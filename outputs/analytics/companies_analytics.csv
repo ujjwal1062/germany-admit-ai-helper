@@ -1,0 +1,337 @@
+﻿company_name,state,city,industry,subindustry,company_type,founded_year,employees,website,description,source_dataset
+BMW Group,Bavaria,Munich,Automotive,,Established,,,https://www.bmwgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Siemens,Bavaria,Munich,Industrial Technology,,Established,,,https://www.siemens.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Allianz,Bavaria,Munich,Insurance,,Established,,,https://www.allianz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Munich Re,Bavaria,Munich,Reinsurance,,Established,,,https://www.munichre.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Infineon Technologies,Bavaria,Neubiberg,Semiconductors,,Established,,,https://www.infineon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+MTU Aero Engines,Bavaria,Munich,Aerospace,,Established,,,https://www.mtu.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+MAN Truck & Bus,Bavaria,Munich,Commercial Vehicles,,Established,,,https://www.man.eu/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Celonis,Bavaria,Munich,Enterprise Software,,Scaleup,,,https://www.celonis.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Personio,Bavaria,Munich,Enterprise Software,,Scaleup,,,https://www.personio.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Quantum Systems,Bavaria,Gilching,Drones,,Startup/Scaleup,,,https://quantum-systems.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+RobCo,Bavaria,Munich,Robotics,,Startup/Scaleup,,,https://www.robco.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ProGlove,Bavaria,Munich,Industrial IoT,,Scaleup,,,https://www.proglove.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+DeepDrive,Bavaria,Munich,Electric Mobility,,Startup/Scaleup,,,https://www.deepdrive.tech/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Flix,Bavaria,Munich,Mobility Technology,,Scaleup,,,https://www.flix.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Siemens Healthineers,Bavaria,Erlangen,Medical Technology,,Established,,,https://www.siemens-healthineers.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Schaeffler,Bavaria,Herzogenaurach,Automotive/Industrial,,Established,,,https://www.schaeffler.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Mercedes-Benz Group,Baden-Württemberg,Stuttgart,Automotive,,Established,,,https://group.mercedes-benz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Porsche,Baden-Württemberg,Stuttgart,Automotive,,Established,,,https://www.porsche.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Bosch,Baden-Württemberg,Gerlingen,Industrial Technology,,Established,,,https://www.bosch.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+SAP,Baden-Württemberg,Walldorf,Enterprise Software,,Established,,,https://www.sap.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ZEISS,Baden-Württemberg,Oberkochen,Optics/MedTech,,Established,,,https://www.zeiss.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+TRUMPF,Baden-Württemberg,Ditzingen,Industrial Machinery,,Established,,,https://www.trumpf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Festo,Baden-Württemberg,Esslingen,Automation,,Established,,,https://www.festo.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Vector Informatik,Baden-Württemberg,Stuttgart,Automotive Software,,Established,,,https://www.vector.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+TeamViewer,Baden-Württemberg,Göppingen,Software,,Established,,,https://www.teamviewer.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+NEURA Robotics,Baden-Württemberg,Metzingen,Robotics,,Startup/Scaleup,,,https://neura-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Aleph Alpha,Baden-Württemberg,Heidelberg,Artificial Intelligence,,Startup/Scaleup,,,https://www.aleph-alpha.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Volocopter,Baden-Württemberg,Bruchsal,Advanced Air Mobility,,Startup/Scaleup,,,https://www.volocopter.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+MHP,Baden-Württemberg,Ludwigsburg,Technology Consulting,,Established,,,https://www.mhp.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Deutsche Bahn,Berlin,Berlin,Transport/Rail,,Established,,,https://www.deutschebahn.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Zalando,Berlin,Berlin,E-Commerce/Technology,,Established,,,https://corporate.zalando.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Delivery Hero,Berlin,Berlin,Delivery Technology,,Established,,,https://www.deliveryhero.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+HelloFresh,Berlin,Berlin,Food Technology,,Established,,,https://www.hellofreshgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+N26,Berlin,Berlin,FinTech,,Scaleup,,,https://n26.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Trade Republic,Berlin,Berlin,FinTech,,Scaleup,,,https://traderepublic.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Contentful,Berlin,Berlin,Enterprise Software,,Scaleup,,,https://www.contentful.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+n8n,Berlin,Berlin,Workflow Automation,,Startup/Scaleup,,,https://n8n.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+deepset,Berlin,Berlin,Artificial Intelligence,,Startup/Scaleup,,,https://www.deepset.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Apheris,Berlin,Berlin,Privacy-Preserving AI,,Startup,,,https://www.apheris.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Langdock,Berlin,Berlin,Enterprise AI,,Startup,,,https://www.langdock.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+sennder,Berlin,Berlin,Digital Logistics,,Scaleup,,,https://www.sennder.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Enpal,Berlin,Berlin,Energy Technology,,Scaleup,,,https://www.enpal.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+GetYourGuide,Berlin,Berlin,Travel Technology,,Scaleup,,,https://www.getyourguide.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Airbus Operations Germany,Hamburg,Hamburg,Aerospace,,Established,,,https://www.airbus.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Lufthansa Technik,Hamburg,Hamburg,Aviation Services,,Established,,,https://www.lufthansa-technik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Hapag-Lloyd,Hamburg,Hamburg,Shipping,,Established,,,https://www.hapag-lloyd.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Otto Group,Hamburg,Hamburg,Retail/E-Commerce,,Established,,,https://www.ottogroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Beiersdorf,Hamburg,Hamburg,Consumer Health/Cosmetics,,Established,,,https://www.beiersdorf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ABOUT YOU,Hamburg,Hamburg,E-Commerce Technology,,Scaleup,,,https://corporate.aboutyou.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+1KOMMA5°,Hamburg,Hamburg,Clean Energy Technology,,Startup/Scaleup,,,https://1komma5.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+OHB,Bremen,Bremen,Space Technology,,Established,,,https://www.ohb.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Mercedes-Benz Bremen Plant,Bremen,Bremen,Automotive Manufacturing,,Established,,,https://group.mercedes-benz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+BLG Logistics,Bremen,Bremen,Logistics,,Established,,,https://www.blg-logistics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Deutsche Bank,Hesse,Frankfurt am Main,Banking,,Established,,,https://www.db.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Commerzbank,Hesse,Frankfurt am Main,Banking,,Established,,,https://www.commerzbank.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Deutsche Börse,Hesse,Frankfurt am Main,Financial Infrastructure,,Established,,,https://www.deutsche-boerse.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Lufthansa Group,Hesse,Frankfurt am Main,Aviation,,Established,,,https://www.lufthansagroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Merck KGaA,Hesse,Darmstadt,Life Sciences/Chemicals,,Established,,,https://www.merckgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Software AG,Hesse,Darmstadt,Enterprise Software,,Established,,,https://www.softwareag.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Wingcopter,Hesse,Weiterstadt,Drones,,Startup/Scaleup,,,https://wingcopter.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Deutsche Telekom,North Rhine-Westphalia,Bonn,Telecommunications,,Established,,,https://www.telekom.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+DHL Group,North Rhine-Westphalia,Bonn,Logistics,,Established,,,https://group.dhl.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Bayer,North Rhine-Westphalia,Leverkusen,Life Sciences,,Established,,,https://www.bayer.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Henkel,North Rhine-Westphalia,Düsseldorf,Chemicals/Consumer Products,,Established,,,https://www.henkel.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+E.ON,North Rhine-Westphalia,Essen,Energy,,Established,,,https://www.eon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+RWE,North Rhine-Westphalia,Essen,Energy,,Established,,,https://www.rwe.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+thyssenkrupp,North Rhine-Westphalia,Essen,Industrial Engineering,,Established,,,https://www.thyssenkrupp.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Evonik,North Rhine-Westphalia,Essen,Specialty Chemicals,,Established,,,https://www.evonik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Rheinmetall,North Rhine-Westphalia,Düsseldorf,Defense/Automotive Technology,,Established,,,https://www.rheinmetall.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+QIAGEN,North Rhine-Westphalia,Hilden,Biotechnology,,Established,,,https://www.qiagen.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+DeepL,North Rhine-Westphalia,Cologne,Artificial Intelligence,,Scaleup,,,https://www.deepl.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Trivago,North Rhine-Westphalia,Düsseldorf,Travel Technology,,Established,,,https://company.trivago.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Picnic,North Rhine-Westphalia,Düsseldorf,E-Grocery Technology,,Scaleup,,,https://picnic.app/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Volkswagen,Lower Saxony,Wolfsburg,Automotive,,Established,,,https://www.volkswagen-group.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Continental,Lower Saxony,Hanover,Automotive Technology,,Established,,,https://www.continental.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+TUI Group,Lower Saxony,Hanover,Travel,,Established,,,https://www.tuigroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Sartorius,Lower Saxony,Göttingen,Life Sciences Technology,,Established,,,https://www.sartorius.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+GlobalFoundries Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://gf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Infineon Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://www.infineon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Bosch Semiconductor Manufacturing Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://www.bosch.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Volkswagen Saxony,Saxony,Zwickau/Dresden,Automotive,,Established,,,https://www.volkswagen-sachsen.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Porsche Leipzig,Saxony,Leipzig,Automotive,,Established,,,https://www.porsche-leipzig.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+BMW Leipzig Plant,Saxony,Leipzig,Automotive,,Established,,,https://www.bmwgroup-werke.com/leipzig/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Staffbase,Saxony,Chemnitz,Enterprise Software,,Scaleup,,,https://staffbase.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+BASF,Rhineland-Palatinate,Ludwigshafen,Chemicals,,Established,,,https://www.basf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+BioNTech,Rhineland-Palatinate,Mainz,Biotechnology,,Established Biotech,,,https://www.biontech.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+SCHOTT,Rhineland-Palatinate,Mainz,Specialty Glass/Materials,,Established,,,https://www.schott.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ZF Saarbrücken,Saarland,Saarbrücken,Automotive Technology,,Established,,,https://www.zf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Dräger,Schleswig-Holstein,Lübeck,Medical/Safety Technology,,Established,,,https://www.draeger.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Tesla Gigafactory Berlin-Brandenburg,Brandenburg,Grünheide,Automotive/Batteries,,Established,,,https://www.tesla.com/giga-berlin,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+JENOPTIK,Thuringia,Jena,Photonics,,Established,,,https://www.jenoptik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Carl Zeiss Meditec,Thuringia,Jena,Medical Technology,,Established,,,https://www.zeiss.com/meditec/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+X-FAB,Thuringia,Erfurt,Semiconductors,,Established,,,https://www.xfab.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+OHB System AG,Bremen,Bremen,Space Technology,,Established,,,https://www.ohb.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+AIDA Cruises,Mecklenburg-Vorpommern,Rostock,Tourism/Maritime,,Established,,,https://www.aida.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Ypsomed,Mecklenburg-Vorpommern,Schwerin,Medical Technology,,Established,,,https://www.ypsomed.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+JENOPTIK Optical Systems,Thuringia,Jena,Optics,,Established,,,https://www.jenoptik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+QIAGEN Digital Insights,North Rhine-Westphalia,Hilden,Bioinformatics,,Established,,,https://www.qiagen.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Akhetonics,Berlin,Berlin,Semiconductors / AI,,Startup,,,https://akhetonics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ARX Robotics,Bavaria,Munich,Robotics / Defense Technology,,Startup,,,https://www.arx-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Atira,Berlin,Berlin,AI / Software,,Startup,,,https://atira.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Atmos Space Cargo,Hesse,Frankfurt am Main,Aerospace / Space,,Startup,,,https://atmos.space/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Black Forest AI,Baden-Württemberg,Freiburg im Breisgau,AI / Software,,Startup,,,https://blackforest.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Deeploi,Berlin,Berlin,Enterprise Software,,Startup,,,https://www.deeploi.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Doinstruct,Bremen,Bremen,Industrial Software,,Startup,,,https://www.doinstruct.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Peec AI,Berlin,Berlin,AI Marketing Software,,Startup,,,https://peec.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Pruna AI,Berlin,Berlin,AI Infrastructure,,Startup,,,https://pruna.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Q.ANT,Baden-Württemberg,Stuttgart,Quantum / AI Hardware,,Startup,,,https://www.qant.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Qualifyze,Hesse,Frankfurt am Main,Supply Chain / Software,,Startup,,,https://qualifyze.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Sereact,Baden-Württemberg,Stuttgart,Robotics / AI,,Startup,,,https://sereact.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Cartken,Bavaria,Munich,Robotics / Mobility,,Startup,,,https://www.cartken.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Micropsi Industries,Berlin,Berlin,Industrial AI / Robotics,,Startup,,,https://micropsi-industries.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Wandelbots,Saxony,Dresden,Robotics Software,,Startup,,,https://wandelbots.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+coboworx,Rhineland-Palatinate,Osann-Monzel,Industrial Robotics,,Startup,,,https://coboworx.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+fruitcore robotics,Baden-Württemberg,Constance,Industrial Robotics,,Startup,,,https://fruitcore-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Filics,Bavaria,Munich,Logistics Robotics,,Startup,,,https://www.filics.eu/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+byte robotics,Saxony-Anhalt,Magdeburg,Robotics Software,,Startup,,,https://byte-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Ubica Robotics,Bavaria,Munich,Robotics,,Startup,,,https://ubica-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+N Robotics,Berlin,Berlin,Robotics,,Startup,,,https://nrobotics.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Nomadic Drones,Berlin,Berlin,Drones / Robotics,,Startup,,,https://nomadicdrones.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+HandsOn Robotics,Bavaria,Munich,Robotics,,Startup,,,https://handsonrobotics.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Mambu,Berlin,Berlin,FinTech Software,,Scaleup,,,https://www.mambu.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Miro,Berlin,Berlin,Collaboration Software,,Established,,,https://miro.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Aiven,Berlin,Berlin,Cloud Data Infrastructure,,Scaleup,,,https://aiven.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Solaris,Berlin,Berlin,FinTech Infrastructure,,Scaleup,,,https://www.solarisgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Raisin,Berlin,Berlin,FinTech,,Scaleup,,,https://www.raisin.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Lemon Markets,Berlin,Berlin,FinTech,,Startup,,,https://lemon.markets/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+360T,Hesse,Frankfurt am Main,Financial Technology,,Established,,,https://www.360t.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Agicap,Berlin,Berlin,FinTech Software,,Scaleup,,,https://agicap.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+3B Pharmaceuticals,Berlin,Berlin,Biotechnology,,Established,,,https://www.3b-pharma.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+4base-lab,Baden-Württemberg,Reutlingen,Life Sciences,,Established,,,https://www.4base-lab.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Abalos Therapeutics,North Rhine-Westphalia,Essen,Biotechnology,,Startup,,,https://abalos-therapeutics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+abberior,Lower Saxony,Göttingen,Optics / Life Sciences,,Established,,,https://www.abberior.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Abcalis,Lower Saxony,Braunschweig,Biotechnology,,Startup,,,https://abcalis.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ABiTEP,Berlin,Berlin,Biotechnology,,Established,,,https://abitep.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Absea,Berlin,Berlin,Biotechnology,,Startup,,,https://absea.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Abviris Deutschland,Schleswig-Holstein,Ahrensburg,Diagnostics,,Established,,,https://www.abviris.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+acCELLerate,Hamburg,Hamburg,Life Sciences,,Established,,,https://accellerate.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Acousia Therapeutics,Baden-Württemberg,Tübingen,Biotechnology,,Startup,,,https://acousia.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+ActiTrexx,Rhineland-Palatinate,Mainz,Biotechnology,,Startup,,,https://actitrexx.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Actome,Baden-Württemberg,Freiburg im Breisgau,Biotechnology,,Startup,,,https://actome.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Acus Laboratories,North Rhine-Westphalia,Cologne,Biotechnology,,Startup,,,https://acus-laboratories.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+adivo,Bavaria,Planegg,Biotechnology,,Startup,,,https://adivo.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+advanceCOR,Bavaria,Planegg,Biotechnology,,Startup,,,https://advancecor.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Again,Berlin,Berlin,Climate Biotech,,Startup,,,https://again.bio/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Tanso,Bavaria,Munich,Climate Software,,Startup,,,https://www.tanso.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Thermondo,Berlin,Berlin,Energy,,Scaleup,,,https://www.thermondo.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Forto,Berlin,Berlin,Digital Freight,,Scaleup,,,https://www.forto.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+Bosch Semiconductor Manufacturing,Saxony,Dresden,Semiconductors,,Established,,,https://www.bosch-semiconductors.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final
+BMW Group,Bavaria,Munich,Automotive,,Established,,,https://www.bmwgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Siemens,Bavaria,Munich,Industrial Technology,,Established,,,https://www.siemens.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Allianz,Bavaria,Munich,Insurance,,Established,,,https://www.allianz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Munich Re,Bavaria,Munich,Reinsurance,,Established,,,https://www.munichre.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Infineon Technologies,Bavaria,Neubiberg,Semiconductors,,Established,,,https://www.infineon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+MTU Aero Engines,Bavaria,Munich,Aerospace,,Established,,,https://www.mtu.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+MAN Truck & Bus,Bavaria,Munich,Commercial Vehicles,,Established,,,https://www.man.eu/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Celonis,Bavaria,Munich,Enterprise Software,,Scaleup,,,https://www.celonis.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Personio,Bavaria,Munich,Enterprise Software,,Scaleup,,,https://www.personio.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Quantum Systems,Bavaria,Gilching,Drones,,Startup/Scaleup,,,https://quantum-systems.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+RobCo,Bavaria,Munich,Robotics,,Startup/Scaleup,,,https://www.robco.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ProGlove,Bavaria,Munich,Industrial IoT,,Scaleup,,,https://www.proglove.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+DeepDrive,Bavaria,Munich,Electric Mobility,,Startup/Scaleup,,,https://www.deepdrive.tech/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Flix,Bavaria,Munich,Mobility Technology,,Scaleup,,,https://www.flix.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Siemens Healthineers,Bavaria,Erlangen,Medical Technology,,Established,,,https://www.siemens-healthineers.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Schaeffler,Bavaria,Herzogenaurach,Automotive/Industrial,,Established,,,https://www.schaeffler.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Mercedes-Benz Group,Baden-Württemberg,Stuttgart,Automotive,,Established,,,https://group.mercedes-benz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Porsche,Baden-Württemberg,Stuttgart,Automotive,,Established,,,https://www.porsche.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Bosch,Baden-Württemberg,Gerlingen,Industrial Technology,,Established,,,https://www.bosch.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+SAP,Baden-Württemberg,Walldorf,Enterprise Software,,Established,,,https://www.sap.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ZEISS,Baden-Württemberg,Oberkochen,Optics/MedTech,,Established,,,https://www.zeiss.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+TRUMPF,Baden-Württemberg,Ditzingen,Industrial Machinery,,Established,,,https://www.trumpf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Festo,Baden-Württemberg,Esslingen,Automation,,Established,,,https://www.festo.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Vector Informatik,Baden-Württemberg,Stuttgart,Automotive Software,,Established,,,https://www.vector.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+TeamViewer,Baden-Württemberg,Göppingen,Software,,Established,,,https://www.teamviewer.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+NEURA Robotics,Baden-Württemberg,Metzingen,Robotics,,Startup/Scaleup,,,https://neura-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Aleph Alpha,Baden-Württemberg,Heidelberg,Artificial Intelligence,,Startup/Scaleup,,,https://www.aleph-alpha.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Volocopter,Baden-Württemberg,Bruchsal,Advanced Air Mobility,,Startup/Scaleup,,,https://www.volocopter.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+MHP,Baden-Württemberg,Ludwigsburg,Technology Consulting,,Established,,,https://www.mhp.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Deutsche Bahn,Berlin,Berlin,Transport/Rail,,Established,,,https://www.deutschebahn.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Zalando,Berlin,Berlin,E-Commerce/Technology,,Established,,,https://corporate.zalando.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Delivery Hero,Berlin,Berlin,Delivery Technology,,Established,,,https://www.deliveryhero.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+HelloFresh,Berlin,Berlin,Food Technology,,Established,,,https://www.hellofreshgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+N26,Berlin,Berlin,FinTech,,Scaleup,,,https://n26.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Trade Republic,Berlin,Berlin,FinTech,,Scaleup,,,https://traderepublic.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Contentful,Berlin,Berlin,Enterprise Software,,Scaleup,,,https://www.contentful.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+n8n,Berlin,Berlin,Workflow Automation,,Startup/Scaleup,,,https://n8n.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+deepset,Berlin,Berlin,Artificial Intelligence,,Startup/Scaleup,,,https://www.deepset.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Apheris,Berlin,Berlin,Privacy-Preserving AI,,Startup,,,https://www.apheris.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Langdock,Berlin,Berlin,Enterprise AI,,Startup,,,https://www.langdock.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+sennder,Berlin,Berlin,Digital Logistics,,Scaleup,,,https://www.sennder.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Enpal,Berlin,Berlin,Energy Technology,,Scaleup,,,https://www.enpal.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+GetYourGuide,Berlin,Berlin,Travel Technology,,Scaleup,,,https://www.getyourguide.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Airbus Operations Germany,Hamburg,Hamburg,Aerospace,,Established,,,https://www.airbus.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Lufthansa Technik,Hamburg,Hamburg,Aviation Services,,Established,,,https://www.lufthansa-technik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Hapag-Lloyd,Hamburg,Hamburg,Shipping,,Established,,,https://www.hapag-lloyd.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Otto Group,Hamburg,Hamburg,Retail/E-Commerce,,Established,,,https://www.ottogroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Beiersdorf,Hamburg,Hamburg,Consumer Health/Cosmetics,,Established,,,https://www.beiersdorf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ABOUT YOU,Hamburg,Hamburg,E-Commerce Technology,,Scaleup,,,https://corporate.aboutyou.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+1KOMMA5°,Hamburg,Hamburg,Clean Energy Technology,,Startup/Scaleup,,,https://1komma5.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+OHB,Bremen,Bremen,Space Technology,,Established,,,https://www.ohb.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Mercedes-Benz Bremen Plant,Bremen,Bremen,Automotive Manufacturing,,Established,,,https://group.mercedes-benz.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+BLG Logistics,Bremen,Bremen,Logistics,,Established,,,https://www.blg-logistics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Deutsche Bank,Hesse,Frankfurt am Main,Banking,,Established,,,https://www.db.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Commerzbank,Hesse,Frankfurt am Main,Banking,,Established,,,https://www.commerzbank.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Deutsche Börse,Hesse,Frankfurt am Main,Financial Infrastructure,,Established,,,https://www.deutsche-boerse.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Lufthansa Group,Hesse,Frankfurt am Main,Aviation,,Established,,,https://www.lufthansagroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Merck KGaA,Hesse,Darmstadt,Life Sciences/Chemicals,,Established,,,https://www.merckgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Software AG,Hesse,Darmstadt,Enterprise Software,,Established,,,https://www.softwareag.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Wingcopter,Hesse,Weiterstadt,Drones,,Startup/Scaleup,,,https://wingcopter.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Deutsche Telekom,North Rhine-Westphalia,Bonn,Telecommunications,,Established,,,https://www.telekom.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+DHL Group,North Rhine-Westphalia,Bonn,Logistics,,Established,,,https://group.dhl.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Bayer,North Rhine-Westphalia,Leverkusen,Life Sciences,,Established,,,https://www.bayer.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Henkel,North Rhine-Westphalia,Düsseldorf,Chemicals/Consumer Products,,Established,,,https://www.henkel.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+E.ON,North Rhine-Westphalia,Essen,Energy,,Established,,,https://www.eon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+RWE,North Rhine-Westphalia,Essen,Energy,,Established,,,https://www.rwe.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+thyssenkrupp,North Rhine-Westphalia,Essen,Industrial Engineering,,Established,,,https://www.thyssenkrupp.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Evonik,North Rhine-Westphalia,Essen,Specialty Chemicals,,Established,,,https://www.evonik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Rheinmetall,North Rhine-Westphalia,Düsseldorf,Defense/Automotive Technology,,Established,,,https://www.rheinmetall.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+QIAGEN,North Rhine-Westphalia,Hilden,Biotechnology,,Established,,,https://www.qiagen.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+DeepL,North Rhine-Westphalia,Cologne,Artificial Intelligence,,Scaleup,,,https://www.deepl.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Trivago,North Rhine-Westphalia,Düsseldorf,Travel Technology,,Established,,,https://company.trivago.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Picnic,North Rhine-Westphalia,Düsseldorf,E-Grocery Technology,,Scaleup,,,https://picnic.app/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Volkswagen,Lower Saxony,Wolfsburg,Automotive,,Established,,,https://www.volkswagen-group.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Continental,Lower Saxony,Hanover,Automotive Technology,,Established,,,https://www.continental.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+TUI Group,Lower Saxony,Hanover,Travel,,Established,,,https://www.tuigroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Sartorius,Lower Saxony,Göttingen,Life Sciences Technology,,Established,,,https://www.sartorius.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+GlobalFoundries Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://gf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Infineon Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://www.infineon.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Bosch Semiconductor Manufacturing Dresden,Saxony,Dresden,Semiconductors,,Established,,,https://www.bosch.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Volkswagen Saxony,Saxony,Zwickau/Dresden,Automotive,,Established,,,https://www.volkswagen-sachsen.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Porsche Leipzig,Saxony,Leipzig,Automotive,,Established,,,https://www.porsche-leipzig.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+BMW Leipzig Plant,Saxony,Leipzig,Automotive,,Established,,,https://www.bmwgroup-werke.com/leipzig/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Staffbase,Saxony,Chemnitz,Enterprise Software,,Scaleup,,,https://staffbase.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+BASF,Rhineland-Palatinate,Ludwigshafen,Chemicals,,Established,,,https://www.basf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+BioNTech,Rhineland-Palatinate,Mainz,Biotechnology,,Established Biotech,,,https://www.biontech.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+SCHOTT,Rhineland-Palatinate,Mainz,Specialty Glass/Materials,,Established,,,https://www.schott.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ZF Saarbrücken,Saarland,Saarbrücken,Automotive Technology,,Established,,,https://www.zf.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Dräger,Schleswig-Holstein,Lübeck,Medical/Safety Technology,,Established,,,https://www.draeger.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Tesla Gigafactory Berlin-Brandenburg,Brandenburg,Grünheide,Automotive/Batteries,,Established,,,https://www.tesla.com/giga-berlin,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+JENOPTIK,Thuringia,Jena,Photonics,,Established,,,https://www.jenoptik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Carl Zeiss Meditec,Thuringia,Jena,Medical Technology,,Established,,,https://www.zeiss.com/meditec/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+X-FAB,Thuringia,Erfurt,Semiconductors,,Established,,,https://www.xfab.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+OHB System AG,Bremen,Bremen,Space Technology,,Established,,,https://www.ohb.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+AIDA Cruises,Mecklenburg-Vorpommern,Rostock,Tourism/Maritime,,Established,,,https://www.aida.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Ypsomed,Mecklenburg-Vorpommern,Schwerin,Medical Technology,,Established,,,https://www.ypsomed.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+JENOPTIK Optical Systems,Thuringia,Jena,Optics,,Established,,,https://www.jenoptik.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+QIAGEN Digital Insights,North Rhine-Westphalia,Hilden,Bioinformatics,,Established,,,https://www.qiagen.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Akhetonics,Berlin,Berlin,Semiconductors / AI,,Startup,,,https://akhetonics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ARX Robotics,Bavaria,Munich,Robotics / Defense Technology,,Startup,,,https://www.arx-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Atira,Berlin,Berlin,AI / Software,,Startup,,,https://atira.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Atmos Space Cargo,Hesse,Frankfurt am Main,Aerospace / Space,,Startup,,,https://atmos.space/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Black Forest AI,Baden-Württemberg,Freiburg im Breisgau,AI / Software,,Startup,,,https://blackforest.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Deeploi,Berlin,Berlin,Enterprise Software,,Startup,,,https://www.deeploi.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Doinstruct,Bremen,Bremen,Industrial Software,,Startup,,,https://www.doinstruct.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Peec AI,Berlin,Berlin,AI Marketing Software,,Startup,,,https://peec.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Pruna AI,Berlin,Berlin,AI Infrastructure,,Startup,,,https://pruna.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Q.ANT,Baden-Württemberg,Stuttgart,Quantum / AI Hardware,,Startup,,,https://www.qant.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Qualifyze,Hesse,Frankfurt am Main,Supply Chain / Software,,Startup,,,https://qualifyze.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Sereact,Baden-Württemberg,Stuttgart,Robotics / AI,,Startup,,,https://sereact.ai/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Cartken,Bavaria,Munich,Robotics / Mobility,,Startup,,,https://www.cartken.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Micropsi Industries,Berlin,Berlin,Industrial AI / Robotics,,Startup,,,https://micropsi-industries.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Wandelbots,Saxony,Dresden,Robotics Software,,Startup,,,https://wandelbots.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+coboworx,Rhineland-Palatinate,Osann-Monzel,Industrial Robotics,,Startup,,,https://coboworx.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+fruitcore robotics,Baden-Württemberg,Constance,Industrial Robotics,,Startup,,,https://fruitcore-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Filics,Bavaria,Munich,Logistics Robotics,,Startup,,,https://www.filics.eu/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+byte robotics,Saxony-Anhalt,Magdeburg,Robotics Software,,Startup,,,https://byte-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Ubica Robotics,Bavaria,Munich,Robotics,,Startup,,,https://ubica-robotics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+N Robotics,Berlin,Berlin,Robotics,,Startup,,,https://nrobotics.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Nomadic Drones,Berlin,Berlin,Drones / Robotics,,Startup,,,https://nomadicdrones.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+HandsOn Robotics,Bavaria,Munich,Robotics,,Startup,,,https://handsonrobotics.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Mambu,Berlin,Berlin,FinTech Software,,Scaleup,,,https://www.mambu.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Miro,Berlin,Berlin,Collaboration Software,,Established,,,https://miro.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Aiven,Berlin,Berlin,Cloud Data Infrastructure,,Scaleup,,,https://aiven.io/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Solaris,Berlin,Berlin,FinTech Infrastructure,,Scaleup,,,https://www.solarisgroup.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Raisin,Berlin,Berlin,FinTech,,Scaleup,,,https://www.raisin.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Lemon Markets,Berlin,Berlin,FinTech,,Startup,,,https://lemon.markets/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+360T,Hesse,Frankfurt am Main,Financial Technology,,Established,,,https://www.360t.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Agicap,Berlin,Berlin,FinTech Software,,Scaleup,,,https://agicap.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+3B Pharmaceuticals,Berlin,Berlin,Biotechnology,,Established,,,https://www.3b-pharma.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+4base-lab,Baden-Württemberg,Reutlingen,Life Sciences,,Established,,,https://www.4base-lab.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Abalos Therapeutics,North Rhine-Westphalia,Essen,Biotechnology,,Startup,,,https://abalos-therapeutics.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+abberior,Lower Saxony,Göttingen,Optics / Life Sciences,,Established,,,https://www.abberior.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Abcalis,Lower Saxony,Braunschweig,Biotechnology,,Startup,,,https://abcalis.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ABiTEP,Berlin,Berlin,Biotechnology,,Established,,,https://abitep.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Absea,Berlin,Berlin,Biotechnology,,Startup,,,https://absea.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Abviris Deutschland,Schleswig-Holstein,Ahrensburg,Diagnostics,,Established,,,https://www.abviris.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+acCELLerate,Hamburg,Hamburg,Life Sciences,,Established,,,https://accellerate.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Acousia Therapeutics,Baden-Württemberg,Tübingen,Biotechnology,,Startup,,,https://acousia.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+ActiTrexx,Rhineland-Palatinate,Mainz,Biotechnology,,Startup,,,https://actitrexx.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Actome,Baden-Württemberg,Freiburg im Breisgau,Biotechnology,,Startup,,,https://actome.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Acus Laboratories,North Rhine-Westphalia,Cologne,Biotechnology,,Startup,,,https://acus-laboratories.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+adivo,Bavaria,Planegg,Biotechnology,,Startup,,,https://adivo.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+advanceCOR,Bavaria,Planegg,Biotechnology,,Startup,,,https://advancecor.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Again,Berlin,Berlin,Climate Biotech,,Startup,,,https://again.bio/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Tanso,Bavaria,Munich,Climate Software,,Startup,,,https://www.tanso.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Thermondo,Berlin,Berlin,Energy,,Scaleup,,,https://www.thermondo.de/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Forto,Berlin,Berlin,Digital Freight,,Scaleup,,,https://www.forto.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+Bosch Semiconductor Manufacturing,Saxony,Dresden,Semiconductors,,Established,,,https://www.bosch-semiconductors.com/,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Companies_Startups
+,Baden-Württemberg,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Bavaria,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Berlin,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Brandenburg,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Bremen,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Hamburg,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Hesse,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Mecklenburg-Vorpommern,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Lower Saxony,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,North Rhine-Westphalia,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Rhineland-Palatinate,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Saarland,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Saxony,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Saxony-Anhalt,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Schleswig-Holstein,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,Thuringia,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__State_Coverage
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__AI_Ecosystem_Benchmark
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__Sources
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README
+,,,,,,,,,,Germany_Companies_Startups_Career_Ecosystem_Master_Final__README

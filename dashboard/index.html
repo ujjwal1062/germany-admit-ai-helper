@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Germany Admit AI Helper</title>
+
+    <meta
+        name="description"
+        content="Germany university, study program, scholarship and career ecosystem analytics."
+    >
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- Dashboard CSS -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                DE
+            </div>
+
+            <div>
+                <h1>
+                    Germany Admit AI Helper
+                </h1>
+
+                <p>
+                    Study • Scholarships • Universities • Careers
+                </p>
+            </div>
+
+        </div>
+
+        <div class="header-status">
+
+            <span class="status-dot"></span>
+
+            Analytics Dashboard
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="container">
+
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <span class="eyebrow">
+                    GERMANY HIGHER EDUCATION & CAREER DATA
+                </span>
+
+                <h2>
+                    Explore Germany for
+                    <span>Study & Career</span>
+                </h2>
+
+                <p>
+                    Explore universities, study programs, scholarships,
+                    companies, industries and regional opportunities
+                    across Germany.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             KPI CARDS
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        OVERVIEW
+                    </span>
+
+                    <h3>
+                        Germany at a glance
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="kpi-grid">
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-icon">
+                        🎓
+                    </div>
+
+                    <div>
+
+                        <span class="kpi-label">
+                            Universities
+                        </span>
+
+                        <strong id="universityCount">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-icon">
+                        📚
+                    </div>
+
+                    <div>
+
+                        <span class="kpi-label">
+                            Study Programs
+                        </span>
+
+                        <strong id="courseCount">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-icon">
+                        💶
+                    </div>
+
+                    <div>
+
+                        <span class="kpi-label">
+                            Scholarships
+                        </span>
+
+                        <strong id="scholarshipCount">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-icon">
+                        🏢
+                    </div>
+
+                    <div>
+
+                        <span class="kpi-label">
+                            Companies
+                        </span>
+
+                        <strong id="companyCount">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INTERACTIVE GERMANY MAP
+        ====================================================== -->
+
+        <section
+            class="section"
+            id="map-section"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        INTERACTIVE MAP
+                    </span>
+
+                    <h3>
+                        Explore Germany by state
+                    </h3>
+
+                    <p>
+                        Click a Bundesland to see its universities,
+                        study programs, scholarships and career ecosystem.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="map-layout">
+
+
+                <!-- MAP -->
+
+                <div class="data-card map-card">
+
+                    <div class="card-header map-header">
+
+                        <div>
+
+                            <h4>
+                                Germany federal states
+                            </h4>
+
+                            <p>
+                                Click a state to select it.
+                                The map itself does not move when you click.
+                            </p>
+
+                        </div>
+
+                        <div class="map-legend">
+
+                            <span class="legend-dot"></span>
+
+                            <span>
+                                Click a state
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="germanyMap"
+                        class="germany-map"
+                    >
+
+                        <div class="map-loading">
+                            Loading Germany map...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATE DETAIL -->
+
+                <div class="data-card map-detail-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h4>
+                                Selected state
+                            </h4>
+
+                            <p>
+                                Regional study and career signals.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="mapStateDetail"
+                        class="map-state-detail"
+                    >
+
+                        <div class="empty-state">
+
+                            Select a state on the map.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- REGIONAL SIGNALS -->
+
+            <div
+                id="regionalSignals"
+                class="regional-signals"
+            >
+
+                <div class="signal-card">
+
+                    <span>
+                        Highest university concentration
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                    <small>
+                        Based on university count in the current dataset.
+                    </small>
+
+                </div>
+
+
+                <div class="signal-card">
+
+                    <span>
+                        Lowest university concentration
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                    <small>
+                        Based on university count in the current dataset.
+                    </small>
+
+                </div>
+
+
+                <div class="signal-card">
+
+                    <span>
+                        Largest study-program volume
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                    <small>
+                        Based on course/program count in the current dataset.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             STATE EXPLORER
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        REGIONAL EXPLORER
+                    </span>
+
+                    <h3>
+                        Explore German states
+                    </h3>
+
+                </div>
+
+
+                <div class="control-group">
+
+                    <label for="stateSelect">
+                        Select state
+                    </label>
+
+                    <select id="stateSelect">
+
+                        <option value="">
+                            All states
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="state-grid">
+
+
+                <div class="data-card large">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h4>
+                                State overview
+                            </h4>
+
+                            <p>
+                                University, course, scholarship and
+                                company coverage.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="stateOverview"
+                        class="state-overview"
+                    >
+
+                        <div class="empty-state">
+                            Loading state data...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="data-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h4>
+                                Universities by state
+                            </h4>
+
+                            <p>
+                                Number of universities represented
+                                in the dataset.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="stateUniversityList"
+                        class="ranking-list"
+                    >
+
+                        <div class="empty-state">
+                            Loading...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FIELDS
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        STUDY AREAS
+                    </span>
+
+                    <h3>
+                        Fields and study programs
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="two-column">
+
+
+                <div class="data-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h4>
+                                Study fields
+                            </h4>
+
+                            <p>
+                                Fields represented across the course
+                                dataset.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="fieldList"
+                        class="ranking-list"
+                    >
+
+                        <div class="empty-state">
+                            Loading fields...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="data-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h4>
+                                Industries
+                            </h4>
+
+                            <p>
+                                Industries represented in the career
+                                ecosystem dataset.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="industryList"
+                        class="ranking-list"
+                    >
+
+                        <div class="empty-state">
+                            Loading industries...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CAREER ECOSYSTEM
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        CAREER ECOSYSTEM
+                    </span>
+
+                    <h3>
+                        Companies and industries
+                    </h3>
+
+                    <p>
+                        Explore how the German company ecosystem is
+                        distributed across industries and states.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-card">
+
+                <div
+                    id="industryTable"
+                    class="table-wrapper"
+                >
+
+                    <div class="empty-state">
+                        Loading company ecosystem...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SCHOLARSHIPS
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        FUNDING
+                    </span>
+
+                    <h3>
+                        Scholarship ecosystem
+                    </h3>
+
+                    <p>
+                        Scholarship coverage represented in the
+                        current dataset.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-card">
+
+                <div
+                    id="scholarshipTable"
+                    class="table-wrapper"
+                >
+
+                    <div class="empty-state">
+                        Loading scholarships...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DATA QUALITY
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        DATA QUALITY
+                    </span>
+
+                    <h3>
+                        Dataset coverage
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="qualityGrid"
+                class="quality-grid"
+            >
+
+                <div class="empty-state">
+                    Loading quality information...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             FUTURE PLATFORM
+        ====================================================== -->
+
+        <section class="future-card">
+
+            <div>
+
+                <span class="section-label">
+                    NEXT PHASE
+                </span>
+
+                <h3>
+                    Germany Admit AI Consultant
+                </h3>
+
+                <p>
+                    This dashboard is the data foundation for a
+                    future Germany-focused AI consultant that can
+                    connect study interests, universities,
+                    scholarships and career opportunities.
+                </p>
+
+            </div>
+
+
+            <div class="future-badge">
+                Coming later
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="footer">
+
+        <div>
+
+            <strong>
+                Germany Admit AI Helper
+            </strong>
+
+            <p>
+                Germany education and career analytics project.
+            </p>
+
+        </div>
+
+        <div class="footer-right">
+
+            <span>
+                Data-driven • Open • Educational
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <!-- Leaflet -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- Dashboard JavaScript -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>

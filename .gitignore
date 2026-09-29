@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ============================================================
+# GERMANY ADMIT AI HELPER
+# GitHub / GitHub Pages ignore rules
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Logs / temporary files
+*.log
+*.tmp
+*.temp
+*.pid
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.secret
+
+# Local backups
+dashboard_backup_v1/
+
+# Raw/source datasets
+data/raw/
+
+# Local Python cache
+.pytest_cache/
+.mypy_cache/

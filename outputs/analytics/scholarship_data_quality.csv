@@ -1,0 +1,9 @@
+﻿metric,value,interpretation
+scholarship_source_rows,270,Rows in scholarships_analytics.csv
+distinct_scholarship_ids,125,Distinct scholarship IDs; preferable to raw row count for a national KPI
+distinct_scholarship_names,89,Distinct scholarship names
+rows_with_explicit_state,0,Scholarship rows with a populated state field
+rows_with_university_link,156,Scholarship rows with a university_name value
+distinct_university_linked_scholarship_ids,78,Distinct scholarship IDs with a university link
+universities_with_nonzero_summary_scholarships,16,Universities with nonzero scholarship_count in university_scholarship_summary.csv
+university_linked_summary_scholarship_records,58,Sum of scholarship_count in university_scholarship_summary.csv; used for state-linked dashboard counts

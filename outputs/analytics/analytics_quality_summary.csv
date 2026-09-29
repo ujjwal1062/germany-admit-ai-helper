@@ -1,0 +1,5 @@
+﻿domain,rows,columns,duplicate_rows,missing_cells,missing_percentage
+universities,66,8,5,102,19.32
+courses,14922,9,5582,65000,48.4
+scholarships,270,13,8,991,28.23
+companies,336,11,19,1556,42.1

@@ -1,0 +1,3224 @@
+GERMANY ADMIT AI HELPER
+DATASET SCHEMA REPORT
+================================================================================
+Files discovered: 7
+
+================================================================================
+FILE: German_Universities_All_Datasets_Master.csv
+CATEGORY: universities
+STATUS: success
+
+ROWS: 7,461
+COLUMNS: 160
+DUPLICATE ROWS: 45
+
+  university
+    dtype: object
+    non-missing: 5,551
+    missing: 1,910
+    missing %: 25.6%
+    unique: 45
+    examples: Freie Universität Berlin | Technical University of Munich (TUM) | Ludwig-Maximilians-Universität München (LMU) | Heidelberg University | RWTH Aachen University
+  QS_2027_Germany_position
+    dtype: float64
+    non-missing: 3,952
+    missing: 3,509
+    missing %: 47.03%
+    unique: 31
+    examples: 4.0 | 1.0 | 2.0 | 3.0 | 5.0
+  QS_2027_global_rank
+    dtype: object
+    non-missing: 3,952
+    missing: 3,509
+    missing %: 47.03%
+    unique: 30
+    examples: =98 | 25 | 61 | 86 | 104
+  programme_name
+    dtype: object
+    non-missing: 5,793
+    missing: 1,668
+    missing %: 22.36%
+    unique: 2,748
+    examples: Biochemistry | Bioinformatics | Biology | Business Administration | Chemistry
+  degree_type
+    dtype: object
+    non-missing: 4,100
+    missing: 3,361
+    missing %: 45.05%
+    unique: 164
+    examples: Bachelor of Science (B.Sc.) | Bachelor of Arts (B.A.) | State Examination | First State Examination / Erste Juristische Prüfung | Bachelor
+  programme_category
+    dtype: object
+    non-missing: 1,213
+    missing: 6,248
+    missing %: 83.74%
+    unique: 160
+    examples: Mono Bachelor | State examination | First law examination | Charité programme hosted/coordinated with FU context | Charité programme
+  language
+    dtype: object
+    non-missing: 2,277
+    missing: 5,184
+    missing %: 69.48%
+    unique: 47
+    examples: German / programme-dependent | German | German / English depending on programme | English | English / German
+  standard_duration
+    dtype: object
+    non-missing: 4,409
+    missing: 3,052
+    missing %: 40.91%
+    unique: 46
+    examples: 6 semesters | See programme regulations | Programme-specific | 4 semesters | Usually 6 semesters
+  start_semester
+    dtype: object
+    non-missing: 3,146
+    missing: 4,315
+    missing %: 57.83%
+    unique: 19
+    examples: See programme page | Winter | Winter / Summer | Programme-specific | Winter / programme-specific
+  admission_mode
+    dtype: object
+    non-missing: 2,217
+    missing: 5,244
+    missing %: 70.29%
+    unique: 35
+    examples: Admission-free or NC depending on programme | National/central selection where applicable | Admission-free or NC depending on semester/subject | Programme-specific | National admission
+  admission_requirements
+    dtype: object
+    non-missing: 3,057
+    missing: 4,404
+    missing %: 59.03%
+    unique: 98
+    examples: University entrance qualification (e.g. Abitur); programme-specific language/admission conditions apply. | University entrance qualification and the applicable national/subject-specific admission requirements. | University entrance qualification and programme-specific requirements. | Programme-specific admission requirements; see programme page. | University entrance qualification and national admission procedure.
+  tuition_fee
+    dtype: object
+    non-missing: 5,645
+    missing: 1,816
+    missing %: 24.34%
+    unique: 55
+    examples: No tuition stated on programme overview; semester fees/contributions may apply | €3,000/semester for international students from third countries | €1,500/semester for international students from third countries | International tuition applies where applicable | International tuition may apply
+  programme_url
+    dtype: object
+    non-missing: 1,592
+    missing: 5,869
+    missing %: 78.66%
+    unique: 57
+    examples: https://www.fu-berlin.de/en/studium/studienangebot/ | https://www.tum.de/en/studies/degree-programs/detail/aerospace-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/engineering-and-materials-science-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/management-and-technology-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/geodesy-and-earth-observation-bachelor-of-science-bsc
+  source_type
+    dtype: object
+    non-missing: 2,153
+    missing: 5,308
+    missing %: 71.14%
+    unique: 14
+    examples: Official FU Berlin programme catalogue | Official TUM programme page / official TUM School programme list | Official LMU programme/degree pages | Official Heidelberg University Study Programme Finder / programme overview | Official RWTH Aachen study-programme catalogue / 2026 study-choice guide
+  last_checked
+    dtype: object
+    non-missing: 5,793
+    missing: 1,668
+    missing %: 22.36%
+    unique: 3
+    examples: 2026-09-21 | 2026-09-24 | 2026-09-25
+  field
+    dtype: object
+    non-missing: 270
+    missing: 7,191
+    missing %: 96.38%
+    unique: 40
+    examples: Coverage | Programme rows | Official source | Important note | University
+  value
+    dtype: object
+    non-missing: 426
+    missing: 7,035
+    missing %: 94.29%
+    unique: 393
+    examples: Freie Universität Berlin | 292 | https://www.fu-berlin.de/en/studium/studienangebot/ | Rows are extracted from FU's official programme overviews. Programme-specific requirements/deadlines must be verified on each individual programme page; the overview does not publish every requirement for every programme. | Programme-level dataset: one row per degree programme.
+  application_deadline
+    dtype: object
+    non-missing: 4,961
+    missing: 2,500
+    missing %: 33.51%
+    unique: 61
+    examples: 15 May–15 July | Programme-specific | 15 May–15 September | 1 April–31 May | 1 Feb–31 May (winter); 1 Oct–30 Nov (summer)
+  notes
+    dtype: object
+    non-missing: 1,488
+    missing: 5,973
+    missing %: 80.06%
+    unique: 42
+    examples: Legacy programme: TUM states new applications are only possible for Geodesy and Earth Observation. | Programme is listed in TUM School of Engineering & Design official A-Z list; individual programme-level fields require the linked TUM programme page. | LMU states individual admission requirements are in the Degree Program Finder. | Official LMU list of English-taught master's programmes. | Official LMU master's catalogue; individual programme details govern exact requirements.
+  item
+    dtype: object
+    non-missing: 352
+    missing: 7,109
+    missing %: 95.28%
+    unique: 153
+    examples: Dataset purpose | University | QS 2027 position | Rows in this batch | Primary source
+  category
+    dtype: object
+    non-missing: 138
+    missing: 7,323
+    missing %: 98.15%
+    unique: 6
+    examples: Civil / Environmental Engineering | Engineering Sciences | Natural Sciences and Mathematics | Humanities and Social Sciences | Medicine / Dentistry
+  language_of_instruction
+    dtype: object
+    non-missing: 1,644
+    missing: 5,817
+    missing %: 77.97%
+    unique: 30
+    examples: German | German and English | English | German/English | English/German
+  requirements
+    dtype: object
+    non-missing: 2,295
+    missing: 5,166
+    missing %: 69.24%
+    unique: 17
+    examples: Programme-specific; see TU Dresden SINS and the applicable study/admission regulations. | Programme-specific admission requirements; consult the individual University of Bonn programme page and examination/admission regulations. | Programme-specific; verify the individual University of Hamburg programme page and applicable admission regulations. | Programme-specific; verify the official FAU programme page and admission regulations. | Programme-specific; check the official degree-programme details and admission regulations.
+  source_url
+    dtype: object
+    non-missing: 561
+    missing: 6,900
+    missing %: 92.48%
+    unique: 4
+    examples: https://tu-dresden.de/studium/vor-dem-studium/studienangebot/sins/sins_start | https://www.fau.eu/studying/degree-programs/all-degree-programs/ | https://uni-tuebingen.de/en/study/finding-a-course/degree-programs-available/ | https://www.student.uni-stuttgart.de/en/study-programs/
+  degree_code
+    dtype: object
+    non-missing: 242
+    missing: 7,219
+    missing %: 96.76%
+    unique: 4
+    examples: M | L | B | E
+  programme_option
+    dtype: object
+    non-missing: 377
+    missing: 7,084
+    missing %: 94.95%
+    unique: 32
+    examples: Single-Subject | Vocational School (Small Professional Specialisation) | Teaching Bachelor, None | Vocational School (Two-Subject) | Vocational School (Great Professional Specialisation)
+  field_of_study
+    dtype: object
+    non-missing: 1,560
+    missing: 5,901
+    missing %: 79.09%
+    unique: 249
+    examples: Agriculture/Economics | Teaching | Agriculture | Humanities | Languages
+  study_location
+    dtype: object
+    non-missing: 130
+    missing: 7,331
+    missing %: 98.26%
+    unique: 4
+    examples: Erlangen | Nuremberg | Erlangen/Nuremberg | Erlangen/Rennes
+  start
+    dtype: object
+    non-missing: 130
+    missing: 7,331
+    missing %: 98.26%
+    unique: 3
+    examples: Summer semester | Winter semester | Summer/Winter
+  duration_semesters
+    dtype: object
+    non-missing: 97
+    missing: 7,364
+    missing %: 98.7%
+    unique: 7
+    examples: 4 | 3 | 2 | 2 or 4 | 4 or 8 part-time
+  admission_status
+    dtype: object
+    non-missing: 1,788
+    missing: 5,673
+    missing %: 76.04%
+    unique: 35
+    examples: Restricted | Restricted/Programme-specific | Programme-specific | None/Programme-specific | Restricted admission
+  deadline
+    dtype: object
+    non-missing: 293
+    missing: 7,168
+    missing %: 96.07%
+    unique: 2
+    examples: Programme-, applicant- and semester-specific; verify current Tübingen application page. | Programme-specific; see official application/admission page
+  sr_no
+    dtype: float64
+    non-missing: 3,366
+    missing: 4,095
+    missing %: 54.89%
+    unique: 257
+    examples: 1.0 | 2.0 | 3.0 | 4.0 | 5.0
+  qs_2027_germany_position
+    dtype: float64
+    non-missing: 67
+    missing: 7,394
+    missing %: 99.1%
+    unique: 1
+    examples: 14.0
+  qs_2027_global_rank
+    dtype: object
+    non-missing: 1,059
+    missing: 6,402
+    missing %: 85.81%
+    unique: 9
+    examples: 245 | =261 | 269 | =370 | =540
+  official_source
+    dtype: object
+    non-missing: 138
+    missing: 7,323
+    missing %: 98.15%
+    unique: 2
+    examples: https://uni-freiburg.de/en/studies/degree-programmes/ | https://www.uni-wuerzburg.de/en/studying-at-jmu/studienangelegenheiten/application-and-enrolment/international-degree-seeking-students/study-programmes-doctoral-studies/
+  option/track
+    dtype: float64
+    non-missing: 0
+    missing: 7,461
+    missing %: 100.0%
+    unique: 0
+  duration
+    dtype: object
+    non-missing: 273
+    missing: 7,188
+    missing %: 96.34%
+    unique: 11
+    examples: 4 semesters | 6 semesters | 6 semesters (3 years) | 8 semesters (4 years) | 6 semesters (3 years) + 4 semesters (2 years)
+  programme_structure
+    dtype: object
+    non-missing: 296
+    missing: 7,165
+    missing %: 96.03%
+    unique: 10
+    examples: 1 subject | 2 subject | Teaching Degree | State examination | Mono-Bachelor
+  programme_catalogue_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://studienangebot.ruhr-uni-bochum.de/en/overview
+  fees_source_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://international.ruhr-uni-bochum.de/en/costs-studying-ruhr-university-bochum
+  application_source_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://studium.ruhr-uni-bochum.de/en/application-international-prospective-students
+  city
+    dtype: object
+    non-missing: 3,228
+    missing: 4,233
+    missing %: 56.74%
+    unique: 29
+    examples: Berlin | Hannover | Bayreuth / Kulmbach | Göttingen | Mainz
+  state
+    dtype: object
+    non-missing: 3,228
+    missing: 4,233
+    missing %: 56.74%
+    unique: 16
+    examples: Berlin | Lower Saxony | Bavaria | Rhineland-Palatinate | North Rhine-Westphalia
+  institution_type
+    dtype: object
+    non-missing: 99
+    missing: 7,362
+    missing %: 98.67%
+    unique: 1
+    examples: Public university
+  qs_world_ranking_2027
+    dtype: object
+    non-missing: 99
+    missing: 7,362
+    missing %: 98.67%
+    unique: 1
+    examples: =98
+  ects
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 1
+    examples: Programme-specific
+  semester_contribution
+    dtype: object
+    non-missing: 2,102
+    missing: 5,359
+    missing %: 71.83%
+    unique: 15
+    examples: Applicable; current amount is semester-specific | About €165/semester (University FAQ; current amount can change) | Applicable; current semester contribution is semester-specific | Approx. €400/semester (programme/campus-specific current contribution should be checked) | Approx. €400/semester (current contribution should be checked)
+  language_requirements
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 5
+    examples: Programme-specific | Programme-specific; official A–Z catalogue provides language filters | Programme-specific; catalogue identifies teaching language and whether German is required for English-language programmes | German-taught programmes generally require German proof; English-taught programmes have programme-specific requirements | Programme-specific; see official programme page
+  application_route
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 11
+    examples: FU Berlin application/enrollment; applicants with non-German qualifications may need uni-assist/VPD depending on programme | Programme-specific | HHU portal / DoSV / nationwide NC / programme-specific procedure | University of Bremen application portal / programme-specific route | UDE application/enrolment route; programme-specific or central admission route
+  official_programme_url
+    dtype: object
+    non-missing: 1,172
+    missing: 6,289
+    missing %: 84.29%
+    unique: 10
+    examples: https://www.fu-berlin.de/studium/studienangebot/index.html | https://www.uni-hannover.de/en/studium/studienangebot/gesamt | https://www.uni-goettingen.de/en/degree%2Bprogrammes%2Bfrom%2Ba%2Bto%2Bz/473404.html | https://studierende.uni-koeln.de/studienorientierung/content/range_of_courses/index_eng.html | https://www.uni-muenster.de/ZSB/studienfuehrer
+  official_admissions_url
+    dtype: object
+    non-missing: 323
+    missing: 7,138
+    missing %: 95.67%
+    unique: 3
+    examples: https://www.fu-berlin.de/studium/bewerbung/index.html | https://www.hhu.de/studium/bewerbung-und-einschreibung/bewerbungsportal | https://www.uni-due.de/studierendensekretariat/studienplatzangebot.shtml
+  typical_start
+    dtype: object
+    non-missing: 148
+    missing: 7,313
+    missing %: 98.02%
+    unique: 4
+    examples: Fall semester | Fall; some Master's also spring | Winter | Winter/Summer
+  language_requirement_note
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: All bachelor's and many master's require German C1; exact language proof is programme-specific.
+  application_deadline_2026_27
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: Bachelor: generally 1 Jun–15 Jul or 31 Aug depending on programme. Master: generally 1 Apr–15 May/31 May/15 Jul; some spring Master's: 15 Oct–15 Nov. Verify programme-specific deadline.
+  fees
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 10
+    examples: Semester fee €194 (Fall 2026/27); non-EU/EEA international tuition generally €1,500/semester, subject to exemptions | €8,500 programme fee shown in official catalogue | €65,000 programme fee shown in official catalogue | €55,000 programme fee shown in official catalogue | €47,000 programme fee shown in official catalogue
+  programme_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/before-your-studies/programs/
+  deadline_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/dates/application-deadlines/
+  fees_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/during-your-studies/organizing-your-studies/fees/
+  degree
+    dtype: object
+    non-missing: 1,196
+    missing: 6,265
+    missing %: 83.97%
+    unique: 50
+    examples: B.Sc. | B.A. | State Examination | M.Sc. | M.A.
+  level
+    dtype: object
+    non-missing: 140
+    missing: 7,321
+    missing %: 98.12%
+    unique: 6
+    examples: Bachelor | State Examination | Master | Supplementary | State examination
+  credits_or_duration
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 4
+    examples: 210 ECTS | 180 ECTS | programme-specific | 120 ECTS
+  teaching_language
+    dtype: object
+    non-missing: 1,836
+    missing: 5,625
+    missing %: 75.39%
+    unique: 32
+    examples: German | German/Chinese | English | German/English | German/French
+  general_tuition_fee
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: €0
+  semester_contribution_note
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: JMU states no general tuition; semester contribution applies.
+  deadline_note
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: Programme-specific; verify the official JMU programme page/application portal.
+  degree_level
+    dtype: object
+    non-missing: 392
+    missing: 7,069
+    missing %: 94.75%
+    unique: 9
+    examples: Bachelor / undergraduate | Master | Bachelor / State Examination / Teacher Education | Bachelor | State/teacher examination
+  degree_duration
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: Programme-specific
+  course_start
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 2
+    examples: Usually winter semester; some programmes offer summer intake. | Programme-specific; LUH catalogue shows winter and/or summer intake.
+  semester_fee_WS_2026_27_eur
+    dtype: float64
+    non-missing: 188
+    missing: 7,273
+    missing %: 97.48%
+    unique: 2
+    examples: 453.16 | 412.3
+  fee_note
+    dtype: object
+    non-missing: 1,332
+    missing: 6,129
+    missing %: 82.15%
+    unique: 13
+    examples: LUH official page states €453.16 semester fee for winter semester 2026/27, including Studentenwerk, Deutschlandsemesterticket, student body, administration and other listed contributions. | Semester contribution is separate from tuition and includes student-service/student-body contributions and a regional semester ticket. | Semester contribution is separate from tuition. Programme-specific additional costs may apply. | WS 2026/27 total: €80 student services + €15 student body + €51 enrollment/re-registration + €226.80 Deutschlandsemesterticket. | Includes €121.20 Studierendenwerk + €1.30 insurance + €13 AStA + €50 administrative charge + €226.80 Deutschlandsemesterticket.
+  official_facts_url
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: https://www.uni-hannover.de/en/universitaet/profil/zahlen
+  official_fees_url
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: https://www.uni-hannover.de/en/studium/finanzierung-foerderung/studienkosten
+  official_programme_source
+    dtype: object
+    non-missing: 1,655
+    missing: 5,806
+    missing %: 77.82%
+    unique: 17
+    examples: https://www.uni-bayreuth.de/en/study-programme-finder | https://www.studium.uni-mainz.de/studienwahl/studienangebot/ | https://www.uni-potsdam.de/en/studium/what-to-study/courses-from-a-to-z | https://www.uni-giessen.de/de/studium/studienangebot | https://www.uni-giessen.de/de/studium/studienangebot/master
+  official_application_source
+    dtype: object
+    non-missing: 1,045
+    missing: 6,416
+    missing %: 85.99%
+    unique: 11
+    examples: https://www.uni-bayreuth.de/en/study-programme-finder | https://www.international-office.uni-bayreuth.de/en/degree-programmes/4-periods-and-deadlines-for-masters/ | https://www.uni-saarland.de/en/study/application/first-degree/direct/enrolment-dates.html | https://www.uni-kiel.de/en/studying | https://www.ovgu.de/bewerbung.html
+  university_type
+    dtype: object
+    non-missing: 1,313
+    missing: 6,148
+    missing %: 82.4%
+    unique: 3
+    examples: Public university | Public research university | Public technical university
+  phd_available
+    dtype: object
+    non-missing: 1,064
+    missing: 6,397
+    missing %: 85.74%
+    unique: 9
+    examples: Yes where this row is a doctoral/Ph.D. programme; otherwise not a doctoral row | Doctoral study exists at the University of Cologne, but this batch does not expand doctoral subject areas without a corresponding A-Z degree-programme entry | Doctoral study is available at Münster; this batch does not fabricate doctoral rows without a corresponding programme entry | Yes where degree_type is Ph.D.; Leipzig also offers doctoral study beyond these rows | Yes — HHU also offers doctoral programmes
+  official_study_portal
+    dtype: object
+    non-missing: 139
+    missing: 7,322
+    missing %: 98.14%
+    unique: 1
+    examples: https://www.uni-goettingen.de/en/3811.html
+  programme_level
+    dtype: object
+    non-missing: 1,415
+    missing: 6,046
+    missing %: 81.03%
+    unique: 22
+    examples: Bachelor | State Examination | Diplom | Master | Doctorate
+  standard_duration_semesters
+    dtype: object
+    non-missing: 286
+    missing: 7,175
+    missing %: 96.17%
+    unique: 9
+    examples: 6 | 8 | 10 | 12 | 11
+  standard_ects
+    dtype: float64
+    non-missing: 212
+    missing: 7,249
+    missing %: 97.16%
+    unique: 4
+    examples: 180.0 | 210.0 | 240.0 | 120.0
+  semester_contribution_Winter_2026_27
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: €366.90 Mainz campus; €389.80 Germersheim; €378.80 Trier Medical Campus
+  official_structure_source
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: https://www.studium.uni-mainz.de/en/choosing-your-degree-program/program-structure/
+  official_deadlines_source
+    dtype: object
+    non-missing: 264
+    missing: 7,197
+    missing %: 96.46%
+    unique: 2
+    examples: https://www.studium.uni-mainz.de/en/during-your-studies/dates-and-deadlines/ | https://www.uni-potsdam.de/en/studium/dates-and-deadlines/application-and-enrollment-deadlines
+  official_fees_source
+    dtype: object
+    non-missing: 371
+    missing: 7,090
+    missing %: 95.03%
+    unique: 3
+    examples: https://www.studium.uni-mainz.de/en/during-your-studies/organizing-your-studies/financial-matters/ | https://www.uni-potsdam.de/en/studium/studying/organizing-your-studies/re-registration | https://www.uni-saarland.de/en/study/organisation/fees/semester-fee.html
+  faculty_or_area
+    dtype: object
+    non-missing: 116
+    missing: 7,345
+    missing %: 98.45%
+    unique: 9
+    examples: Arts & Humanities | Medicine | Management/Economics/Social Sciences | Law | Mathematics/Natural Sciences
+  official_university_programmes_overview
+    dtype: object
+    non-missing: 116
+    missing: 7,345
+    missing %: 98.45%
+    unique: 1
+    examples: https://uni-koeln.de/en/studying-teaching/why-choose-the-university-of-cologne/our-degree-programmes
+  standard_duration_or_ects
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 4
+    examples: Generally 6 semesters / 180 CP; some programmes are 7–8 semesters / 210–240 CP. | Generally 4 semesters / 120 CP for consecutive Master's; continuing-education programmes vary. | Programme-specific teacher-training structure. | Programme-specific / regulated.
+  semester_fee_WS_2026_27
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 1
+    examples: €372.80
+  official_finder_source
+    dtype: object
+    non-missing: 107
+    missing: 7,354
+    missing %: 98.57%
+    unique: 1
+    examples: https://www.uni-giessen.de/de/studium/studienangebot/finder
+  official_accreditation_url
+    dtype: object
+    non-missing: 90
+    missing: 7,371
+    missing %: 98.79%
+    unique: 1
+    examples: https://www.uni-muenster.de/lehre/en/studienmodelle/akk_stud.html
+  official_overview_pdf
+    dtype: object
+    non-missing: 111
+    missing: 7,350
+    missing %: 98.51%
+    unique: 1
+    examples: https://www.uni-leipzig.de/fileadmin/ul/Dokumente/250429_SI_Studienangebot_DE_EN.pdf
+  official_bachelor_source
+    dtype: object
+    non-missing: 353
+    missing: 7,108
+    missing %: 95.27%
+    unique: 3
+    examples: https://www.uni-saarland.de/en/study/programmes/qualifications/bachelor.html | https://www.ovgu.de/studienangebot_bachelor.html | https://www.tu-dortmund.de/en/students/degree-programs/bachelor/
+  faculty
+    dtype: object
+    non-missing: 587
+    missing: 6,874
+    missing %: 92.13%
+    unique: 10
+    examples: Programme-specific | Arts and Humanities | Mathematics and Computer Science | Social and Behavioral Sciences | Physics and Astronomy
+  official_degree_source
+    dtype: object
+    non-missing: 65
+    missing: 7,396
+    missing %: 99.13%
+    unique: 1
+    examples: https://tu-freiberg.de/studium/studienangebot/hilfe-bei-der-studienwahl/studienabschluesse
+  official_master_catalogue
+    dtype: object
+    non-missing: 117
+    missing: 7,344
+    missing %: 98.43%
+    unique: 1
+    examples: https://www.studium.uni-kiel.de/de/studienangebot/uebersicht/Vorlaeufiges-Studienangebot-Master.pdf
+  official_degree_programmes_url
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 1
+    examples: https://www.uni-bremen.de/en/fb3/studies-teaching/degree-programs
+  official_master_source
+    dtype: object
+    non-missing: 246
+    missing: 7,215
+    missing %: 96.7%
+    unique: 2
+    examples: https://www.ovgu.de/studienangebot_master.html | https://www.tu-dortmund.de/en/students/degree-programs/master/
+  campus
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 4
+    examples: Essen | Duisburg | Other | Essen & Duisburg
+  official_degree_info
+    dtype: object
+    non-missing: 151
+    missing: 7,310
+    missing %: 97.98%
+    unique: 1
+    examples: https://www.uni-regensburg.de/studieren/wege-ins-studium/studienorientierung/studienmoeglichkeiten/studienabschluesse
+  official_curriculum_source
+    dtype: object
+    non-missing: 53
+    missing: 7,408
+    missing %: 99.29%
+    unique: 1
+    examples: https://www.uni-hohenheim.de/en/curriculum
+  catalogue_entry_type
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 15
+    examples: Bachelor specialisation / Master | Bachelor / Master | Bachelor | Two-subject Bachelor | Master
+  official_overview_source
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 1
+    examples: https://www.tu-braunschweig.de/en/study-teaching/beginning-your-studies/degree-programmes/overview-study-programmes
+  official_cost_source
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 1
+    examples: https://www.tu-braunschweig.de/en/study-teaching/during-your-studies/financing-and-costs
+  degree_or_track
+    dtype: object
+    non-missing: 326
+    missing: 7,135
+    missing %: 95.63%
+    unique: 40
+    examples: B.Sc. | M.Sc. | M.A. | Kombi B.A. | Kombi M.A.
+  ECTS_or_LP
+    dtype: float64
+    non-missing: 251
+    missing: 7,210
+    missing %: 96.64%
+    unique: 16
+    examples: 180.0 | 120.0 | 60.0 | 90.0 | 45.0
+  admission_status_from_catalogue
+    dtype: object
+    non-missing: 257
+    missing: 7,204
+    missing %: 96.56%
+    unique: 8
+    examples: Admission-free / no NC | Uni-NC | Admission-restricted via DoSV | No enrolment currently | Drittfachabhängig
+  semester_fee
+    dtype: object
+    non-missing: 257
+    missing: 7,204
+    missing %: 96.56%
+    unique: 1
+    examples: Mandatory semester fee; current amount is semester-specific.
+  official_catalogue
+    dtype: object
+    non-missing: 350
+    missing: 7,111
+    missing %: 95.31%
+    unique: 3
+    examples: https://studienangebot.uni-halle.de/ | https://www.uni-rostock.de/studium/studienangebot/alle-studiengaenge-und-abschluesse/ | https://www.uni-frankfurt.de/de/studium/studiengaenge
+  official_application
+    dtype: object
+    non-missing: 281
+    missing: 7,180
+    missing %: 96.23%
+    unique: 2
+    examples: https://www.uni-halle.de/ssc/bewerbungsinformationen/faq-apply/ | https://www.uni-frankfurt.de/en/studium/bewerbung-einschreibung
+  QS_list_position
+    dtype: float64
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: 45.0
+  QS_global_rank
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: 901–950
+  semester_contribution_WS_2026_27
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: €352
+  official_costs
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: https://www.uni-rostock.de/studium/studienorganisation/im-studium/rueckmeldung/
+  University
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 14
+    examples: Philipps-Universität Marburg | Bergische Universität Wuppertal | Bielefeld University | Carl von Ossietzky Universität Oldenburg | Universität Greifswald
+  QS Rank
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 4
+    examples: 951–1000 | 1001–1200 | 1201–1400 | 1401+
+  Programme
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 676
+    examples: American, British and Canadian Studies | Betriebswirtschaftslehre | Bewegungs- und Sportwissenschaft | Biologie | Chemie
+  Degree
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 54
+    examples: Bachelor | B.Sc. | B.A. | 1st State Examination | Extension/State Examination
+  Study model
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 42
+    examples: Mono-Bachelor | Kombi-Bachelor Hauptfach | Kombi-Bachelor Nebenfach | Lehramt | Staatsexamen
+  Regular duration
+    dtype: object
+    non-missing: 362
+    missing: 7,099
+    missing %: 95.15%
+    unique: 15
+    examples: 6 semesters | 6/8 semesters | 9 semesters | 3 semesters (extension) | extension
+  Language
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 15
+    examples: English | German | German/English | English/German | German/French
+  Admission
+    dtype: object
+    non-missing: 1,112
+    missing: 6,349
+    missing %: 85.1%
+    unique: 40
+    examples: See programme page | Free (no NC) | NC | Free (no NC from WiSe 2026/27) | Admission restricted
+  Start
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 16
+    examples: Winter semester | Winter/Summer | Every 2 years | Every semester | Every 3 years
+  Deadline
+    dtype: object
+    non-missing: 41
+    missing: 7,420
+    missing %: 99.45%
+    unique: 1
+    examples: 18 Sep 2026 (WiSe 2026/27)
+  Tuition/Fees
+    dtype: float64
+    non-missing: 0
+    missing: 7,461
+    missing %: 100.0%
+    unique: 0
+  Requirements / notes
+    dtype: object
+    non-missing: 357
+    missing: 7,104
+    missing %: 95.22%
+    unique: 41
+    examples: B2 French; B1 English | Diagnostic language test | Latin/Ancient Greek recommended | Language placement test | Outgoing programme; new entrants use B.Ed. Grundschule
+  Tuition / semester fee
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: Semester contribution applies; current published amount €358.05
+  Source
+    dtype: object
+    non-missing: 1,113
+    missing: 6,348
+    missing %: 85.08%
+    unique: 13
+    examples: Official Bergische Universität Wuppertal study-programme catalogue | Official Universität Bielefeld study and application information | Official Universität Oldenburg study-programme information | Official Universität Greifswald study-programme catalogue / 2026/27 admissions information | Official TU Chemnitz study programme and admissions pages (2026)
+  WiSe 2026/27 application deadline / note
+    dtype: object
+    non-missing: 58
+    missing: 7,403
+    missing %: 99.22%
+    unique: 16
+    examples: 01.06–15.07.2026 | 01.06–30.09.2026 | 01.06–15.08.2026 / 01.12–15.02 | 01.06–30.09.2026 / 01.12–31.03 | 01.06–15.07.2026 / 01.12–15.01
+  Tuition fees
+    dtype: object
+    non-missing: 73
+    missing: 7,388
+    missing %: 99.02%
+    unique: 1
+    examples: No tuition fees; semester contribution €351.65 for WiSe 2026/27
+  Duration
+    dtype: object
+    non-missing: 374
+    missing: 7,087
+    missing %: 94.99%
+    unique: 9
+    examples: 6 semesters | 4 semesters | 12+ semesters | 7 semesters | Programme-specific; verify official programme page
+  Notes
+    dtype: object
+    non-missing: 31
+    missing: 7,430
+    missing %: 99.58%
+    unique: 19
+    examples: Professional/part-time format | Joint European programme | Two-subject degree | Teacher education | Subject combination
+  Tuition / fees
+    dtype: object
+    non-missing: 408
+    missing: 7,053
+    missing %: 94.53%
+    unique: 5
+    examples: No general tuition fee; semester contribution applies | No general tuition fee stated on programme pages; semester contribution applies. | No general tuition fee information recorded here; semester contribution applies. | No general tuition amount recorded in the programme overview; semester contribution applies. | No general tuition amount recorded here; semester contribution applies. Continuing-education programmes may be fee-based.
+  2026/27 application deadline
+    dtype: object
+    non-missing: 159
+    missing: 7,302
+    missing %: 97.87%
+    unique: 2
+    examples: NC: 15 Jul 2026; NC-free: 16 Oct 2026; nationwide NC: Hochschulstart deadlines | Regular: 21 Sep 2026; late application for open-admission programmes: 15 Oct 2026
+  Fees
+    dtype: object
+    non-missing: 511
+    missing: 6,950
+    missing %: 93.15%
+    unique: 4
+    examples: No general tuition fee; semester contribution applies | No general tuition fee; semester contribution applies; Management (part-time) fee-based | No tuition fees; semester contribution €123.22 (official 2026 portal) | No general tuition fee; continuing-education UNIKIMS programmes are fee-based
+  Duration (sem.)
+    dtype: object
+    non-missing: 467
+    missing: 6,994
+    missing %: 93.74%
+    unique: 13
+    examples: 4 | 6 | variable | 10 | 7+
+  2026/27 deadlines
+    dtype: object
+    non-missing: 187
+    missing: 7,274
+    missing %: 97.49%
+    unique: 2
+    examples: Restricted: 15 Jul 2026; admission-free: 18 Sep 2026; international via uni-assist: 15 Jul 2026 | Restricted: 15 Jul 2026; many unrestricted Master's: 02 Oct 2026; exceptions apply
+  2026/27 deadline / status
+    dtype: object
+    non-missing: 411
+    missing: 7,050
+    missing %: 94.49%
+    unique: 14
+    examples: Programme-specific. Current official pages show many Master's through 15 Sep 2026; many basic programmes extended through 5 Oct 2026 for German applicants. | 2026/27: uni-assist 1 Apr–15 Jul 2026 | 2026/27: 1 Apr–15 Jul (WiSe); 1 Nov–15 Jan (SoSe) | 2026/27: 1 Apr–15 Jul 2026 | 2026/27: 1 Apr–15 Jul 2026 (last intake per current page)
+  2026/27 deadline
+    dtype: object
+    non-missing: 79
+    missing: 7,382
+    missing %: 98.94%
+    unique: 1
+    examples: Restricted Bachelor: 15 Jul 2026; current general enrolment for many programmes extended to 12 Oct 2026; Master's deadlines are programme-specific
+  Admission mode
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 6
+    examples: Admission-free | Restricted | Admission-free; aptitude procedure | Admission-free; some aptitude procedure | Nationwide restricted
+  German requirement
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 7
+    examples: C1 | B2 | B1 | Not required | C2
+  admission
+    dtype: object
+    non-missing: 24
+    missing: 7,437
+    missing %: 99.68%
+    unique: 3
+    examples: Open | Open + aptitude test | NC
+  study_mode
+    dtype: object
+    non-missing: 321
+    missing: 7,140
+    missing %: 95.7%
+    unique: 5
+    examples: Programme-specific | Full-time; part-time possible for many programmes | Full-time | Part-time, career-integrated | Full-time / research
+  entry_requirements
+    dtype: object
+    non-missing: 372
+    missing: 7,089
+    missing %: 95.01%
+    unique: 5
+    examples: Programme-specific; Goethe University degree-program finder | Programme-specific; see degree-programme database | Programme-specific. Master's normally requires the corresponding/equivalent Bachelor's degree. | Programme-specific; see official programme/admission page | Programme-specific. Master's generally requires a first university degree in a related field.
+  source_note
+    dtype: object
+    non-missing: 24
+    missing: 7,437
+    missing %: 99.68%
+    unique: 1
+    examples: Official Goethe University degree-programme finder; first 24 records currently exposed on catalogue page 1. University catalogue states 199 degree programmes total.
+  admission_restriction
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 2
+    examples: No NC indicated in official overview | NC
+  official_programme_catalogue
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 1
+    examples: https://www.uni-jena.de/en/3860/degree-programmes
+  official_requirements_source
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 1
+    examples: https://www.uni-jena.de/en/69421/study-orientation
+  qs_world_university_ranking_2027
+    dtype: object
+    non-missing: 297
+    missing: 7,164
+    missing %: 96.02%
+    unique: 3
+    examples: 250 | =575 | =425
+  typical_duration
+    dtype: object
+    non-missing: 225
+    missing: 7,236
+    missing %: 96.98%
+    unique: 5
+    examples: 4 semesters | 6 semesters | Programme-specific | Usually 4 semesters; programme-specific | Usually 6 semesters; programme-specific
+  semester_fee_winter_2026_27_eur
+    dtype: float64
+    non-missing: 123
+    missing: 7,338
+    missing %: 98.35%
+    unique: 1
+    examples: 402.68
+  phd_eligibility
+    dtype: object
+    non-missing: 225
+    missing: 7,236
+    missing %: 96.98%
+    unique: 2
+    examples: Master's degrees generally qualify for doctoral study | Master's/state-exam graduates can generally pursue doctoral studies subject to doctoral admission rules
+  official_semester_fee_source
+    dtype: object
+    non-missing: 123
+    missing: 7,338
+    missing %: 98.35%
+    unique: 1
+    examples: https://www.tu-darmstadt.de/studieren/studieren_von_a_bis_z/artikel_details_de_en_286144.en.jsp
+  Field
+    dtype: object
+    non-missing: 39
+    missing: 7,422
+    missing %: 99.48%
+    unique: 30
+    examples: University | Location | QS World University Rankings 2027 | Official programme scope | Rows in this dataset
+  Value
+    dtype: object
+    non-missing: 39
+    missing: 7,422
+    missing %: 99.48%
+    unique: 39
+    examples: Technische Universität Darmstadt (TU Darmstadt) | Darmstadt, Hesse, Germany | #250 | TU Darmstadt states that it offers over 130 courses/programmes and six degree qualifications. | 123
+  semester_contribution_2026_27_eur
+    dtype: float64
+    non-missing: 72
+    missing: 7,389
+    missing %: 99.03%
+    unique: 1
+    examples: 192.0
+  official_admissions_source
+    dtype: object
+    non-missing: 72
+    missing: 7,389
+    missing %: 99.03%
+    unique: 1
+    examples: https://www.uni-ulm.de/en/study/application-and-enrolment/
+  official_fee_source
+    dtype: object
+    non-missing: 174
+    missing: 7,287
+    missing %: 97.67%
+    unique: 2
+    examples: https://www.uni-ulm.de/en/study/organisation/tuition-fees/ | https://www.uni-konstanz.de/en/study/study-essentials/finances/other-fees/general-overview/
+  semester_fee_from_summer_2026_eur
+    dtype: float64
+    non-missing: 102
+    missing: 7,359
+    missing %: 98.63%
+    unique: 1
+    examples: 209.0
+  official_master_application_source
+    dtype: object
+    non-missing: 102
+    missing: 7,359
+    missing %: 98.63%
+    unique: 1
+    examples: https://www.uni-konstanz.de/en/study/before-you-study/application-and-enrolment/masters-degree/
+================================================================================
+FILE: German_Universities_All_Datasets_Master.xlsx
+CATEGORY: universities
+STATUS: success
+
+SHEET: Master
+ROWS: 7,461
+COLUMNS: 160
+DUPLICATE ROWS: 60
+
+  university
+    dtype: object
+    non-missing: 5,551
+    missing: 1,910
+    missing %: 25.6%
+    unique: 45
+    examples: Freie Universität Berlin | Technical University of Munich (TUM) | Ludwig-Maximilians-Universität München (LMU) | Heidelberg University | RWTH Aachen University
+  QS_2027_Germany_position
+    dtype: float64
+    non-missing: 3,952
+    missing: 3,509
+    missing %: 47.03%
+    unique: 31
+    examples: 4.0 | 1.0 | 2.0 | 3.0 | 5.0
+  QS_2027_global_rank
+    dtype: object
+    non-missing: 1,581
+    missing: 5,880
+    missing %: 78.81%
+    unique: 14
+    examples: 25 | 61 | 86 | 104 | 110
+  programme_name
+    dtype: object
+    non-missing: 5,793
+    missing: 1,668
+    missing %: 22.36%
+    unique: 2,748
+    examples: Biochemistry | Bioinformatics | Biology | Business Administration | Chemistry
+  degree_type
+    dtype: object
+    non-missing: 4,100
+    missing: 3,361
+    missing %: 45.05%
+    unique: 164
+    examples: Bachelor of Science (B.Sc.) | Bachelor of Arts (B.A.) | State Examination | First State Examination / Erste Juristische Prüfung | Bachelor
+  programme_category
+    dtype: object
+    non-missing: 1,213
+    missing: 6,248
+    missing %: 83.74%
+    unique: 160
+    examples: Mono Bachelor | State examination | First law examination | Charité programme hosted/coordinated with FU context | Charité programme
+  language
+    dtype: object
+    non-missing: 2,277
+    missing: 5,184
+    missing %: 69.48%
+    unique: 47
+    examples: German / programme-dependent | German | German / English depending on programme | English | English / German
+  standard_duration
+    dtype: object
+    non-missing: 4,409
+    missing: 3,052
+    missing %: 40.91%
+    unique: 46
+    examples: 6 semesters | See programme regulations | Programme-specific | 4 semesters | Usually 6 semesters
+  start_semester
+    dtype: object
+    non-missing: 3,146
+    missing: 4,315
+    missing %: 57.83%
+    unique: 19
+    examples: See programme page | Winter | Winter / Summer | Programme-specific | Winter / programme-specific
+  admission_mode
+    dtype: object
+    non-missing: 2,217
+    missing: 5,244
+    missing %: 70.29%
+    unique: 35
+    examples: Admission-free or NC depending on programme | National/central selection where applicable | Admission-free or NC depending on semester/subject | Programme-specific | National admission
+  admission_requirements
+    dtype: object
+    non-missing: 3,057
+    missing: 4,404
+    missing %: 59.03%
+    unique: 98
+    examples: University entrance qualification (e.g. Abitur); programme-specific language/admission conditions apply. | University entrance qualification and the applicable national/subject-specific admission requirements. | University entrance qualification and programme-specific requirements. | Programme-specific admission requirements; see programme page. | University entrance qualification and national admission procedure.
+  tuition_fee
+    dtype: object
+    non-missing: 5,645
+    missing: 1,816
+    missing %: 24.34%
+    unique: 55
+    examples: No tuition stated on programme overview; semester fees/contributions may apply | €3,000/semester for international students from third countries | €1,500/semester for international students from third countries | International tuition applies where applicable | International tuition may apply
+  programme_url
+    dtype: object
+    non-missing: 1,592
+    missing: 5,869
+    missing %: 78.66%
+    unique: 57
+    examples: https://www.fu-berlin.de/en/studium/studienangebot/ | https://www.tum.de/en/studies/degree-programs/detail/aerospace-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/engineering-and-materials-science-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/management-and-technology-bachelor-of-science-bsc | https://www.tum.de/en/studies/degree-programs/detail/geodesy-and-earth-observation-bachelor-of-science-bsc
+  source_type
+    dtype: object
+    non-missing: 2,153
+    missing: 5,308
+    missing %: 71.14%
+    unique: 14
+    examples: Official FU Berlin programme catalogue | Official TUM programme page / official TUM School programme list | Official LMU programme/degree pages | Official Heidelberg University Study Programme Finder / programme overview | Official RWTH Aachen study-programme catalogue / 2026 study-choice guide
+  last_checked
+    dtype: object
+    non-missing: 5,793
+    missing: 1,668
+    missing %: 22.36%
+    unique: 3
+    examples: 2026-09-21 | 2026-09-24 | 2026-09-25
+  field
+    dtype: object
+    non-missing: 270
+    missing: 7,191
+    missing %: 96.38%
+    unique: 40
+    examples: Coverage | Programme rows | Official source | Important note | University
+  value
+    dtype: object
+    non-missing: 406
+    missing: 7,055
+    missing %: 94.56%
+    unique: 375
+    examples: Freie Universität Berlin | 292 | https://www.fu-berlin.de/en/studium/studienangebot/ | Rows are extracted from FU's official programme overviews. Programme-specific requirements/deadlines must be verified on each individual programme page; the overview does not publish every requirement for every programme. | Programme-level dataset: one row per degree programme.
+  application_deadline
+    dtype: object
+    non-missing: 4,961
+    missing: 2,500
+    missing %: 33.51%
+    unique: 61
+    examples: 15 May–15 July | Programme-specific | 15 May–15 September | 1 April–31 May | 1 Feb–31 May (winter); 1 Oct–30 Nov (summer)
+  notes
+    dtype: object
+    non-missing: 1,488
+    missing: 5,973
+    missing %: 80.06%
+    unique: 42
+    examples: Legacy programme: TUM states new applications are only possible for Geodesy and Earth Observation. | Programme is listed in TUM School of Engineering & Design official A-Z list; individual programme-level fields require the linked TUM programme page. | LMU states individual admission requirements are in the Degree Program Finder. | Official LMU list of English-taught master's programmes. | Official LMU master's catalogue; individual programme details govern exact requirements.
+  item
+    dtype: object
+    non-missing: 352
+    missing: 7,109
+    missing %: 95.28%
+    unique: 153
+    examples: Dataset purpose | University | QS 2027 position | Rows in this batch | Primary source
+  category
+    dtype: object
+    non-missing: 138
+    missing: 7,323
+    missing %: 98.15%
+    unique: 6
+    examples: Civil / Environmental Engineering | Engineering Sciences | Natural Sciences and Mathematics | Humanities and Social Sciences | Medicine / Dentistry
+  language_of_instruction
+    dtype: object
+    non-missing: 1,644
+    missing: 5,817
+    missing %: 77.97%
+    unique: 30
+    examples: German | German and English | English | German/English | English/German
+  requirements
+    dtype: object
+    non-missing: 2,295
+    missing: 5,166
+    missing %: 69.24%
+    unique: 17
+    examples: Programme-specific; see TU Dresden SINS and the applicable study/admission regulations. | Programme-specific admission requirements; consult the individual University of Bonn programme page and examination/admission regulations. | Programme-specific; verify the individual University of Hamburg programme page and applicable admission regulations. | Programme-specific; verify the official FAU programme page and admission regulations. | Programme-specific; check the official degree-programme details and admission regulations.
+  source_url
+    dtype: object
+    non-missing: 561
+    missing: 6,900
+    missing %: 92.48%
+    unique: 4
+    examples: https://tu-dresden.de/studium/vor-dem-studium/studienangebot/sins/sins_start | https://www.fau.eu/studying/degree-programs/all-degree-programs/ | https://uni-tuebingen.de/en/study/finding-a-course/degree-programs-available/ | https://www.student.uni-stuttgart.de/en/study-programs/
+  degree_code
+    dtype: object
+    non-missing: 242
+    missing: 7,219
+    missing %: 96.76%
+    unique: 4
+    examples: M | L | B | E
+  programme_option
+    dtype: object
+    non-missing: 377
+    missing: 7,084
+    missing %: 94.95%
+    unique: 32
+    examples: Single-Subject | Vocational School (Small Professional Specialisation) | Teaching Bachelor, None | Vocational School (Two-Subject) | Vocational School (Great Professional Specialisation)
+  field_of_study
+    dtype: object
+    non-missing: 1,560
+    missing: 5,901
+    missing %: 79.09%
+    unique: 249
+    examples: Agriculture/Economics | Teaching | Agriculture | Humanities | Languages
+  study_location
+    dtype: object
+    non-missing: 130
+    missing: 7,331
+    missing %: 98.26%
+    unique: 4
+    examples: Erlangen | Nuremberg | Erlangen/Nuremberg | Erlangen/Rennes
+  start
+    dtype: object
+    non-missing: 130
+    missing: 7,331
+    missing %: 98.26%
+    unique: 3
+    examples: Summer semester | Winter semester | Summer/Winter
+  duration_semesters
+    dtype: object
+    non-missing: 97
+    missing: 7,364
+    missing %: 98.7%
+    unique: 7
+    examples: 4 | 3 | 2 | 2 or 4 | 4 or 8 part-time
+  admission_status
+    dtype: object
+    non-missing: 1,788
+    missing: 5,673
+    missing %: 76.04%
+    unique: 35
+    examples: Restricted | Restricted/Programme-specific | Programme-specific | None/Programme-specific | Restricted admission
+  deadline
+    dtype: object
+    non-missing: 293
+    missing: 7,168
+    missing %: 96.07%
+    unique: 2
+    examples: Programme-, applicant- and semester-specific; verify current Tübingen application page. | Programme-specific; see official application/admission page
+  sr_no
+    dtype: float64
+    non-missing: 3,366
+    missing: 4,095
+    missing %: 54.89%
+    unique: 257
+    examples: 1.0 | 2.0 | 3.0 | 4.0 | 5.0
+  qs_2027_germany_position
+    dtype: float64
+    non-missing: 67
+    missing: 7,394
+    missing %: 99.1%
+    unique: 1
+    examples: 14.0
+  qs_2027_global_rank
+    dtype: object
+    non-missing: 407
+    missing: 7,054
+    missing %: 94.54%
+    unique: 4
+    examples: 245 | 269 | 951-1000 | 801-850
+  official_source
+    dtype: object
+    non-missing: 138
+    missing: 7,323
+    missing %: 98.15%
+    unique: 2
+    examples: https://uni-freiburg.de/en/studies/degree-programmes/ | https://www.uni-wuerzburg.de/en/studying-at-jmu/studienangelegenheiten/application-and-enrolment/international-degree-seeking-students/study-programmes-doctoral-studies/
+  option/track
+    dtype: float64
+    non-missing: 0
+    missing: 7,461
+    missing %: 100.0%
+    unique: 0
+  duration
+    dtype: object
+    non-missing: 273
+    missing: 7,188
+    missing %: 96.34%
+    unique: 11
+    examples: 4 semesters | 6 semesters | 6 semesters (3 years) | 8 semesters (4 years) | 6 semesters (3 years) + 4 semesters (2 years)
+  programme_structure
+    dtype: object
+    non-missing: 296
+    missing: 7,165
+    missing %: 96.03%
+    unique: 10
+    examples: 1 subject | 2 subject | Teaching Degree | State examination | Mono-Bachelor
+  programme_catalogue_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://studienangebot.ruhr-uni-bochum.de/en/overview
+  fees_source_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://international.ruhr-uni-bochum.de/en/costs-studying-ruhr-university-bochum
+  application_source_url
+    dtype: object
+    non-missing: 197
+    missing: 7,264
+    missing %: 97.36%
+    unique: 1
+    examples: https://studium.ruhr-uni-bochum.de/en/application-international-prospective-students
+  city
+    dtype: object
+    non-missing: 3,228
+    missing: 4,233
+    missing %: 56.74%
+    unique: 29
+    examples: Berlin | Hannover | Bayreuth / Kulmbach | Göttingen | Mainz
+  state
+    dtype: object
+    non-missing: 3,228
+    missing: 4,233
+    missing %: 56.74%
+    unique: 16
+    examples: Berlin | Lower Saxony | Bavaria | Rhineland-Palatinate | North Rhine-Westphalia
+  institution_type
+    dtype: object
+    non-missing: 99
+    missing: 7,362
+    missing %: 98.67%
+    unique: 1
+    examples: Public university
+  qs_world_ranking_2027
+    dtype: float64
+    non-missing: 0
+    missing: 7,461
+    missing %: 100.0%
+    unique: 0
+  ects
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 1
+    examples: Programme-specific
+  semester_contribution
+    dtype: object
+    non-missing: 2,102
+    missing: 5,359
+    missing %: 71.83%
+    unique: 15
+    examples: Applicable; current amount is semester-specific | About €165/semester (University FAQ; current amount can change) | Applicable; current semester contribution is semester-specific | Approx. €400/semester (programme/campus-specific current contribution should be checked) | Approx. €400/semester (current contribution should be checked)
+  language_requirements
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 5
+    examples: Programme-specific | Programme-specific; official A–Z catalogue provides language filters | Programme-specific; catalogue identifies teaching language and whether German is required for English-language programmes | German-taught programmes generally require German proof; English-taught programmes have programme-specific requirements | Programme-specific; see official programme page
+  application_route
+    dtype: object
+    non-missing: 1,463
+    missing: 5,998
+    missing %: 80.39%
+    unique: 11
+    examples: FU Berlin application/enrollment; applicants with non-German qualifications may need uni-assist/VPD depending on programme | Programme-specific | HHU portal / DoSV / nationwide NC / programme-specific procedure | University of Bremen application portal / programme-specific route | UDE application/enrolment route; programme-specific or central admission route
+  official_programme_url
+    dtype: object
+    non-missing: 1,172
+    missing: 6,289
+    missing %: 84.29%
+    unique: 10
+    examples: https://www.fu-berlin.de/studium/studienangebot/index.html | https://www.uni-hannover.de/en/studium/studienangebot/gesamt | https://www.uni-goettingen.de/en/degree%2Bprogrammes%2Bfrom%2Ba%2Bto%2Bz/473404.html | https://studierende.uni-koeln.de/studienorientierung/content/range_of_courses/index_eng.html | https://www.uni-muenster.de/ZSB/studienfuehrer
+  official_admissions_url
+    dtype: object
+    non-missing: 323
+    missing: 7,138
+    missing %: 95.67%
+    unique: 3
+    examples: https://www.fu-berlin.de/studium/bewerbung/index.html | https://www.hhu.de/studium/bewerbung-und-einschreibung/bewerbungsportal | https://www.uni-due.de/studierendensekretariat/studienplatzangebot.shtml
+  typical_start
+    dtype: object
+    non-missing: 148
+    missing: 7,313
+    missing %: 98.02%
+    unique: 4
+    examples: Fall semester | Fall; some Master's also spring | Winter | Winter/Summer
+  language_requirement_note
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: All bachelor's and many master's require German C1; exact language proof is programme-specific.
+  application_deadline_2026_27
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: Bachelor: generally 1 Jun–15 Jul or 31 Aug depending on programme. Master: generally 1 Apr–15 May/31 May/15 Jul; some spring Master's: 15 Oct–15 Nov. Verify programme-specific deadline.
+  fees
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 10
+    examples: Semester fee €194 (Fall 2026/27); non-EU/EEA international tuition generally €1,500/semester, subject to exemptions | €8,500 programme fee shown in official catalogue | €65,000 programme fee shown in official catalogue | €55,000 programme fee shown in official catalogue | €47,000 programme fee shown in official catalogue
+  programme_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/before-your-studies/programs/
+  deadline_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/dates/application-deadlines/
+  fees_source
+    dtype: object
+    non-missing: 77
+    missing: 7,384
+    missing %: 98.97%
+    unique: 1
+    examples: https://www.uni-mannheim.de/en/academics/during-your-studies/organizing-your-studies/fees/
+  degree
+    dtype: object
+    non-missing: 1,196
+    missing: 6,265
+    missing %: 83.97%
+    unique: 50
+    examples: B.Sc. | B.A. | State Examination | M.Sc. | M.A.
+  level
+    dtype: object
+    non-missing: 140
+    missing: 7,321
+    missing %: 98.12%
+    unique: 6
+    examples: Bachelor | State Examination | Master | Supplementary | State examination
+  credits_or_duration
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 4
+    examples: 210 ECTS | 180 ECTS | programme-specific | 120 ECTS
+  teaching_language
+    dtype: object
+    non-missing: 1,836
+    missing: 5,625
+    missing %: 75.39%
+    unique: 32
+    examples: German | German/Chinese | English | German/English | German/French
+  general_tuition_fee
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: €0
+  semester_contribution_note
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: JMU states no general tuition; semester contribution applies.
+  deadline_note
+    dtype: object
+    non-missing: 71
+    missing: 7,390
+    missing %: 99.05%
+    unique: 1
+    examples: Programme-specific; verify the official JMU programme page/application portal.
+  degree_level
+    dtype: object
+    non-missing: 392
+    missing: 7,069
+    missing %: 94.75%
+    unique: 9
+    examples: Bachelor / undergraduate | Master | Bachelor / State Examination / Teacher Education | Bachelor | State/teacher examination
+  degree_duration
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: Programme-specific
+  course_start
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 2
+    examples: Usually winter semester; some programmes offer summer intake. | Programme-specific; LUH catalogue shows winter and/or summer intake.
+  semester_fee_WS_2026_27_eur
+    dtype: float64
+    non-missing: 188
+    missing: 7,273
+    missing %: 97.48%
+    unique: 2
+    examples: 453.16 | 412.3
+  fee_note
+    dtype: object
+    non-missing: 1,332
+    missing: 6,129
+    missing %: 82.15%
+    unique: 13
+    examples: LUH official page states €453.16 semester fee for winter semester 2026/27, including Studentenwerk, Deutschlandsemesterticket, student body, administration and other listed contributions. | Semester contribution is separate from tuition and includes student-service/student-body contributions and a regional semester ticket. | Semester contribution is separate from tuition. Programme-specific additional costs may apply. | WS 2026/27 total: €80 student services + €15 student body + €51 enrollment/re-registration + €226.80 Deutschlandsemesterticket. | Includes €121.20 Studierendenwerk + €1.30 insurance + €13 AStA + €50 administrative charge + €226.80 Deutschlandsemesterticket.
+  official_facts_url
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: https://www.uni-hannover.de/en/universitaet/profil/zahlen
+  official_fees_url
+    dtype: object
+    non-missing: 81
+    missing: 7,380
+    missing %: 98.91%
+    unique: 1
+    examples: https://www.uni-hannover.de/en/studium/finanzierung-foerderung/studienkosten
+  official_programme_source
+    dtype: object
+    non-missing: 1,655
+    missing: 5,806
+    missing %: 77.82%
+    unique: 17
+    examples: https://www.uni-bayreuth.de/en/study-programme-finder | https://www.studium.uni-mainz.de/studienwahl/studienangebot/ | https://www.uni-potsdam.de/en/studium/what-to-study/courses-from-a-to-z | https://www.uni-giessen.de/de/studium/studienangebot | https://www.uni-giessen.de/de/studium/studienangebot/master
+  official_application_source
+    dtype: object
+    non-missing: 1,045
+    missing: 6,416
+    missing %: 85.99%
+    unique: 11
+    examples: https://www.uni-bayreuth.de/en/study-programme-finder | https://www.international-office.uni-bayreuth.de/en/degree-programmes/4-periods-and-deadlines-for-masters/ | https://www.uni-saarland.de/en/study/application/first-degree/direct/enrolment-dates.html | https://www.uni-kiel.de/en/studying | https://www.ovgu.de/bewerbung.html
+  university_type
+    dtype: object
+    non-missing: 1,313
+    missing: 6,148
+    missing %: 82.4%
+    unique: 3
+    examples: Public university | Public research university | Public technical university
+  phd_available
+    dtype: object
+    non-missing: 1,064
+    missing: 6,397
+    missing %: 85.74%
+    unique: 9
+    examples: Yes where this row is a doctoral/Ph.D. programme; otherwise not a doctoral row | Doctoral study exists at the University of Cologne, but this batch does not expand doctoral subject areas without a corresponding A-Z degree-programme entry | Doctoral study is available at Münster; this batch does not fabricate doctoral rows without a corresponding programme entry | Yes where degree_type is Ph.D.; Leipzig also offers doctoral study beyond these rows | Yes — HHU also offers doctoral programmes
+  official_study_portal
+    dtype: object
+    non-missing: 139
+    missing: 7,322
+    missing %: 98.14%
+    unique: 1
+    examples: https://www.uni-goettingen.de/en/3811.html
+  programme_level
+    dtype: object
+    non-missing: 1,415
+    missing: 6,046
+    missing %: 81.03%
+    unique: 22
+    examples: Bachelor | State Examination | Diplom | Master | Doctorate
+  standard_duration_semesters
+    dtype: object
+    non-missing: 286
+    missing: 7,175
+    missing %: 96.17%
+    unique: 9
+    examples: 6 | 8 | 10 | 12 | 11
+  standard_ects
+    dtype: float64
+    non-missing: 212
+    missing: 7,249
+    missing %: 97.16%
+    unique: 4
+    examples: 180.0 | 210.0 | 240.0 | 120.0
+  semester_contribution_Winter_2026_27
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: €366.90 Mainz campus; €389.80 Germersheim; €378.80 Trier Medical Campus
+  official_structure_source
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: https://www.studium.uni-mainz.de/en/choosing-your-degree-program/program-structure/
+  official_deadlines_source
+    dtype: object
+    non-missing: 264
+    missing: 7,197
+    missing %: 96.46%
+    unique: 2
+    examples: https://www.studium.uni-mainz.de/en/during-your-studies/dates-and-deadlines/ | https://www.uni-potsdam.de/en/studium/dates-and-deadlines/application-and-enrollment-deadlines
+  official_fees_source
+    dtype: object
+    non-missing: 371
+    missing: 7,090
+    missing %: 95.03%
+    unique: 3
+    examples: https://www.studium.uni-mainz.de/en/during-your-studies/organizing-your-studies/financial-matters/ | https://www.uni-potsdam.de/en/studium/studying/organizing-your-studies/re-registration | https://www.uni-saarland.de/en/study/organisation/fees/semester-fee.html
+  faculty_or_area
+    dtype: object
+    non-missing: 116
+    missing: 7,345
+    missing %: 98.45%
+    unique: 9
+    examples: Arts & Humanities | Medicine | Management/Economics/Social Sciences | Law | Mathematics/Natural Sciences
+  official_university_programmes_overview
+    dtype: object
+    non-missing: 116
+    missing: 7,345
+    missing %: 98.45%
+    unique: 1
+    examples: https://uni-koeln.de/en/studying-teaching/why-choose-the-university-of-cologne/our-degree-programmes
+  standard_duration_or_ects
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 4
+    examples: Generally 6 semesters / 180 CP; some programmes are 7–8 semesters / 210–240 CP. | Generally 4 semesters / 120 CP for consecutive Master's; continuing-education programmes vary. | Programme-specific teacher-training structure. | Programme-specific / regulated.
+  semester_fee_WS_2026_27
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 1
+    examples: €372.80
+  official_finder_source
+    dtype: object
+    non-missing: 107
+    missing: 7,354
+    missing %: 98.57%
+    unique: 1
+    examples: https://www.uni-giessen.de/de/studium/studienangebot/finder
+  official_accreditation_url
+    dtype: object
+    non-missing: 90
+    missing: 7,371
+    missing %: 98.79%
+    unique: 1
+    examples: https://www.uni-muenster.de/lehre/en/studienmodelle/akk_stud.html
+  official_overview_pdf
+    dtype: object
+    non-missing: 111
+    missing: 7,350
+    missing %: 98.51%
+    unique: 1
+    examples: https://www.uni-leipzig.de/fileadmin/ul/Dokumente/250429_SI_Studienangebot_DE_EN.pdf
+  official_bachelor_source
+    dtype: object
+    non-missing: 353
+    missing: 7,108
+    missing %: 95.27%
+    unique: 3
+    examples: https://www.uni-saarland.de/en/study/programmes/qualifications/bachelor.html | https://www.ovgu.de/studienangebot_bachelor.html | https://www.tu-dortmund.de/en/students/degree-programs/bachelor/
+  faculty
+    dtype: object
+    non-missing: 587
+    missing: 6,874
+    missing %: 92.13%
+    unique: 10
+    examples: Programme-specific | Arts and Humanities | Mathematics and Computer Science | Social and Behavioral Sciences | Physics and Astronomy
+  official_degree_source
+    dtype: object
+    non-missing: 65
+    missing: 7,396
+    missing %: 99.13%
+    unique: 1
+    examples: https://tu-freiberg.de/studium/studienangebot/hilfe-bei-der-studienwahl/studienabschluesse
+  official_master_catalogue
+    dtype: object
+    non-missing: 117
+    missing: 7,344
+    missing %: 98.43%
+    unique: 1
+    examples: https://www.studium.uni-kiel.de/de/studienangebot/uebersicht/Vorlaeufiges-Studienangebot-Master.pdf
+  official_degree_programmes_url
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 1
+    examples: https://www.uni-bremen.de/en/fb3/studies-teaching/degree-programs
+  official_master_source
+    dtype: object
+    non-missing: 246
+    missing: 7,215
+    missing %: 96.7%
+    unique: 2
+    examples: https://www.ovgu.de/studienangebot_master.html | https://www.tu-dortmund.de/en/students/degree-programs/master/
+  campus
+    dtype: object
+    non-missing: 143
+    missing: 7,318
+    missing %: 98.08%
+    unique: 4
+    examples: Essen | Duisburg | Other | Essen & Duisburg
+  official_degree_info
+    dtype: object
+    non-missing: 151
+    missing: 7,310
+    missing %: 97.98%
+    unique: 1
+    examples: https://www.uni-regensburg.de/studieren/wege-ins-studium/studienorientierung/studienmoeglichkeiten/studienabschluesse
+  official_curriculum_source
+    dtype: object
+    non-missing: 53
+    missing: 7,408
+    missing %: 99.29%
+    unique: 1
+    examples: https://www.uni-hohenheim.de/en/curriculum
+  catalogue_entry_type
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 15
+    examples: Bachelor specialisation / Master | Bachelor / Master | Bachelor | Two-subject Bachelor | Master
+  official_overview_source
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 1
+    examples: https://www.tu-braunschweig.de/en/study-teaching/beginning-your-studies/degree-programmes/overview-study-programmes
+  official_cost_source
+    dtype: object
+    non-missing: 110
+    missing: 7,351
+    missing %: 98.53%
+    unique: 1
+    examples: https://www.tu-braunschweig.de/en/study-teaching/during-your-studies/financing-and-costs
+  degree_or_track
+    dtype: object
+    non-missing: 326
+    missing: 7,135
+    missing %: 95.63%
+    unique: 40
+    examples: B.Sc. | M.Sc. | M.A. | Kombi B.A. | Kombi M.A.
+  ECTS_or_LP
+    dtype: float64
+    non-missing: 251
+    missing: 7,210
+    missing %: 96.64%
+    unique: 16
+    examples: 180.0 | 120.0 | 60.0 | 90.0 | 45.0
+  admission_status_from_catalogue
+    dtype: object
+    non-missing: 257
+    missing: 7,204
+    missing %: 96.56%
+    unique: 8
+    examples: Admission-free / no NC | Uni-NC | Admission-restricted via DoSV | No enrolment currently | Drittfachabhängig
+  semester_fee
+    dtype: object
+    non-missing: 257
+    missing: 7,204
+    missing %: 96.56%
+    unique: 1
+    examples: Mandatory semester fee; current amount is semester-specific.
+  official_catalogue
+    dtype: object
+    non-missing: 350
+    missing: 7,111
+    missing %: 95.31%
+    unique: 3
+    examples: https://studienangebot.uni-halle.de/ | https://www.uni-rostock.de/studium/studienangebot/alle-studiengaenge-und-abschluesse/ | https://www.uni-frankfurt.de/de/studium/studiengaenge
+  official_application
+    dtype: object
+    non-missing: 281
+    missing: 7,180
+    missing %: 96.23%
+    unique: 2
+    examples: https://www.uni-halle.de/ssc/bewerbungsinformationen/faq-apply/ | https://www.uni-frankfurt.de/en/studium/bewerbung-einschreibung
+  QS_list_position
+    dtype: float64
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: 45.0
+  QS_global_rank
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: 901–950
+  semester_contribution_WS_2026_27
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: €352
+  official_costs
+    dtype: object
+    non-missing: 69
+    missing: 7,392
+    missing %: 99.08%
+    unique: 1
+    examples: https://www.uni-rostock.de/studium/studienorganisation/im-studium/rueckmeldung/
+  University
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 14
+    examples: Philipps-Universität Marburg | Bergische Universität Wuppertal | Bielefeld University | Carl von Ossietzky Universität Oldenburg | Universität Greifswald
+  QS Rank
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 4
+    examples: 951–1000 | 1001–1200 | 1201–1400 | 1401+
+  Programme
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 676
+    examples: American, British and Canadian Studies | Betriebswirtschaftslehre | Bewegungs- und Sportwissenschaft | Biologie | Chemie
+  Degree
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 54
+    examples: Bachelor | B.Sc. | B.A. | 1st State Examination | Extension/State Examination
+  Study model
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 42
+    examples: Mono-Bachelor | Kombi-Bachelor Hauptfach | Kombi-Bachelor Nebenfach | Lehramt | Staatsexamen
+  Regular duration
+    dtype: object
+    non-missing: 362
+    missing: 7,099
+    missing %: 95.15%
+    unique: 15
+    examples: 6 semesters | 6/8 semesters | 9 semesters | 3 semesters (extension) | extension
+  Language
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 15
+    examples: English | German | German/English | English/German | German/French
+  Admission
+    dtype: object
+    non-missing: 1,112
+    missing: 6,349
+    missing %: 85.1%
+    unique: 40
+    examples: See programme page | Free (no NC) | NC | Free (no NC from WiSe 2026/27) | Admission restricted
+  Start
+    dtype: object
+    non-missing: 1,203
+    missing: 6,258
+    missing %: 83.88%
+    unique: 16
+    examples: Winter semester | Winter/Summer | Every 2 years | Every semester | Every 3 years
+  Deadline
+    dtype: object
+    non-missing: 41
+    missing: 7,420
+    missing %: 99.45%
+    unique: 1
+    examples: 18 Sep 2026 (WiSe 2026/27)
+  Tuition/Fees
+    dtype: float64
+    non-missing: 0
+    missing: 7,461
+    missing %: 100.0%
+    unique: 0
+  Requirements / notes
+    dtype: object
+    non-missing: 357
+    missing: 7,104
+    missing %: 95.22%
+    unique: 41
+    examples: B2 French; B1 English | Diagnostic language test | Latin/Ancient Greek recommended | Language placement test | Outgoing programme; new entrants use B.Ed. Grundschule
+  Tuition / semester fee
+    dtype: object
+    non-missing: 121
+    missing: 7,340
+    missing %: 98.38%
+    unique: 1
+    examples: Semester contribution applies; current published amount €358.05
+  Source
+    dtype: object
+    non-missing: 1,113
+    missing: 6,348
+    missing %: 85.08%
+    unique: 13
+    examples: Official Bergische Universität Wuppertal study-programme catalogue | Official Universität Bielefeld study and application information | Official Universität Oldenburg study-programme information | Official Universität Greifswald study-programme catalogue / 2026/27 admissions information | Official TU Chemnitz study programme and admissions pages (2026)
+  WiSe 2026/27 application deadline / note
+    dtype: object
+    non-missing: 58
+    missing: 7,403
+    missing %: 99.22%
+    unique: 16
+    examples: 01.06–15.07.2026 | 01.06–30.09.2026 | 01.06–15.08.2026 / 01.12–15.02 | 01.06–30.09.2026 / 01.12–31.03 | 01.06–15.07.2026 / 01.12–15.01
+  Tuition fees
+    dtype: object
+    non-missing: 73
+    missing: 7,388
+    missing %: 99.02%
+    unique: 1
+    examples: No tuition fees; semester contribution €351.65 for WiSe 2026/27
+  Duration
+    dtype: object
+    non-missing: 374
+    missing: 7,087
+    missing %: 94.99%
+    unique: 9
+    examples: 6 semesters | 4 semesters | 12+ semesters | 7 semesters | Programme-specific; verify official programme page
+  Notes
+    dtype: object
+    non-missing: 31
+    missing: 7,430
+    missing %: 99.58%
+    unique: 19
+    examples: Professional/part-time format | Joint European programme | Two-subject degree | Teacher education | Subject combination
+  Tuition / fees
+    dtype: object
+    non-missing: 408
+    missing: 7,053
+    missing %: 94.53%
+    unique: 5
+    examples: No general tuition fee; semester contribution applies | No general tuition fee stated on programme pages; semester contribution applies. | No general tuition fee information recorded here; semester contribution applies. | No general tuition amount recorded in the programme overview; semester contribution applies. | No general tuition amount recorded here; semester contribution applies. Continuing-education programmes may be fee-based.
+  2026/27 application deadline
+    dtype: object
+    non-missing: 159
+    missing: 7,302
+    missing %: 97.87%
+    unique: 2
+    examples: NC: 15 Jul 2026; NC-free: 16 Oct 2026; nationwide NC: Hochschulstart deadlines | Regular: 21 Sep 2026; late application for open-admission programmes: 15 Oct 2026
+  Fees
+    dtype: object
+    non-missing: 511
+    missing: 6,950
+    missing %: 93.15%
+    unique: 4
+    examples: No general tuition fee; semester contribution applies | No general tuition fee; semester contribution applies; Management (part-time) fee-based | No tuition fees; semester contribution €123.22 (official 2026 portal) | No general tuition fee; continuing-education UNIKIMS programmes are fee-based
+  Duration (sem.)
+    dtype: object
+    non-missing: 467
+    missing: 6,994
+    missing %: 93.74%
+    unique: 13
+    examples: 4 | 6 | variable | 10 | 7+
+  2026/27 deadlines
+    dtype: object
+    non-missing: 187
+    missing: 7,274
+    missing %: 97.49%
+    unique: 2
+    examples: Restricted: 15 Jul 2026; admission-free: 18 Sep 2026; international via uni-assist: 15 Jul 2026 | Restricted: 15 Jul 2026; many unrestricted Master's: 02 Oct 2026; exceptions apply
+  2026/27 deadline / status
+    dtype: object
+    non-missing: 411
+    missing: 7,050
+    missing %: 94.49%
+    unique: 14
+    examples: Programme-specific. Current official pages show many Master's through 15 Sep 2026; many basic programmes extended through 5 Oct 2026 for German applicants. | 2026/27: uni-assist 1 Apr–15 Jul 2026 | 2026/27: 1 Apr–15 Jul (WiSe); 1 Nov–15 Jan (SoSe) | 2026/27: 1 Apr–15 Jul 2026 | 2026/27: 1 Apr–15 Jul 2026 (last intake per current page)
+  2026/27 deadline
+    dtype: object
+    non-missing: 79
+    missing: 7,382
+    missing %: 98.94%
+    unique: 1
+    examples: Restricted Bachelor: 15 Jul 2026; current general enrolment for many programmes extended to 12 Oct 2026; Master's deadlines are programme-specific
+  Admission mode
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 6
+    examples: Admission-free | Restricted | Admission-free; aptitude procedure | Admission-free; some aptitude procedure | Nationwide restricted
+  German requirement
+    dtype: object
+    non-missing: 91
+    missing: 7,370
+    missing %: 98.78%
+    unique: 7
+    examples: C1 | B2 | B1 | Not required | C2
+  admission
+    dtype: object
+    non-missing: 24
+    missing: 7,437
+    missing %: 99.68%
+    unique: 3
+    examples: Open | Open + aptitude test | NC
+  study_mode
+    dtype: object
+    non-missing: 321
+    missing: 7,140
+    missing %: 95.7%
+    unique: 5
+    examples: Programme-specific | Full-time; part-time possible for many programmes | Full-time | Part-time, career-integrated | Full-time / research
+  entry_requirements
+    dtype: object
+    non-missing: 372
+    missing: 7,089
+    missing %: 95.01%
+    unique: 5
+    examples: Programme-specific; Goethe University degree-program finder | Programme-specific; see degree-programme database | Programme-specific. Master's normally requires the corresponding/equivalent Bachelor's degree. | Programme-specific; see official programme/admission page | Programme-specific. Master's generally requires a first university degree in a related field.
+  source_note
+    dtype: object
+    non-missing: 24
+    missing: 7,437
+    missing %: 99.68%
+    unique: 1
+    examples: Official Goethe University degree-programme finder; first 24 records currently exposed on catalogue page 1. University catalogue states 199 degree programmes total.
+  admission_restriction
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 2
+    examples: No NC indicated in official overview | NC
+  official_programme_catalogue
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 1
+    examples: https://www.uni-jena.de/en/3860/degree-programmes
+  official_requirements_source
+    dtype: object
+    non-missing: 51
+    missing: 7,410
+    missing %: 99.32%
+    unique: 1
+    examples: https://www.uni-jena.de/en/69421/study-orientation
+  qs_world_university_ranking_2027
+    dtype: float64
+    non-missing: 123
+    missing: 7,338
+    missing %: 98.35%
+    unique: 1
+    examples: 250.0
+  typical_duration
+    dtype: object
+    non-missing: 225
+    missing: 7,236
+    missing %: 96.98%
+    unique: 5
+    examples: 4 semesters | 6 semesters | Programme-specific | Usually 4 semesters; programme-specific | Usually 6 semesters; programme-specific
+  semester_fee_winter_2026_27_eur
+    dtype: float64
+    non-missing: 123
+    missing: 7,338
+    missing %: 98.35%
+    unique: 1
+    examples: 402.68
+  phd_eligibility
+    dtype: object
+    non-missing: 225
+    missing: 7,236
+    missing %: 96.98%
+    unique: 2
+    examples: Master's degrees generally qualify for doctoral study | Master's/state-exam graduates can generally pursue doctoral studies subject to doctoral admission rules
+  official_semester_fee_source
+    dtype: object
+    non-missing: 123
+    missing: 7,338
+    missing %: 98.35%
+    unique: 1
+    examples: https://www.tu-darmstadt.de/studieren/studieren_von_a_bis_z/artikel_details_de_en_286144.en.jsp
+  Field
+    dtype: object
+    non-missing: 39
+    missing: 7,422
+    missing %: 99.48%
+    unique: 30
+    examples: University | Location | QS World University Rankings 2027 | Official programme scope | Rows in this dataset
+  Value
+    dtype: object
+    non-missing: 37
+    missing: 7,424
+    missing %: 99.5%
+    unique: 37
+    examples: Technische Universität Darmstadt (TU Darmstadt) | Darmstadt, Hesse, Germany | #250 | TU Darmstadt states that it offers over 130 courses/programmes and six degree qualifications. | 123
+  semester_contribution_2026_27_eur
+    dtype: float64
+    non-missing: 72
+    missing: 7,389
+    missing %: 99.03%
+    unique: 1
+    examples: 192.0
+  official_admissions_source
+    dtype: object
+    non-missing: 72
+    missing: 7,389
+    missing %: 99.03%
+    unique: 1
+    examples: https://www.uni-ulm.de/en/study/application-and-enrolment/
+  official_fee_source
+    dtype: object
+    non-missing: 174
+    missing: 7,287
+    missing %: 97.67%
+    unique: 2
+    examples: https://www.uni-ulm.de/en/study/organisation/tuition-fees/ | https://www.uni-konstanz.de/en/study/study-essentials/finances/other-fees/general-overview/
+  semester_fee_from_summer_2026_eur
+    dtype: float64
+    non-missing: 102
+    missing: 7,359
+    missing %: 98.63%
+    unique: 1
+    examples: 209.0
+  official_master_application_source
+    dtype: object
+    non-missing: 102
+    missing: 7,359
+    missing %: 98.63%
+    unique: 1
+    examples: https://www.uni-konstanz.de/en/study/before-you-study/application-and-enrolment/masters-degree/
+================================================================================
+FILE: Germany_Companies_Startups_Career_Ecosystem_Master_Final.csv
+CATEGORY: companies_startups_careers
+STATUS: success
+
+ROWS: 149
+COLUMNS: 18
+DUPLICATE ROWS: 0
+
+  company_id
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 149
+    examples: DE-COMP-0001 | DE-COMP-0002 | DE-COMP-0003 | DE-COMP-0004 | DE-COMP-0005
+  company_name
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 149
+    examples: BMW Group | Siemens | Allianz | Munich Re | Infineon Technologies
+  entity_type
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 5
+    examples: Established | Scaleup | Startup/Scaleup | Startup | Established Biotech
+  city
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 53
+    examples: Munich | Neubiberg | Gilching | Erlangen | Herzogenaurach
+  state
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 16
+    examples: Bavaria | Baden-Württemberg | Berlin | Hamburg | Bremen
+  primary_sector
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 93
+    examples: Automotive | Industrial Technology | Insurance | Reinsurance | Semiconductors
+  career_tags
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 146
+    examples: Mobility; Manufacturing; Software; AI/ML | Automation; Software; AI/ML; Energy; Engineering | Finance; Data Science; AI/ML; Software | Finance; Risk; Data Science; AI/ML | Electronics; Embedded Systems; Automotive; AI Hardware
+  official_website
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 143
+    examples: https://www.bmwgroup.com/ | https://www.siemens.com/ | https://www.allianz.com/ | https://www.munichre.com/ | https://www.infineon.com/
+  ai_ml_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  software_data_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  engineering_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  life_sciences_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  logistics_mobility_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  energy_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  finance_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  last_checked
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: 2026-09-27
+  source_type
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Official company website; sector/location cross-check against German ecosystem sources | Official company site + sector ecosystem source
+  notes
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Career tags are normalized for study-to-career matching; they are not a ranking and do not imply a current vacancy. | Added to the career ecosystem master; sector/location is based on publicly available company/ecosystem sources. Career tags are normalized for study-to-career matching and do not imply a current vacancy.
+================================================================================
+FILE: Germany_Companies_Startups_Career_Ecosystem_Master_Final.xlsx
+CATEGORY: companies_startups_careers
+STATUS: success
+
+SHEET: Companies_Startups
+ROWS: 149
+COLUMNS: 18
+DUPLICATE ROWS: 0
+
+  company_id
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 149
+    examples: DE-COMP-0001 | DE-COMP-0002 | DE-COMP-0003 | DE-COMP-0004 | DE-COMP-0005
+  company_name
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 149
+    examples: BMW Group | Siemens | Allianz | Munich Re | Infineon Technologies
+  entity_type
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 5
+    examples: Established | Scaleup | Startup/Scaleup | Startup | Established Biotech
+  city
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 53
+    examples: Munich | Neubiberg | Gilching | Erlangen | Herzogenaurach
+  state
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 16
+    examples: Bavaria | Baden-Württemberg | Berlin | Hamburg | Bremen
+  primary_sector
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 93
+    examples: Automotive | Industrial Technology | Insurance | Reinsurance | Semiconductors
+  career_tags
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 146
+    examples: Mobility; Manufacturing; Software; AI/ML | Automation; Software; AI/ML; Energy; Engineering | Finance; Data Science; AI/ML; Software | Finance; Risk; Data Science; AI/ML | Electronics; Embedded Systems; Automotive; AI Hardware
+  official_website
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 143
+    examples: https://www.bmwgroup.com/ | https://www.siemens.com/ | https://www.allianz.com/ | https://www.munichre.com/ | https://www.infineon.com/
+  ai_ml_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  software_data_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  engineering_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  life_sciences_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  logistics_mobility_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Yes | No
+  energy_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  finance_relevant
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: No | Yes
+  last_checked
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: 2026-09-27
+  source_type
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Official company website; sector/location cross-check against German ecosystem sources | Official company site + sector ecosystem source
+  notes
+    dtype: object
+    non-missing: 149
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Career tags are normalized for study-to-career matching; they are not a ranking and do not imply a current vacancy. | Added to the career ecosystem master; sector/location is based on publicly available company/ecosystem sources. Career tags are normalized for study-to-career matching and do not imply a current vacancy.
+
+SHEET: State_Coverage
+ROWS: 16
+COLUMNS: 4
+DUPLICATE ROWS: 0
+
+  state
+    dtype: object
+    non-missing: 16
+    missing: 0
+    missing %: 0.0%
+    unique: 16
+    examples: Baden-Württemberg | Bavaria | Berlin | Brandenburg | Bremen
+  company_rows_in_master
+    dtype: int64
+    non-missing: 16
+    missing: 0
+    missing %: 0.0%
+    unique: 12
+    examples: 20 | 24 | 35 | 1 | 5
+  cities_represented
+    dtype: object
+    non-missing: 16
+    missing: 0
+    missing %: 0.0%
+    unique: 16
+    examples: Bruchsal; Constance; Ditzingen; Esslingen; Freiburg im Breisgau; Gerlingen; Göppingen; Heidelberg; Ludwigsburg; Metzingen; Oberkochen; Reutlingen; Stuttgart; Tübingen; Walldorf | Erlangen; Gilching; Herzogenaurach; Munich; Neubiberg; Planegg | Berlin | Grünheide | Bremen
+  note
+    dtype: object
+    non-missing: 16
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: Count reflects this curated career-relevant master, not all companies in the state.
+
+SHEET: AI_Ecosystem_Benchmark
+ROWS: 7
+COLUMNS: 4
+DUPLICATE ROWS: 0
+
+  metric
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 7
+    examples: German AI startups, 2025 | Berlin AI startups, 2025 | Munich AI startups, 2025 | Hamburg AI startups, 2025 | Generative AI startups, 2025
+  value
+    dtype: int64
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 7
+    examples: 935 | 283 | 200 | 71 | 316
+  source
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: appliedAI Institute
+  source_url
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: https://www.appliedai-institute.de/en/publications/ai-startup-landscape-2025/
+
+SHEET: Sources
+ROWS: 7
+COLUMNS: 3
+DUPLICATE ROWS: 0
+
+  source
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 7
+    examples: appliedAI Institute – German AI Startup Landscape 2025 | appliedAI Institute – AI Startup Database | Germany Trade & Invest – Federal States | German Federal Ministry for Economic Affairs – byte robotics | deutsche-startups.de – Robotics startups
+  use_in_dataset
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 7
+    examples: 935 German AI startups; methodology; city/state distribution; industries; technologies; AI capabilities; funding; generative AI. | Central database of German AI startups with filters for AI capability, enterprise function, industry, technology type and generative AI. | Official framework for Germany's 16 federal states and their regional economic/business landscapes. | Official source confirming byte robotics as a Magdeburg AI/robotics startup and university spin-off. | Sector source covering German robotics startups including Cartken, coboworx, fruitcore robotics, Micropsi Industries, Neura Robotics, RobCo, Sereact and Wandelbots.
+  source_url
+    dtype: object
+    non-missing: 7
+    missing: 0
+    missing %: 0.0%
+    unique: 7
+    examples: https://www.appliedai-institute.de/en/publications/ai-startup-landscape-2025/ | https://www.appliedai-institute.de/ressourcen/ai-startups-deutschland/ | https://www.gtai.de/en/invest/business-location-germany/federal-states | https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Dossier/Gruenderwettbewerb/Artikel/20250715_byte_robotics.html | https://www.deutsche-startups.de/2025/02/03/11-spannende-robotik-startups-die-alle-kennen-sollten/
+
+SHEET: README
+ROWS: 8
+COLUMNS: 2
+DUPLICATE ROWS: 0
+
+  item
+    dtype: object
+    non-missing: 8
+    missing: 0
+    missing %: 0.0%
+    unique: 8
+    examples: Dataset purpose | Company rows | Scope | Deduplication | Career matching
+  value
+    dtype: object
+    non-missing: 8
+    missing: 0
+    missing %: 0.0%
+    unique: 8
+    examples: Germany career ecosystem dataset linking companies/startups to study fields, technologies and sectors. | 149 | Curated, career-relevant employer/startup universe; not a registry of every German legal entity. | Company names were deduplicated; original 98 rows were preserved and new rows appended. | career_tags and relevance flags are normalized for chatbot/ML matching.
+================================================================================
+FILE: Germany_QS_2027_60_Universities_Dataset.xlsx
+CATEGORY: universities
+STATUS: success
+
+SHEET: 60_Universities
+ROWS: 60
+COLUMNS: 8
+DUPLICATE ROWS: 0
+
+  Germany_List_Position
+    dtype: int64
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 60
+    examples: 1 | 2 | 3 | 4 | 5
+  University
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 60
+    examples: Technical University of Munich | Ludwig-Maximilians-Universität München | Universität Heidelberg | Freie Universitaet Berlin | RWTH Aachen University
+  QS_2027_Global_Rank
+    dtype: object
+    non-missing: 32
+    missing: 28
+    missing %: 46.67%
+    unique: 20
+    examples: 25 | 61 | 86 | 104 | 110
+  City
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 55
+    examples: Munich | Heidelberg | Berlin | Aachen | Karlsruhe
+  State
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 16
+    examples: Bavaria | Baden-Württemberg | Berlin | North Rhine-Westphalia | Saxony
+  Country
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: Germany
+  Ranking
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: QS World University Rankings 2027
+  Source
+    dtype: object
+    non-missing: 60
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: QS TopUniversities – Top universities in Germany
+
+SHEET: README
+ROWS: 6
+COLUMNS: 2
+DUPLICATE ROWS: 0
+
+  Field
+    dtype: object
+    non-missing: 6
+    missing: 0
+    missing %: 0.0%
+    unique: 6
+    examples: Dataset | Ranking edition | Scope | Number of universities | Source
+  Value
+    dtype: object
+    non-missing: 6
+    missing: 0
+    missing %: 0.0%
+    unique: 6
+    examples: QS 2027 Germany – 60 Universities | QS World University Rankings 2027 | German universities appearing in QS's Germany overview, ordered by displayed QS global rank | 60 | https://www.topuniversities.com/where-to-study/europe/germany/guide
+================================================================================
+FILE: Germany_Scholarships_Combined_Master_Final.csv
+CATEGORY: scholarships
+STATUS: success
+
+ROWS: 125
+COLUMNS: 31
+DUPLICATE ROWS: 0
+
+  Scholarship_ID
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 125
+    examples: DE-FUND-0001 | DE-FUND-0002 | DE-FUND-0003 | DE-FUND-0004 | DE-FUND-0005
+  Scholarship_Name
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 89
+    examples: Study Scholarships - Master Studies for All Academic Disciplines | Research Grants in Germany | Doctoral Programmes in Germany | Bi-nationally Supervised Doctoral Degrees / Cotutelle | University Summer Courses offered in Germany for Foreign Students and Graduates
+  Provider
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 63
+    examples: DAAD | DAAD / BMZ | DAAD / Federal Foreign Office | Alexander von Humboldt Foundation | Alexander von Humboldt Foundation / CAPES
+  Provider_Type
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 14
+    examples: National exchange organisation | National exchange organisation / Federal ministry | Research foundation | Research foundation / international partner | Muslim-oriented / pluralist talent foundation
+  Record_Scope
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: National/Foundation/External | University
+  University
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 44
+    examples: Technical University of Munich | Ludwig-Maximilians-Universität München | Freie Universität Berlin | Technische Universität Berlin | Technische Universität Dresden
+  QS_Germany_Position
+    dtype: float64
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 44
+    examples: 1.0 | 2.0 | 4.0 | 8.0 | 9.0
+  Funding_Category
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 48
+    examples: Degree scholarship | Research grant | Doctoral scholarship | Short-course scholarship | Research/study visit
+  Study_Level
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 31
+    examples: Master | PhD; Postdoc | PhD | Graduate; PhD | Bachelor; Master
+  Purpose
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 23
+    examples: Full Master's study in Germany | Research project in Germany | Doctoral degree in Germany | Bi-national doctoral supervision / cotutelle | German language and regional/cultural studies summer course
+  Subjects
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 29
+    examples: All academic disciplines | All major academic disciplines | All disciplines | Architecture / related | Music
+  International_Eligible
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 1
+    examples: Yes
+  Eligible_Nationalities_or_Origin
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 15
+    examples: Country-restricted; consult DAAD country filter | Country-restricted | Specified countries | Country/call-specific | Developing countries / programme list
+  Target_Group
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 78
+    examples: TUM students and incoming first-year students | International students with non-German university entrance qualification | Eligible TUM students needing books/learning materials | International students subject to TUM tuition fees | International full-time students and doctoral candidates registered at LMU
+  Germany_Host_Required
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 5
+    examples: Yes | German + home-country supervision | Study at eligible recognised institution | Doctorate at eligible German institution / programme rules | Receiving institution in Germany for inbound mobility
+  Amount_Min_EUR
+    dtype: float64
+    non-missing: 83
+    missing: 42
+    missing %: 33.6%
+    unique: 10
+    examples: 3000.0 | 300.0 | 1650.0 | 500.0 | 250.0
+  Amount_Max_EUR
+    dtype: float64
+    non-missing: 83
+    missing: 42
+    missing %: 33.6%
+    unique: 11
+    examples: 3600.0 | 300.0 | 1650.0 | 1800.0 | 250.0
+  Monthly_Stipend_EUR
+    dtype: object
+    non-missing: 28
+    missing: 97
+    missing %: 77.6%
+    unique: 3
+    examples: €3,000 postdoc; €3,600 experienced researcher | 300 | 1650
+  Payment_Frequency
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 13
+    examples: Monthly | One-time per semester | One-time | Tuition waiver | Call-specific
+  Other_Funding
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 20
+    examples: DAAD programme benefits; amount and allowances are call-specific | Call-specific monthly grant and possible allowances | DAAD doctoral scholarship package; call-specific | DAAD call-specific scholarship and mobility support | Course cost + accommodation + €475 one-time allowance + possible country travel allowance + insurance
+  Duration
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 61
+    examples: Programme-specific | PhD: 2–12 months; early postdoc: 2–6 months | Doctoral programme-specific | 4 weeks | Short-term; call-specific
+  Eligibility_Summary
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 100
+    examples: First academic degree; country/call-specific requirements | Doctoral/postdoctoral status; residence and recency rules apply | Qualified graduates/doctoral candidates; country-specific rules | Doctoral project supervised in both countries; call-specific rules | Bachelor students must have completed at least 2 years; German language/course requirements apply
+  Application_Deadline_or_Window
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 74
+    examples: Updated annually; call-specific | Multiple 2026 deadlines; country/call-specific | 31 Aug 2026 shown for one current origin snapshot; verify by origin | 30 Oct annually; applications from 1 Sep | 23 Sep 2026 shown for current call
+  Application_Method
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 30
+    examples: DAAD portal | Usually through selected course / DAAD procedure | Apply under programme instructions to selected master's courses | Online application | Via eligible German host institution
+  Status_2026
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 23
+    examples: Active | Temporarily closed / next call announced | Active / verify current call | Active / call-specific | Active / annual call
+  University_Scope
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 64
+    examples: Eligible German higher-education institutions | German research institution host | Participating German doctoral programmes | German host plus home institution | Approved German summer-course providers
+  Source_URL
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 80
+    examples: https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/ | https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?detail=57742121 | https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?detail=50035295 | https://www.daad.de/en/information-services-for-higher-education-institutions/further-information-on-daad-programmes/epos/ | https://www.daad.de/en/studying-in-germany/scholarships/daad-funding-programmes/helmut-schmidt-programme/
+  Source_Quality
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 3
+    examples: Official primary | Official umbrella source | Official university source
+  Last_Checked
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: 2026-09-27
+  Notes
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 125
+    examples: DAAD-only filter showed 73 programmes in the current database snapshot. Original source ID: DE-SCH-0001. | Current DAAD call states duration by career stage; exact deadline varies by origin. Original source ID: DE-SCH-0002. | Deadline is origin-dependent; never treat the example date as universal. Original source ID: DE-SCH-0003. | Origin-specific eligibility and deadlines. Original source ID: DE-SCH-0004. | Courses take place June–September and are taught in German. Original source ID: DE-SCH-0005.
+  Source_Dataset
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Verified_Core_v1 | 60_Universities_Expansion_v2
+================================================================================
+FILE: Germany_Scholarships_Combined_Master_Final.xlsx
+CATEGORY: scholarships
+STATUS: success
+
+SHEET: Scholarships_Master
+ROWS: 125
+COLUMNS: 31
+DUPLICATE ROWS: 0
+
+  Scholarship_ID
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 125
+    examples: DE-FUND-0001 | DE-FUND-0002 | DE-FUND-0003 | DE-FUND-0004 | DE-FUND-0005
+  Scholarship_Name
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 89
+    examples: Study Scholarships - Master Studies for All Academic Disciplines | Research Grants in Germany | Doctoral Programmes in Germany | Bi-nationally Supervised Doctoral Degrees / Cotutelle | University Summer Courses offered in Germany for Foreign Students and Graduates
+  Provider
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 63
+    examples: DAAD | DAAD / BMZ | DAAD / Federal Foreign Office | Alexander von Humboldt Foundation | Alexander von Humboldt Foundation / CAPES
+  Provider_Type
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 14
+    examples: National exchange organisation | National exchange organisation / Federal ministry | Research foundation | Research foundation / international partner | Muslim-oriented / pluralist talent foundation
+  Record_Scope
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: National/Foundation/External | University
+  University
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 44
+    examples: Technical University of Munich | Ludwig-Maximilians-Universität München | Freie Universität Berlin | Technische Universität Berlin | Technische Universität Dresden
+  QS_Germany_Position
+    dtype: float64
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 44
+    examples: 1.0 | 2.0 | 4.0 | 8.0 | 9.0
+  Funding_Category
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 48
+    examples: Degree scholarship | Research grant | Doctoral scholarship | Short-course scholarship | Research/study visit
+  Study_Level
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 31
+    examples: Master | PhD; Postdoc | PhD | Graduate; PhD | Bachelor; Master
+  Purpose
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 23
+    examples: Full Master's study in Germany | Research project in Germany | Doctoral degree in Germany | Bi-national doctoral supervision / cotutelle | German language and regional/cultural studies summer course
+  Subjects
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 29
+    examples: All academic disciplines | All major academic disciplines | All disciplines | Architecture / related | Music
+  International_Eligible
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 1
+    examples: Yes
+  Eligible_Nationalities_or_Origin
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 15
+    examples: Country-restricted; consult DAAD country filter | Country-restricted | Specified countries | Country/call-specific | Developing countries / programme list
+  Target_Group
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 78
+    examples: TUM students and incoming first-year students | International students with non-German university entrance qualification | Eligible TUM students needing books/learning materials | International students subject to TUM tuition fees | International full-time students and doctoral candidates registered at LMU
+  Germany_Host_Required
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 5
+    examples: Yes | German + home-country supervision | Study at eligible recognised institution | Doctorate at eligible German institution / programme rules | Receiving institution in Germany for inbound mobility
+  Amount_Min_EUR
+    dtype: float64
+    non-missing: 83
+    missing: 42
+    missing %: 33.6%
+    unique: 10
+    examples: 3000.0 | 300.0 | 1650.0 | 500.0 | 250.0
+  Amount_Max_EUR
+    dtype: float64
+    non-missing: 83
+    missing: 42
+    missing %: 33.6%
+    unique: 11
+    examples: 3600.0 | 300.0 | 1650.0 | 1800.0 | 250.0
+  Monthly_Stipend_EUR
+    dtype: object
+    non-missing: 28
+    missing: 97
+    missing %: 77.6%
+    unique: 3
+    examples: €3,000 postdoc; €3,600 experienced researcher | 300 | 1650
+  Payment_Frequency
+    dtype: object
+    non-missing: 78
+    missing: 47
+    missing %: 37.6%
+    unique: 13
+    examples: Monthly | One-time per semester | One-time | Tuition waiver | Call-specific
+  Other_Funding
+    dtype: object
+    non-missing: 47
+    missing: 78
+    missing %: 62.4%
+    unique: 20
+    examples: DAAD programme benefits; amount and allowances are call-specific | Call-specific monthly grant and possible allowances | DAAD doctoral scholarship package; call-specific | DAAD call-specific scholarship and mobility support | Course cost + accommodation + €475 one-time allowance + possible country travel allowance + insurance
+  Duration
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 61
+    examples: Programme-specific | PhD: 2–12 months; early postdoc: 2–6 months | Doctoral programme-specific | 4 weeks | Short-term; call-specific
+  Eligibility_Summary
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 100
+    examples: First academic degree; country/call-specific requirements | Doctoral/postdoctoral status; residence and recency rules apply | Qualified graduates/doctoral candidates; country-specific rules | Doctoral project supervised in both countries; call-specific rules | Bachelor students must have completed at least 2 years; German language/course requirements apply
+  Application_Deadline_or_Window
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 74
+    examples: Updated annually; call-specific | Multiple 2026 deadlines; country/call-specific | 31 Aug 2026 shown for one current origin snapshot; verify by origin | 30 Oct annually; applications from 1 Sep | 23 Sep 2026 shown for current call
+  Application_Method
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 30
+    examples: DAAD portal | Usually through selected course / DAAD procedure | Apply under programme instructions to selected master's courses | Online application | Via eligible German host institution
+  Status_2026
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 23
+    examples: Active | Temporarily closed / next call announced | Active / verify current call | Active / call-specific | Active / annual call
+  University_Scope
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 64
+    examples: Eligible German higher-education institutions | German research institution host | Participating German doctoral programmes | German host plus home institution | Approved German summer-course providers
+  Source_URL
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 80
+    examples: https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/ | https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?detail=57742121 | https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?detail=50035295 | https://www.daad.de/en/information-services-for-higher-education-institutions/further-information-on-daad-programmes/epos/ | https://www.daad.de/en/studying-in-germany/scholarships/daad-funding-programmes/helmut-schmidt-programme/
+  Source_Quality
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 3
+    examples: Official primary | Official umbrella source | Official university source
+  Last_Checked
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 1
+    examples: 2026-09-27
+  Notes
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 125
+    examples: DAAD-only filter showed 73 programmes in the current database snapshot. Original source ID: DE-SCH-0001. | Current DAAD call states duration by career stage; exact deadline varies by origin. Original source ID: DE-SCH-0002. | Deadline is origin-dependent; never treat the example date as universal. Original source ID: DE-SCH-0003. | Origin-specific eligibility and deadlines. Original source ID: DE-SCH-0004. | Courses take place June–September and are taught in German. Original source ID: DE-SCH-0005.
+  Source_Dataset
+    dtype: object
+    non-missing: 125
+    missing: 0
+    missing %: 0.0%
+    unique: 2
+    examples: Verified_Core_v1 | 60_Universities_Expansion_v2
+
+SHEET: Dataset_Summary
+ROWS: 9
+COLUMNS: 2
+DUPLICATE ROWS: 0
+
+  Metric
+    dtype: object
+    non-missing: 9
+    missing: 0
+    missing %: 0.0%
+    unique: 9
+    examples: Combined source rows | Exact duplicate records removed | Final unique records | National/foundation/external source rows | University-source rows
+  Value
+    dtype: object
+    non-missing: 9
+    missing: 0
+    missing %: 0.0%
+    unique: 8
+    examples: 125 | 0 | 47 | 78 | 60 German universities from the user's QS 2027 university project
+
+SHEET: Data_Dictionary
+ROWS: 11
+COLUMNS: 2
+DUPLICATE ROWS: 0
+
+  Field
+    dtype: object
+    non-missing: 11
+    missing: 0
+    missing %: 0.0%
+    unique: 11
+    examples: Scholarship_ID | Record_Scope | Amount_Min_EUR / Amount_Max_EUR | Monthly_Stipend_EUR | International_Eligible
+  Description
+    dtype: object
+    non-missing: 11
+    missing: 0
+    missing %: 0.0%
+    unique: 11
+    examples: Stable combined dataset ID. | National/Foundation/External or University. | Numeric extraction only where a source row had an explicit amount; null otherwise. | Original monthly-stipend field retained from the core dataset. | Explicit university-source eligibility flag where available; null is unknown, not false.

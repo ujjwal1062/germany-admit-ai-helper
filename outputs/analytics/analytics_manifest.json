@@ -1,0 +1,28 @@
+{
+  "project": "Germany Admit AI Helper",
+  "purpose": "Analysis-ready datasets for Germany education and career dashboard",
+  "source_directory": "D:\\dont delete ujjwal\\germany_admit_ai_helper\\data\\raw",
+  "output_directory": "D:\\dont delete ujjwal\\germany_admit_ai_helper\\outputs\\analytics",
+  "datasets_loaded": 14,
+  "domain_counts": {
+    "universities": 66,
+    "courses": 14922,
+    "scholarships": 270,
+    "companies": 336
+  },
+  "outputs": [
+    "universities_analytics.csv",
+    "courses_analytics.csv",
+    "scholarships_analytics.csv",
+    "companies_analytics.csv",
+    "state_summary.csv",
+    "state_dashboard.csv",
+    "field_summary.csv",
+    "industry_summary.csv",
+    "state_industry_summary.csv",
+    "state_field_summary.csv",
+    "university_course_summary.csv",
+    "university_scholarship_summary.csv",
+    "analytics_quality_summary.csv"
+  ]
+}
