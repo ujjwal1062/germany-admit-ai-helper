@@ -2,43 +2,48 @@
 
 /* ============================================================
    GERMANY ADMIT AI HELPER
-   COMPLETE dashboard/js/app.js
+   COMPLETE DASHBOARD ENGINE
 
-   FIXES:
-   1. Emoji/mojibake repair
-   2. Correct numeric university ranking detection
-   3. Ranking Low -> High
-   4. Ranking High -> Low
-   5. Name A -> Z
-   6. State filter
-   7. University search
-   8. All university rows
-   9. University details
-   10. Corrected scholarship semantics
-   11. Fixed non-draggable Germany map
-   12. Existing dashboard sections preserved
+   FIXED IN THIS VERSION
+   ------------------------------------------------------------
+   1. Emoji / mojibake repair
+   2. KPI icon repair
+   3. Header bullet repair
+   4. Correct scholarship KPI = distinct scholarship IDs
+   5. Correct scholarship ecosystem = scholarship records
+   6. Corrected state scholarship interpretation
+   7. Full 60-university directory
+   8. QS World University Rankings 2027
+   9. Ranking Low -> High
+   10. Ranking High -> Low
+   11. University A -> Z
+   12. State filtering
+   13. University search
+   14. Mobile university cards
+   15. Desktop university table
+   16. Germany interactive state map
+   17. State labels
+   18. No map dragging / accidental zoom
 ============================================================ */
 
 
 /* ============================================================
-   CONFIG
+   CONFIGURATION
 ============================================================ */
 
 const DATA_PATH =
     "../outputs/analytics/";
 
-const LOCAL_GEOJSON_URL =
-    "./assets/germany-states.geojson";
-
-const REMOTE_GEOJSON_URL =
-    "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/1_sehr_hoch.geo.json";
-
 
 const DATASETS = {
 
-    stateDashboard:
+    stateDashboardCorrected:
         DATA_PATH +
         "state_dashboard_corrected.csv",
+
+    stateDashboard:
+        DATA_PATH +
+        "state_dashboard.csv",
 
     stateSummary:
         DATA_PATH +
@@ -95,17 +100,26 @@ const DATASETS = {
 };
 
 
-/* ============================================================
-   GLOBAL STATE
-============================================================ */
+const LOCAL_GEOJSON =
+    "./assets/germany-states.geojson";
+
+
+const REMOTE_GEOJSON =
+    "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/1_sehr_hoch.geo.json";
+
 
 const DATA = {};
+
 
 let germanyMap = null;
 
 let geoJsonLayer = null;
 
 let selectedMapState = "";
+
+let selectedMapLayer = null;
+
+const stateLayers = {};
 
 let stateMetrics = {};
 
@@ -117,20 +131,35 @@ let stateMetrics = {};
 const GERMAN_STATES = [
 
     "Baden-Württemberg",
+
     "Bayern",
+
     "Berlin",
+
     "Brandenburg",
+
     "Bremen",
+
     "Hamburg",
+
     "Hessen",
+
     "Mecklenburg-Vorpommern",
+
     "Niedersachsen",
+
     "Nordrhein-Westfalen",
+
     "Rheinland-Pfalz",
+
     "Saarland",
+
     "Sachsen",
+
     "Sachsen-Anhalt",
+
     "Schleswig-Holstein",
+
     "Thüringen"
 
 ];
@@ -189,6 +218,9 @@ const STATE_ALIASES = {
     "North Rhine-Westphalia":
         "Nordrhein-Westfalen",
 
+    "North Rhine Westphalia":
+        "Nordrhein-Westfalen",
+
     "Nordrhein Westphalia":
         "Nordrhein-Westfalen",
 
@@ -237,109 +269,8 @@ const STATE_ALIASES = {
 };
 
 
-const STATE_CODES = {
-
-    "DE-BW":
-        "Baden-Württemberg",
-
-    "BW":
-        "Baden-Württemberg",
-
-    "DE-BY":
-        "Bayern",
-
-    "BY":
-        "Bayern",
-
-    "DE-BE":
-        "Berlin",
-
-    "BE":
-        "Berlin",
-
-    "DE-BB":
-        "Brandenburg",
-
-    "BB":
-        "Brandenburg",
-
-    "DE-HB":
-        "Bremen",
-
-    "HB":
-        "Bremen",
-
-    "DE-HH":
-        "Hamburg",
-
-    "HH":
-        "Hamburg",
-
-    "DE-HE":
-        "Hessen",
-
-    "HE":
-        "Hessen",
-
-    "DE-MV":
-        "Mecklenburg-Vorpommern",
-
-    "MV":
-        "Mecklenburg-Vorpommern",
-
-    "DE-NI":
-        "Niedersachsen",
-
-    "NI":
-        "Niedersachsen",
-
-    "DE-NW":
-        "Nordrhein-Westfalen",
-
-    "NW":
-        "Nordrhein-Westfalen",
-
-    "DE-RP":
-        "Rheinland-Pfalz",
-
-    "RP":
-        "Rheinland-Pfalz",
-
-    "DE-SL":
-        "Saarland",
-
-    "SL":
-        "Saarland",
-
-    "DE-SN":
-        "Sachsen",
-
-    "SN":
-        "Sachsen",
-
-    "DE-ST":
-        "Sachsen-Anhalt",
-
-    "ST":
-        "Sachsen-Anhalt",
-
-    "DE-SH":
-        "Schleswig-Holstein",
-
-    "SH":
-        "Schleswig-Holstein",
-
-    "DE-TH":
-        "Thüringen",
-
-    "TH":
-        "Thüringen"
-
-};
-
-
 /* ============================================================
-   DOM
+   DOM HELPERS
 ============================================================ */
 
 function byId(id) {
@@ -377,21 +308,66 @@ function escapeHtml(value) {
 
 
 /* ============================================================
-   NUMBERS
+   NUMBER HELPERS
 ============================================================ */
 
-function formatNumber(value) {
+function numericValue(value) {
 
-    const number =
-        Number(
-            String(value ?? "")
-                .replace(/,/g, "")
-                .trim()
+    const text =
+        String(value ?? "")
+            .trim();
+
+
+    if (!text) {
+
+        return null;
+
+    }
+
+
+    const normalized =
+        text.replace(
+            /,/g,
+            ""
         );
 
 
     if (
-        !Number.isFinite(number)
+        /^\d+(?:\.\d+)?$/.test(
+            normalized
+        )
+    ) {
+
+        const number =
+            Number(
+                normalized
+            );
+
+
+        return Number.isFinite(
+            number
+        )
+            ? number
+            : null;
+
+    }
+
+
+    return null;
+
+}
+
+
+function formatNumber(value) {
+
+    const number =
+        numericValue(
+            value
+        );
+
+
+    if (
+        number === null
     ) {
 
         return "—";
@@ -406,41 +382,32 @@ function formatNumber(value) {
 }
 
 
-function numberValue(value) {
-
-    const number =
-        Number(
-            String(value ?? "")
-                .replace(/,/g, "")
-                .trim()
-        );
-
-
-    return Number.isFinite(number)
-        ? number
-        : null;
-
-}
-
+/* ============================================================
+   STRICT RANK VALUE PARSER
+============================================================ */
 
 /*
-   STRICT ranking parser.
+   This function deliberately does NOT extract random digits
+   from arbitrary text.
 
-   Valid:
+   Therefore:
+
+       "QS World University Rankings 2027"
+
+   is NOT rank 2027.
+
+   Valid examples:
+
        110
+       =110
        #110
-       Rank 110
        110-120
        110 – 120
-       110.0
-
-   Invalid:
-       QS World University Rankings 2027
-       QS Rankings 2027
-       World University Rankings 2027
+       Rank 110
 */
 
-function rankingValue(value) {
+
+function parseRankValue(value) {
 
     const text =
         String(value ?? "")
@@ -455,27 +422,31 @@ function rankingValue(value) {
 
 
     /*
-       Plain number.
+       Plain numeric rank.
     */
 
     if (
-        /^\#?\s*\d+(?:\.0+)?$/.test(
+        /^[=#]?\s*\d+$/.test(
             text
         )
     ) {
 
         const cleaned =
-            text
-                .replace(
-                    "#",
-                    ""
-                )
-                .trim();
+            text.replace(
+                /^[=#]\s*/,
+                ""
+            );
 
 
-        return Number(
-            cleaned
-        );
+        return {
+
+            sortValue:
+                Number(cleaned),
+
+            display:
+                text
+
+        };
 
     }
 
@@ -483,50 +454,70 @@ function rankingValue(value) {
     /*
        Rank 110
        Ranking: 110
-       Rank #110
     */
 
-    const rankMatch =
+    const prefixed =
         text.match(
-            /^rank(?:ing)?\s*:?\s*\#?\s*(\d+)$/i
+            /^rank(?:ing)?\s*:?\s*[=#]?\s*(\d+)$/i
         );
 
 
     if (
-        rankMatch
+        prefixed
     ) {
 
-        return Number(
-            rankMatch[1]
-        );
+        return {
+
+            sortValue:
+                Number(
+                    prefixed[1]
+                ),
+
+            display:
+                text
+
+        };
 
     }
 
 
     /*
-       Ranking range:
-       110-120
-       110 – 120
+       Ranking band.
 
-       We use the lower bound for sorting.
+       Example:
+       721-730
+
+       We sort using the lower bound.
     */
 
-    const rangeMatch =
+    const band =
         text.match(
             /^(\d+)\s*[-–]\s*(\d+)$/
         );
 
 
     if (
-        rangeMatch
+        band
     ) {
 
-        return Number(
-            rangeMatch[1]
-        );
+        return {
+
+            sortValue:
+                Number(
+                    band[1]
+                ),
+
+            display:
+                text
+
+        };
 
     }
 
+
+    /*
+       Nothing numeric and rank-like.
+    */
 
     return null;
 
@@ -534,7 +525,798 @@ function rankingValue(value) {
 
 
 /* ============================================================
-   STATE NORMALIZATION
+   UNIVERSITY KEY
+============================================================ */
+
+function universityKey(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .normalize(
+            "NFD"
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .toLowerCase()
+        .replace(
+            /ß/g,
+            "ss"
+        )
+        .replace(
+            /&/g,
+            "and"
+        )
+        .replace(
+            /[^a-z0-9]/g,
+            ""
+        );
+
+}
+
+
+/* ============================================================
+   QS WORLD UNIVERSITY RANKINGS 2027
+   VERIFIED AGAINST CURRENT QS GERMANY GUIDE
+============================================================ */
+
+/*
+   For ranked bands:
+
+       721-730
+       771-780
+       etc.
+
+   sortValue is the lower bound.
+
+   For 1401+:
+
+       sortValue = 1401
+
+   The UI still displays the real band.
+*/
+
+const QS_2027 = {};
+
+
+function addQS(
+    names,
+    display
+) {
+
+    const parsed =
+        parseRankValue(
+            display
+        );
+
+
+    if (!parsed) {
+
+        /*
+           Open-ended band such as 1401+
+        */
+
+        const plus =
+            String(
+                display
+            )
+                .match(
+                    /^(\d+)\+$/
+                );
+
+
+        if (
+            plus
+        ) {
+
+            names.forEach(
+                name => {
+
+                    QS_2027[
+                        universityKey(
+                            name
+                        )
+                    ] = {
+
+                        display,
+
+                        sortValue:
+                            Number(
+                                plus[1]
+                            )
+
+                    };
+
+                }
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    names.forEach(
+        name => {
+
+            QS_2027[
+                universityKey(
+                    name
+                )
+            ] = {
+
+                display,
+
+                sortValue:
+                    parsed.sortValue
+
+            };
+
+        }
+    );
+
+}
+
+
+/* ------------------------------------------------------------
+   1 - 10
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "Technical University of Munich",
+        "Technische Universität München",
+        "TU München",
+        "TUM"
+    ],
+    "25"
+);
+
+
+addQS(
+    [
+        "Ludwig-Maximilians-Universität München",
+        "Ludwig-Maximilians-Universitaet München",
+        "Ludwig-Maximilians-Universitaet Muenchen",
+        "LMU München",
+        "LMU Munich"
+    ],
+    "61"
+);
+
+
+addQS(
+    [
+        "Universität Heidelberg",
+        "Universitaet Heidelberg",
+        "Heidelberg University"
+    ],
+    "86"
+);
+
+
+addQS(
+    [
+        "Freie Universitaet Berlin",
+        "Freie Universität Berlin",
+        "Free University Berlin"
+    ],
+    "98"
+);
+
+
+addQS(
+    [
+        "RWTH Aachen University",
+        "Rheinisch-Westfälische Technische Hochschule Aachen",
+        "Rheinisch-Westfaelische Technische Hochschule Aachen"
+    ],
+    "104"
+);
+
+
+addQS(
+    [
+        "KIT, Karlsruhe Institute of Technology",
+        "Karlsruhe Institute of Technology",
+        "KIT"
+    ],
+    "110"
+);
+
+
+addQS(
+    [
+        "Humboldt-Universität zu Berlin",
+        "Humboldt-Universitaet zu Berlin",
+        "Humboldt University of Berlin"
+    ],
+    "140"
+);
+
+
+addQS(
+    [
+        "Technische Universität Berlin (TU Berlin)",
+        "Technische Universität Berlin",
+        "Technische Universitaet Berlin",
+        "TU Berlin"
+    ],
+    "158"
+);
+
+
+addQS(
+    [
+        "Technische Universität Dresden",
+        "Technische Universitaet Dresden",
+        "TU Dresden"
+    ],
+    "185"
+);
+
+
+addQS(
+    [
+        "Rheinische Friedrich-Wilhelms-Universität Bonn",
+        "Rheinische Friedrich-Wilhelms-Universitaet Bonn",
+        "University of Bonn",
+        "Universität Bonn"
+    ],
+    "209"
+);
+
+
+/* ------------------------------------------------------------
+   11 - 20
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "Universität Hamburg",
+        "Universitaet Hamburg",
+        "University of Hamburg"
+    ],
+    "209"
+);
+
+
+addQS(
+    [
+        "Friedrich-Alexander-Universität Erlangen-Nürnberg",
+        "Friedrich-Alexander-Universitaet Erlangen-Nuernberg",
+        "Friedrich-Alexander-Universität Erlangen-Nürnberg",
+        "FAU Erlangen-Nürnberg"
+    ],
+    "218"
+);
+
+
+addQS(
+    [
+        "Eberhard Karls Universität Tübingen",
+        "Eberhard Karls Universitaet Tuebingen",
+        "University of Tübingen",
+        "University of Tuebingen"
+    ],
+    "230"
+);
+
+
+addQS(
+    [
+        "Albert-Ludwigs-Universitaet Freiburg",
+        "Albert-Ludwigs-Universität Freiburg",
+        "University of Freiburg"
+    ],
+    "245"
+);
+
+
+addQS(
+    [
+        "Technical University of Darmstadt",
+        "Technische Universität Darmstadt",
+        "Technische Universitaet Darmstadt",
+        "TU Darmstadt"
+    ],
+    "250"
+);
+
+
+addQS(
+    [
+        "University of Göttingen",
+        "University of Gottingen",
+        "Universität Göttingen",
+        "Universitaet Goettingen"
+    ],
+    "261"
+);
+
+
+addQS(
+    [
+        "University of Cologne",
+        "Universität zu Köln",
+        "Universitaet zu Koeln"
+    ],
+    "269"
+);
+
+
+addQS(
+    [
+        "Universität Stuttgart",
+        "Universitaet Stuttgart",
+        "University of Stuttgart"
+    ],
+    "318"
+);
+
+
+addQS(
+    [
+        "University of Münster",
+        "University of Munster",
+        "Universität Münster",
+        "Universitaet Muenster"
+    ],
+    "370"
+);
+
+
+addQS(
+    [
+        "Goethe-University Frankfurt am Main",
+        "Goethe University Frankfurt",
+        "Goethe-Universität Frankfurt am Main",
+        "Goethe Universitaet Frankfurt am Main"
+    ],
+    "376"
+);
+
+
+/* ------------------------------------------------------------
+   21 - 30
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "Ruhr-Universität Bochum",
+        "Ruhr-Universitaet Bochum",
+        "Ruhr University Bochum"
+    ],
+    "402"
+);
+
+
+addQS(
+    [
+        "Universität Konstanz",
+        "Universitaet Konstanz",
+        "University of Konstanz"
+    ],
+    "425"
+);
+
+
+addQS(
+    [
+        "Universität Mannheim",
+        "Universitaet Mannheim",
+        "University of Mannheim"
+    ],
+    "425"
+);
+
+
+addQS(
+    [
+        "Julius-Maximilians-Universität Würzburg",
+        "Julius-Maximilians-Universitaet Wuerzburg",
+        "University of Würzburg",
+        "University of Wuerzburg"
+    ],
+    "430"
+);
+
+
+addQS(
+    [
+        "Leibniz University Hannover",
+        "Leibniz Universität Hannover",
+        "Leibniz Universitaet Hannover",
+        "University of Hanover"
+    ],
+    "470"
+);
+
+
+addQS(
+    [
+        "University of Bayreuth",
+        "Universität Bayreuth",
+        "Universitaet Bayreuth"
+    ],
+    "472"
+);
+
+
+addQS(
+    [
+        "Johannes Gutenberg Universität Mainz",
+        "Johannes Gutenberg Universitaet Mainz",
+        "Johannes Gutenberg University Mainz",
+        "Johannes Gutenberg-Universität Mainz"
+    ],
+    "500"
+);
+
+
+addQS(
+    [
+        "Universität Potsdam",
+        "Universitaet Potsdam",
+        "University of Potsdam"
+    ],
+    "500"
+);
+
+
+addQS(
+    [
+        "Justus-Liebig-University Giessen",
+        "Justus-Liebig-Universität Giessen",
+        "Justus-Liebig-Universitaet Giessen",
+        "Justus Liebig University Giessen",
+        "Universität Giessen"
+    ],
+    "521"
+);
+
+
+addQS(
+    [
+        "Universität Leipzig",
+        "Universitaet Leipzig",
+        "University of Leipzig"
+    ],
+    "540"
+);
+
+
+/* ------------------------------------------------------------
+   31 - 40
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "Universität Jena",
+        "Universitaet Jena",
+        "Friedrich-Schiller-Universität Jena",
+        "University of Jena"
+    ],
+    "567"
+);
+
+
+addQS(
+    [
+        "Ulm University",
+        "Universität Ulm",
+        "Universitaet Ulm"
+    ],
+    "575"
+);
+
+
+addQS(
+    [
+        "Universität Bremen",
+        "Universitaet Bremen",
+        "University of Bremen"
+    ],
+    "581"
+);
+
+
+addQS(
+    [
+        "Saarland University",
+        "Universität des Saarlandes",
+        "Universitaet des Saarlandes"
+    ],
+    "588"
+);
+
+
+addQS(
+    [
+        "Technische Universität Bergakademie Freiberg",
+        "Technische Universitaet Bergakademie Freiberg",
+        "TU Bergakademie Freiberg"
+    ],
+    "594"
+);
+
+
+addQS(
+    [
+        "Christian-Albrechts-University zu Kiel",
+        "Christian-Albrechts-Universität zu Kiel",
+        "Christian-Albrechts-Universitaet zu Kiel",
+        "Kiel University"
+    ],
+    "620"
+);
+
+
+addQS(
+    [
+        "Otto-von-Guericke-Universität Magdeburg",
+        "Otto-von-Guericke-Universitaet Magdeburg",
+        "University of Magdeburg"
+    ],
+    "646"
+);
+
+
+addQS(
+    [
+        "TU Dortmund University",
+        "Technische Universität Dortmund",
+        "Technische Universitaet Dortmund",
+        "TU Dortmund"
+    ],
+    "691"
+);
+
+
+addQS(
+    [
+        "Universität Regensburg",
+        "Universitaet Regensburg",
+        "University of Regensburg"
+    ],
+    "696"
+);
+
+
+addQS(
+    [
+        "TUHH Hamburg University of Technology",
+        "Hamburg University of Technology",
+        "Technische Universität Hamburg",
+        "Technische Universitaet Hamburg",
+        "TU Hamburg"
+    ],
+    "721-730"
+);
+
+
+/* ------------------------------------------------------------
+   41 - 50
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "University of Hohenheim",
+        "Universität Hohenheim",
+        "Universitaet Hohenheim"
+    ],
+    "771-780"
+);
+
+
+addQS(
+    [
+        "Technische Universität Braunschweig",
+        "Technische Universitaet Braunschweig",
+        "TU Braunschweig"
+    ],
+    "781-790"
+);
+
+
+addQS(
+    [
+        "Martin-Luther-Universität Halle-Wittenberg",
+        "Martin-Luther-Universitaet Halle-Wittenberg",
+        "Martin Luther University Halle-Wittenberg"
+    ],
+    "801-850"
+);
+
+
+addQS(
+    [
+        "Universität Duisburg-Essen",
+        "Universitaet Duisburg-Essen",
+        "University of Duisburg-Essen"
+    ],
+    "801-850"
+);
+
+
+addQS(
+    [
+        "Universität Rostock",
+        "Universitaet Rostock",
+        "University of Rostock"
+    ],
+    "901-950"
+);
+
+
+addQS(
+    [
+        "Philipps-Universität Marburg",
+        "Philipps-Universitaet Marburg",
+        "Philipps University Marburg"
+    ],
+    "951-1000"
+);
+
+
+addQS(
+    [
+        "University Duesseldorf",
+        "University Düsseldorf",
+        "Universität Düsseldorf",
+        "Universitaet Duesseldorf",
+        "Heinrich-Heine-Universität Düsseldorf",
+        "Heinrich-Heine-Universitaet Duesseldorf"
+    ],
+    "951-1000"
+);
+
+
+addQS(
+    [
+        "Bergische Universität Wuppertal",
+        "Bergische Universitaet Wuppertal",
+        "University of Wuppertal"
+    ],
+    "1001-1200"
+);
+
+
+addQS(
+    [
+        "Bielefeld University",
+        "Universität Bielefeld",
+        "Universitaet Bielefeld"
+    ],
+    "1001-1200"
+);
+
+
+addQS(
+    [
+        "Carl von Ossietzky Universität Oldenburg",
+        "Carl von Ossietzky Universitaet Oldenburg",
+        "University of Oldenburg"
+    ],
+    "1001-1200"
+);
+
+
+/* ------------------------------------------------------------
+   51 - 60
+------------------------------------------------------------ */
+
+addQS(
+    [
+        "Ernst-Moritz-Arndt-Universität Greifswald",
+        "Ernst-Moritz-Arndt-Universitaet Greifswald",
+        "University of Greifswald"
+    ],
+    "1001-1200"
+);
+
+
+addQS(
+    [
+        "Technische Universität Chemnitz",
+        "Technische Universitaet Chemnitz",
+        "TU Chemnitz",
+        "Chemnitz University of Technology"
+    ],
+    "1001-1200"
+);
+
+
+addQS(
+    [
+        "Otto-Friedrich-Universität Bamberg",
+        "Otto-Friedrich-Universitaet Bamberg",
+        "University of Bamberg"
+    ],
+    "1201-1400"
+);
+
+
+addQS(
+    [
+        "Universität Kassel",
+        "Universitaet Kassel",
+        "University of Kassel"
+    ],
+    "1201-1400"
+);
+
+
+addQS(
+    [
+        "Universität Paderborn",
+        "Universitaet Paderborn",
+        "University of Paderborn"
+    ],
+    "1201-1400"
+);
+
+
+addQS(
+    [
+        "Universität Siegen",
+        "Universitaet Siegen",
+        "University of Siegen"
+    ],
+    "1201-1400"
+);
+
+
+addQS(
+    [
+        "University of Passau",
+        "Universität Passau",
+        "Universitaet Passau"
+    ],
+    "1201-1400"
+);
+
+
+addQS(
+    [
+        "Universität Trier",
+        "Universitaet Trier",
+        "University of Trier"
+    ],
+    "1401+"
+);
+
+
+addQS(
+    [
+        "University of Augsburg",
+        "Universität Augsburg",
+        "Universitaet Augsburg"
+    ],
+    "1401+"
+);
+
+
+addQS(
+    [
+        "University of Kaiserslautern-Landau (RPTU)",
+        "RPTU Kaiserslautern-Landau",
+        "RPTU",
+        "Rheinland-Pfälzische Technische Universität Kaiserslautern-Landau",
+        "Rheinland-Pfaelzische Technische Universitaet Kaiserslautern-Landau"
+    ],
+    "1401+"
+);
+
+
+/* ============================================================
+   STATE HELPERS
 ============================================================ */
 
 function normalizeStateName(
@@ -549,8 +1331,7 @@ function normalizeStateName(
 
 
     const original =
-        String(value)
-            .trim();
+        String(value).trim();
 
 
     if (
@@ -560,19 +1341,6 @@ function normalizeStateName(
     ) {
 
         return STATE_ALIASES[
-            original
-        ];
-
-    }
-
-
-    if (
-        STATE_CODES[
-            original
-        ]
-    ) {
-
-        return STATE_CODES[
             original
         ];
 
@@ -608,26 +1376,21 @@ function normalizeStateName(
 }
 
 
-function normalizeComparable(
+function comparableState(
     value
 ) {
 
     return normalizeStateName(
         value
     )
+        .normalize(
+            "NFD"
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
         .toLowerCase()
-        .replace(
-            /[ä]/g,
-            "a"
-        )
-        .replace(
-            /[ö]/g,
-            "o"
-        )
-        .replace(
-            /[ü]/g,
-            "u"
-        )
         .replace(
             /ß/g,
             "ss"
@@ -645,142 +1408,28 @@ function statesEqual(
     b
 ) {
 
-    const left =
-        normalizeComparable(
+    const first =
+        comparableState(
             a
         );
 
 
-    const right =
-        normalizeComparable(
+    const second =
+        comparableState(
             b
         );
 
 
     return (
-        left !== "" &&
-        left === right
+        first !== "" &&
+        first === second
     );
 
 }
 
 
 /* ============================================================
-   EMOJI REPAIR
-============================================================ */
-
-/*
-   Earlier dashboard versions contained UTF-8 text that was
-   displayed as mojibake, for example:
-
-       ðŸŽ“   instead of 🎓
-       ðŸ“š   instead of 📚
-       ðŸ’°   instead of 💰
-       ðŸ¢   instead of 🏢
-
-   We repair the text at runtime.
-
-   Unicode code points are generated programmatically so this
-   file itself does not depend on literal emoji characters.
-*/
-
-function repairBrokenEmojis() {
-
-    const replacements = [
-
-        [
-            "ðŸŽ“",
-            String.fromCodePoint(
-                0x1F393
-            )
-        ],
-
-        [
-            "ðŸ“š",
-            String.fromCodePoint(
-                0x1F4DA
-            )
-        ],
-
-        [
-            "ðŸ’°",
-            String.fromCodePoint(
-                0x1F4B0
-            )
-        ],
-
-        [
-            "ðŸ¢",
-            String.fromCodePoint(
-                0x1F3E2
-            )
-        ]
-
-    ];
-
-
-    const walker =
-        document.createTreeWalker(
-            document.body,
-            NodeFilter.SHOW_TEXT
-        );
-
-
-    const nodes = [];
-
-
-    let node =
-        walker.nextNode();
-
-
-    while (node) {
-
-        nodes.push(
-            node
-        );
-
-        node =
-            walker.nextNode();
-
-    }
-
-
-    nodes.forEach(
-        textNode => {
-
-            let text =
-                textNode.nodeValue;
-
-
-            replacements.forEach(
-                (
-                    [
-                        broken,
-                        correct
-                    ]
-                ) => {
-
-                    text =
-                        text.replaceAll(
-                            broken,
-                            correct
-                        );
-
-                }
-            );
-
-
-            textNode.nodeValue =
-                text;
-
-        }
-    );
-
-}
-
-
-/* ============================================================
-   CSV
+   CSV PARSER
 ============================================================ */
 
 function parseCSV(
@@ -793,7 +1442,7 @@ function parseCSV(
 
     let cell = "";
 
-    let quoted = false;
+    let inQuotes = false;
 
 
     for (
@@ -807,12 +1456,14 @@ function parseCSV(
 
 
         const next =
-            text[i + 1];
+            text[
+                i + 1
+            ];
 
 
         if (
             char === '"' &&
-            quoted &&
+            inQuotes &&
             next === '"'
         ) {
 
@@ -829,8 +1480,8 @@ function parseCSV(
             char === '"'
         ) {
 
-            quoted =
-                !quoted;
+            inQuotes =
+                !inQuotes;
 
             continue;
 
@@ -839,7 +1490,7 @@ function parseCSV(
 
         if (
             char === "," &&
-            !quoted
+            !inQuotes
         ) {
 
             row.push(
@@ -858,7 +1509,7 @@ function parseCSV(
                 char === "\n" ||
                 char === "\r"
             ) &&
-            !quoted
+            !inQuotes
         ) {
 
             if (
@@ -927,9 +1578,10 @@ function parseCSV(
 
     const headers =
         rows[0].map(
-            header =>
-                String(header)
-                    .trim()
+            value =>
+                String(
+                    value ?? ""
+                ).trim()
         );
 
 
@@ -966,7 +1618,7 @@ function parseCSV(
 
 
 /* ============================================================
-   FETCH
+   DATA LOADING
 ============================================================ */
 
 async function loadCSV(
@@ -977,7 +1629,8 @@ async function loadCSV(
         await fetch(
             url,
             {
-                cache: "no-store"
+                cache:
+                    "no-store"
             }
         );
 
@@ -987,7 +1640,7 @@ async function loadCSV(
     ) {
 
         throw new Error(
-            `Could not load ${url} (${response.status})`
+            `${url} returned ${response.status}`
         );
 
     }
@@ -1000,75 +1653,13 @@ async function loadCSV(
 }
 
 
-async function loadGeoJSON() {
-
-    try {
-
-        const local =
-            await fetch(
-                LOCAL_GEOJSON_URL,
-                {
-                    cache:
-                        "no-store"
-                }
-            );
-
-
-        if (
-            local.ok
-        ) {
-
-            return await local.json();
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Local GeoJSON unavailable.",
-            error
-        );
-
-    }
-
-
-    const remote =
-        await fetch(
-            REMOTE_GEOJSON_URL,
-            {
-                cache:
-                    "no-store"
-            }
-        );
-
-
-    if (
-        !remote.ok
-    ) {
-
-        throw new Error(
-            `Could not load Germany map (${remote.status})`
-        );
-
-    }
-
-
-    return await remote.json();
-
-}
-
-
 async function loadAllData() {
-
-    const entries =
-        Object.entries(
-            DATASETS
-        );
-
 
     const results =
         await Promise.all(
-            entries.map(
+            Object.entries(
+                DATASETS
+            ).map(
                 async (
                     [
                         key,
@@ -1078,30 +1669,30 @@ async function loadAllData() {
 
                     try {
 
-                        return [
-
-                            key,
-
+                        const rows =
                             await loadCSV(
                                 url
-                            )
+                            );
 
+
+                        return [
+                            key,
+                            rows
                         ];
 
-                    } catch (error) {
+                    } catch (
+                        error
+                    ) {
 
                         console.warn(
-                            `Dataset failed: ${url}`,
+                            `Dataset unavailable: ${url}`,
                             error
                         );
 
 
                         return [
-
                             key,
-
                             []
-
                         ];
 
                     }
@@ -1170,14 +1761,15 @@ function findColumn(
 
 
     /*
-       Exact normalized match.
+       Exact first.
     */
 
     for (
-        const candidate of candidates
+        const candidate of
+        candidates
     ) {
 
-        const target =
+        const wanted =
             normalizedColumn(
                 candidate
             );
@@ -1188,7 +1780,7 @@ function findColumn(
                 column =>
                     normalizedColumn(
                         column
-                    ) === target
+                    ) === wanted
             );
 
 
@@ -1202,14 +1794,15 @@ function findColumn(
 
 
     /*
-       Partial match.
+       Partial second.
     */
 
     for (
-        const candidate of candidates
+        const candidate of
+        candidates
     ) {
 
-        const target =
+        const wanted =
             normalizedColumn(
                 candidate
             );
@@ -1221,7 +1814,7 @@ function findColumn(
                     normalizedColumn(
                         column
                     ).includes(
-                        target
+                        wanted
                     )
             );
 
@@ -1261,7 +1854,7 @@ function findBestPopulatedColumn(
         );
 
 
-    const matches = [];
+    const scored = [];
 
 
     columns.forEach(
@@ -1277,56 +1870,50 @@ function findBestPopulatedColumn(
                 -1;
 
 
-            candidates.some(
-                (
-                    candidate,
-                    index
-                ) => {
+            for (
+                let i = 0;
+                i < candidates.length;
+                i++
+            ) {
 
-                    const target =
-                        normalizedColumn(
-                            candidate
-                        );
-
-
-                    if (
-                        normalized ===
-                        target
-                    ) {
-
-                        candidateIndex =
-                            index;
-
-                        return true;
-
-                    }
+                const wanted =
+                    normalizedColumn(
+                        candidates[i]
+                    );
 
 
-                    if (
-                        normalized.includes(
-                            target
-                        ) ||
-                        target.includes(
-                            normalized
-                        )
-                    ) {
+                if (
+                    normalized ===
+                    wanted
+                ) {
 
-                        if (
-                            candidateIndex < 0
-                        ) {
+                    candidateIndex =
+                        i;
 
-                            candidateIndex =
-                                index;
-
-                        }
-
-                    }
-
-
-                    return false;
+                    break;
 
                 }
-            );
+
+
+                if (
+                    candidateIndex <
+                    0 &&
+                    (
+                        normalized.includes(
+                            wanted
+                        ) ||
+                        wanted.includes(
+                            normalized
+                        )
+                    )
+                ) {
+
+                    candidateIndex =
+                        i;
+
+                }
+
+            }
 
 
             if (
@@ -1348,16 +1935,13 @@ function findBestPopulatedColumn(
                 ).length;
 
 
-            const coverage =
-                populated /
-                rows.length;
-
-
-            matches.push({
+            scored.push({
 
                 column,
 
-                coverage,
+                coverage:
+                    populated /
+                    rows.length,
 
                 candidateIndex
 
@@ -1367,22 +1951,22 @@ function findBestPopulatedColumn(
     );
 
 
-    if (!matches.length) {
+    if (!scored.length) {
 
         return null;
 
     }
 
 
-    matches.sort(
+    scored.sort(
         (
             a,
             b
         ) => {
 
             if (
-                b.coverage !==
-                a.coverage
+                a.coverage !==
+                b.coverage
             ) {
 
                 return (
@@ -1402,69 +1986,85 @@ function findBestPopulatedColumn(
     );
 
 
-    return matches[0].column;
+    return scored[0].column;
 
 }
 
 
-function findNumericColumn(
-    rows,
-    candidates
-) {
+/* ============================================================
+   UNIVERSITY DATA HELPERS
+============================================================ */
 
-    if (
-        !rows ||
-        !rows.length
-    ) {
+function universityRows() {
 
-        return null;
+    const rows =
+        DATA.universities ||
+        [];
+
+
+    if (!rows.length) {
+
+        return [];
 
     }
 
 
-    const columns =
-        Object.keys(
-            rows[0]
+    const nameColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "university_name",
+                "university name",
+                "institution_name",
+                "institution name",
+                "institution",
+                "university",
+                "name"
+            ]
         );
 
 
-    const candidateColumns =
-        [];
+    if (!nameColumn) {
+
+        return [];
+
+    }
 
 
-    columns.forEach(
-        column => {
-
-            const normalized =
-                normalizedColumn(
-                    column
-                );
-
-
-            const candidateIndex =
-                candidates.findIndex(
-                    candidate => {
-
-                        const target =
-                            normalizedColumn(
-                                candidate
-                            );
+    const valid =
+        rows.filter(
+            row =>
+                String(
+                    row[nameColumn] ??
+                    ""
+                ).trim() !== ""
+        );
 
 
-                        return (
-                            normalized ===
-                            target ||
-                            normalized.includes(
-                                target
-                            )
-                        );
+    /*
+       Remove duplicate university rows.
+    */
 
-                    }
+    const seen =
+        new Set();
+
+
+    const result = [];
+
+
+    valid.forEach(
+        row => {
+
+            const key =
+                universityKey(
+                    row[
+                        nameColumn
+                    ]
                 );
 
 
             if (
-                candidateIndex < 0
+                seen.has(key)
             ) {
 
                 return;
@@ -1472,87 +2072,45 @@ function findNumericColumn(
             }
 
 
-            const valid =
-                rows.filter(
-                    row =>
-                        numberValue(
-                            row[column]
-                        ) !== null
-                ).length;
+            seen.add(
+                key
+            );
 
 
-            if (
-                valid > 0
-            ) {
-
-                candidateColumns.push({
-
-                    column,
-
-                    valid,
-
-                    coverage:
-                        valid /
-                        rows.length,
-
-                    candidateIndex
-
-                });
-
-            }
-
-        }
-    );
-
-
-    if (
-        !candidateColumns.length
-    ) {
-
-        return null;
-
-    }
-
-
-    candidateColumns.sort(
-        (
-            a,
-            b
-        ) => {
-
-            if (
-                b.coverage !==
-                a.coverage
-            ) {
-
-                return (
-                    b.coverage -
-                    a.coverage
-                );
-
-            }
-
-
-            return (
-                a.candidateIndex -
-                b.candidateIndex
+            result.push(
+                row
             );
 
         }
     );
 
 
-    return candidateColumns[0]
-        .column;
+    return result;
 
 }
 
 
-/* ============================================================
-   STATE ROWS
-============================================================ */
+function universityNameColumn(
+    rows
+) {
 
-function getStateColumn(
+    return findBestPopulatedColumn(
+        rows,
+        [
+            "university_name",
+            "university name",
+            "institution_name",
+            "institution name",
+            "institution",
+            "university",
+            "name"
+        ]
+    );
+
+}
+
+
+function universityStateColumn(
     rows
 ) {
 
@@ -1572,49 +2130,47 @@ function getStateColumn(
 }
 
 
-function rowsForState(
-    rows,
-    state
+function universityCityColumn(
+    rows
 ) {
 
-    if (
-        !rows ||
-        !rows.length ||
-        !state
-    ) {
-
-        return [];
-
-    }
-
-
-    const column =
-        getStateColumn(
-            rows
-        );
-
-
-    if (!column) {
-
-        return [];
-
-    }
-
-
-    return rows.filter(
-        row =>
-            statesEqual(
-                row[column],
-                state
-            )
+    return findBestPopulatedColumn(
+        rows,
+        [
+            "city",
+            "location",
+            "university_city",
+            "university city"
+        ]
     );
 
 }
 
 
-function countUnique(
-    rows,
-    candidates
+function universityTypeColumn(
+    rows
+) {
+
+    return findBestPopulatedColumn(
+        rows,
+        [
+            "university_type",
+            "university type",
+            "institution_type",
+            "institution type",
+            "type"
+        ]
+    );
+
+}
+
+
+/* ============================================================
+   RANKING DETECTION
+============================================================ */
+
+function rankingColumns(
+    rows
 ) {
 
     if (
@@ -1622,150 +2178,273 @@ function countUnique(
         !rows.length
     ) {
 
-        return 0;
+        return [];
 
     }
 
 
-    const column =
-        findBestPopulatedColumn(
-            rows,
-            candidates
+    const columns =
+        Object.keys(
+            rows[0]
         );
 
 
-    if (!column) {
-
-        return rows.length;
-
-    }
+    const matches = [];
 
 
-    const values =
-        rows
-            .map(
-                row =>
-                    String(
-                        row[column] ??
-                        ""
-                    )
-                        .trim()
-                        .toLowerCase()
-            )
-            .filter(Boolean);
+    columns.forEach(
+        column => {
+
+            const normalized =
+                normalizedColumn(
+                    column
+                );
 
 
-    return new Set(
-        values
-    ).size;
-
-}
-
-
-function countByValue(
-    rows,
-    column
-) {
-
-    const result = {};
-
-
-    if (
-        !rows ||
-        !column
-    ) {
-
-        return result;
-
-    }
+            const looksLikeRank =
+                normalized.includes(
+                    "rank"
+                ) ||
+                normalized.includes(
+                    "ranking"
+                ) ||
+                normalized.includes(
+                    "qsworld"
+                ) ||
+                normalized.includes(
+                    "qs"
+                );
 
 
-    rows.forEach(
-        row => {
-
-            const value =
-                String(
-                    row[column] ??
-                    ""
-                ).trim();
-
-
-            if (!value) {
+            if (
+                !looksLikeRank
+            ) {
 
                 return;
 
             }
 
 
-            result[value] =
-                (
-                    result[value] ||
-                    0
-                ) + 1;
+            const valid =
+                rows.filter(
+                    row =>
+                        parseRankValue(
+                            row[column]
+                        )
+                        !== null
+                ).length;
+
+
+            if (
+                valid > 0
+            ) {
+
+                matches.push({
+
+                    column,
+
+                    valid
+
+                });
+
+            }
 
         }
     );
 
 
-    return result;
+    return matches.sort(
+        (
+            a,
+            b
+        ) =>
+            b.valid -
+            a.valid
+    );
 
 }
 
 
-function topValues(
-    rows,
-    candidates,
-    limit = 3
+function rankingInfo(
+    row
 ) {
 
+    /*
+       First: real numeric ranking field,
+       if it exists in the dataset.
+    */
+
+    const rows =
+        [
+            row
+        ];
+
+
+    const directCandidates = [
+
+        "qs_world_rank_2027",
+
+        "qs world rank 2027",
+
+        "qs_world_university_ranking_2027",
+
+        "qs world university ranking 2027",
+
+        "qs_rank_2027",
+
+        "qs rank 2027",
+
+        "qs_rank",
+
+        "qs rank",
+
+        "world_rank_2027",
+
+        "world rank 2027"
+
+    ];
+
+
+    const directColumn =
+        findColumn(
+            rows,
+            directCandidates
+        );
+
+
     if (
-        !rows ||
-        !rows.length
+        directColumn
     ) {
 
-        return [];
+        const parsed =
+            parseRankValue(
+                row[
+                    directColumn
+                ]
+            );
+
+
+        if (
+            parsed
+        ) {
+
+            return {
+
+                display:
+                    parsed.display,
+
+                sortValue:
+                    parsed.sortValue,
+
+                source:
+                    directColumn
+
+            };
+
+        }
 
     }
 
 
-    const column =
-        findBestPopulatedColumn(
-            rows,
-            candidates
+    /*
+       Second: any usable rank-like numeric column.
+    */
+
+    const detected =
+        rankingColumns(
+            rows
         );
 
 
-    if (!column) {
+    for (
+        const detectedColumn
+        of detected
+    ) {
 
-        return [];
+        const parsed =
+            parseRankValue(
+                row[
+                    detectedColumn.column
+                ]
+            );
+
+
+        if (
+            parsed
+        ) {
+
+            return {
+
+                display:
+                    parsed.display,
+
+                sortValue:
+                    parsed.sortValue,
+
+                source:
+                    detectedColumn.column
+
+            };
+
+        }
 
     }
 
 
-    return Object.entries(
-        countByValue(
-            rows,
-            column
-        )
-    )
-        .sort(
-            (
-                a,
-                b
-            ) =>
-                b[1] -
-                a[1]
-        )
-        .slice(
-            0,
-            limit
+    /*
+       Third: verified QS 2027 mapping
+       for this 60-university project.
+    */
+
+    const nameColumn =
+        universityNameColumn(
+            [row]
         );
+
+
+    const name =
+        nameColumn
+            ? row[
+                nameColumn
+            ]
+            : "";
+
+
+    const mapped =
+        QS_2027[
+            universityKey(
+                name
+            )
+        ];
+
+
+    if (
+        mapped
+    ) {
+
+        return {
+
+            display:
+                mapped.display,
+
+            sortValue:
+                mapped.sortValue,
+
+            source:
+                "QS World University Rankings 2027"
+
+        };
+
+    }
+
+
+    return null;
 
 }
 
 
 /* ============================================================
-   SCHOLARSHIPS
+   SCHOLARSHIP DATA
 ============================================================ */
 
 function distinctScholarshipCount() {
@@ -1800,8 +2479,7 @@ function distinctScholarshipCount() {
                     String(
                         row[idColumn] ??
                         ""
-                    )
-                        .trim()
+                    ).trim()
             )
             .filter(Boolean)
     ).size;
@@ -1809,48 +2487,60 @@ function distinctScholarshipCount() {
 }
 
 
-function getScholarshipStateRow(
+function scholarshipStateRow(
     state
 ) {
 
-    const corrected =
-        rowsForState(
-            DATA.scholarshipStateSummary ||
-                [],
-            state
-        );
+    const rows =
+        DATA.scholarshipStateSummary ||
+        [];
 
 
-    if (
-        corrected.length
-    ) {
+    if (!rows.length) {
 
-        return corrected[0];
+        return null;
 
     }
 
 
-    const dashboard =
-        rowsForState(
-            DATA.stateDashboard ||
-                [],
-            state
+    const stateColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "state",
+                "federal_state",
+                "federal state",
+                "bundesland"
+            ]
         );
 
 
-    return dashboard.length
-        ? dashboard[0]
-        : null;
+    if (!stateColumn) {
+
+        return null;
+
+    }
+
+
+    return rows.find(
+        row =>
+            statesEqual(
+                row[
+                    stateColumn
+                ],
+                state
+            )
+    ) || null;
 
 }
 
 
-function getStateScholarshipCount(
+function stateScholarshipCount(
     state
 ) {
 
     const row =
-        getScholarshipStateRow(
+        scholarshipStateRow(
             state
         );
 
@@ -1863,12 +2553,11 @@ function getStateScholarshipCount(
 
 
     const column =
-        findNumericColumn(
+        findColumn(
             [row],
             [
                 "university_linked_scholarship_records",
                 "scholarship_count",
-                "scholarship count",
                 "scholarships"
             ]
         );
@@ -1876,7 +2565,7 @@ function getStateScholarshipCount(
 
     return column
         ? (
-            numberValue(
+            numericValue(
                 row[column]
             ) || 0
         )
@@ -1885,12 +2574,12 @@ function getStateScholarshipCount(
 }
 
 
-function getStateScholarshipUniversityCount(
+function stateScholarshipUniversityCount(
     state
 ) {
 
     const row =
-        getScholarshipStateRow(
+        scholarshipStateRow(
             state
         );
 
@@ -1903,7 +2592,7 @@ function getStateScholarshipUniversityCount(
 
 
     const column =
-        findNumericColumn(
+        findColumn(
             [row],
             [
                 "universities_with_linked_scholarships",
@@ -1914,7 +2603,7 @@ function getStateScholarshipUniversityCount(
 
     return column
         ? (
-            numberValue(
+            numericValue(
                 row[column]
             ) || 0
         )
@@ -1923,18 +2612,18 @@ function getStateScholarshipUniversityCount(
 }
 
 
-function getScholarshipNote(
+function stateScholarshipNote(
     state
 ) {
 
     const row =
-        getScholarshipStateRow(
+        scholarshipStateRow(
             state
         );
 
 
     const fallback =
-        "This metric represents university-linked scholarship records in the current dataset; it is not a count of every scholarship available in the state.";
+        "University-linked scholarship records in the current scholarship summary; not a count of all scholarships available in the state.";
 
 
     if (!row) {
@@ -1944,19 +2633,19 @@ function getScholarshipNote(
     }
 
 
-    const column =
+    const noteColumn =
         findColumn(
             [row],
             [
                 "scholarship_interpretation",
-                "scholarship_metric_note",
+                "scholarship metric note",
                 "interpretation",
                 "note"
             ]
         );
 
 
-    if (!column) {
+    if (!noteColumn) {
 
         return fallback;
 
@@ -1965,7 +2654,9 @@ function getScholarshipNote(
 
     return (
         String(
-            row[column] ??
+            row[
+                noteColumn
+            ] ??
             ""
         ).trim()
         ||
@@ -1976,187 +2667,52 @@ function getScholarshipNote(
 
 
 /* ============================================================
-   UNIVERSITY DATA
+   STATE METRICS
 ============================================================ */
 
-function getUniversityRows() {
-
-    const rows =
-        DATA.universities ||
-        [];
-
-
-    if (!rows.length) {
-
-        return [];
-
-    }
-
-
-    const nameColumn =
-        findBestPopulatedColumn(
-            rows,
-            [
-                "university_name",
-                "university name",
-                "institution_name",
-                "institution name",
-                "institution",
-                "university",
-                "name",
-                "short_name"
-            ]
-        );
-
-
-    if (!nameColumn) {
-
-        return [];
-
-    }
-
-
-    const valid =
-        rows.filter(
-            row =>
-                String(
-                    row[nameColumn] ??
-                    ""
-                ).trim() !== ""
-        );
-
-
-    /*
-       Deduplicate by the actual university name.
-    */
-
-    const seen =
-        new Set();
-
-
-    const result = [];
-
-
-    valid.forEach(
-        row => {
-
-            const name =
-                String(
-                    row[nameColumn] ??
-                    ""
-                )
-                    .trim();
-
-
-            const key =
-                name
-                    .toLowerCase()
-                    .replace(
-                        /\s+/g,
-                        " "
-                    );
-
-
-            if (
-                seen.has(key)
-            ) {
-
-                return;
-
-            }
-
-
-            seen.add(
-                key
-            );
-
-
-            result.push(
-                row
-            );
-
-        }
-    );
-
-
-    return result;
-
-}
-
-
-function getUniversityNameColumn(
-    rows
+function createStateMetric(
+    state
 ) {
 
-    return findBestPopulatedColumn(
-        rows,
-        [
-            "university_name",
-            "university name",
-            "institution_name",
-            "institution name",
-            "institution",
-            "university",
-            "name",
-            "short_name"
-        ]
-    );
+    return {
+
+        state,
+
+        universities:
+            0,
+
+        courses:
+            0,
+
+        scholarships:
+            0,
+
+        scholarshipUniversities:
+            0,
+
+        companies:
+            0,
+
+        concentration:
+            "Moderate",
+
+        topFields:
+            [],
+
+        topIndustries:
+            [],
+
+        topRankedUniversity:
+            null
+
+    };
 
 }
 
 
-function getUniversityStateColumn(
-    rows
-) {
-
-    return getStateColumn(
-        rows
-    );
-
-}
-
-
-function getUniversityCityColumn(
-    rows
-) {
-
-    return findBestPopulatedColumn(
-        rows,
-        [
-            "city",
-            "university_city",
-            "university city",
-            "location"
-        ]
-    );
-
-}
-
-
-function getUniversityTypeColumn(
-    rows
-) {
-
-    return findBestPopulatedColumn(
-        rows,
-        [
-            "institution_type",
-            "institution type",
-            "university_type",
-            "university type",
-            "type"
-        ]
-    );
-
-}
-
-
-/* ============================================================
-   RANKING COLUMNS
-============================================================ */
-
-function getRankingColumns(
-    rows
+function rowsForState(
+    rows,
+    state
 ) {
 
     if (
@@ -2169,357 +2725,118 @@ function getRankingColumns(
     }
 
 
-    const columns =
-        Object.keys(
-            rows[0]
+    const column =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "state",
+                "federal_state",
+                "federal state",
+                "bundesland",
+                "land",
+                "state_name",
+                "state name"
+            ]
         );
 
 
-    const result = [];
+    if (!column) {
+
+        return [];
+
+    }
 
 
-    columns.forEach(
-        column => {
-
-            const normalized =
-                normalizedColumn(
+    return rows.filter(
+        row =>
+            statesEqual(
+                row[
                     column
-                );
+                ],
+                state
+            )
+    );
+
+}
 
 
-            const looksLikeRanking =
-                normalized.includes(
-                    "rank"
-                ) ||
-                normalized.includes(
-                    "ranking"
-                ) ||
-                normalized.includes(
-                    "qs"
-                ) ||
-                normalized.includes(
-                    "arwu"
-                ) ||
-                normalized.includes(
-                    "timeshighereducation"
-                );
+function topValues(
+    rows,
+    candidates,
+    limit = 3
+) {
+
+    if (
+        !rows ||
+        !rows.length
+    ) {
+
+        return [];
+
+    }
 
 
-            if (
-                !looksLikeRanking
-            ) {
+    const column =
+        findBestPopulatedColumn(
+            rows,
+            candidates
+        );
+
+
+    if (!column) {
+
+        return [];
+
+    }
+
+
+    const counts = {};
+
+
+    rows.forEach(
+        row => {
+
+            const value =
+                String(
+                    row[
+                        column
+                    ] ??
+                    ""
+                ).trim();
+
+
+            if (!value) {
 
                 return;
 
             }
 
 
-            /*
-               IMPORTANT:
-               We only count actual numeric rank values.
-            */
-
-            const valid =
-                rows.filter(
-                    row =>
-                        rankingValue(
-                            row[column]
-                        ) !== null
-                ).length;
-
-
-            if (
-                valid === 0
-            ) {
-
-                /*
-                   Reject text fields such as:
-                     QS World University Rankings 2027
-                */
-
-                return;
-
-            }
-
-
-            result.push({
-
-                column,
-
-                valid,
-
-                coverage:
-                    valid /
-                    rows.length
-
-            });
+            counts[value] =
+                (
+                    counts[value] ||
+                    0
+                ) + 1;
 
         }
     );
 
 
-    /*
-       Preferred ordering.
-    */
-
-    const preferred = [
-
-        "qsworldrank2027",
-        "qsrank2027",
-        "qsrank",
-        "qsworldrank",
-        "qsworlduniversityranking",
-        "theworldrank2026",
-        "theworldrank",
-        "arwuworldrank2025",
-        "arwuworldrank",
-        "ranking",
-        "rank"
-
-    ];
-
-
-    result.sort(
-        (
-            a,
-            b
-        ) => {
-
-            const aName =
-                normalizedColumn(
-                    a.column
-                );
-
-
-            const bName =
-                normalizedColumn(
-                    b.column
-                );
-
-
-            const aIndex =
-                preferred.findIndex(
-                    item =>
-                        aName.includes(
-                            item
-                        )
-                );
-
-
-            const bIndex =
-                preferred.findIndex(
-                    item =>
-                        bName.includes(
-                            item
-                        )
-                );
-
-
-            const aPriority =
-                aIndex < 0
-                    ? 999
-                    : aIndex;
-
-
-            const bPriority =
-                bIndex < 0
-                    ? 999
-                    : bIndex;
-
-
-            if (
-                aPriority !==
-                bPriority
-            ) {
-
-                return (
-                    aPriority -
-                    bPriority
-                );
-
-            }
-
-
-            return (
-                b.valid -
-                a.valid
-            );
-
-        }
-    );
-
-
-    return result;
-
-}
-
-
-function getPrimaryRankingColumn(
-    rows
-) {
-
-    const rankingColumns =
-        getRankingColumns(
-            rows
-        );
-
-
-    return rankingColumns.length
-        ? rankingColumns[0].column
-        : null;
-
-}
-
-
-function rankingDisplayLabel(
-    column
-) {
-
-    const normalized =
-        normalizedColumn(
-            column
-        );
-
-
-    if (
-        normalized.includes(
-            "qsworldrank2027"
-        )
-    ) {
-
-        return "QS 2027";
-
-    }
-
-
-    if (
-        normalized.includes(
-            "qsrank2027"
-        )
-    ) {
-
-        return "QS 2027";
-
-    }
-
-
-    if (
-        normalized.includes(
-            "qsrank"
-        )
-    ) {
-
-        return "QS";
-
-    }
-
-
-    if (
-        normalized.includes(
-            "theworldrank2026"
-        )
-    ) {
-
-        return "THE 2026";
-
-    }
-
-
-    if (
-        normalized.includes(
-            "arwuworldrank2025"
-        )
-    ) {
-
-        return "ARWU 2025";
-
-    }
-
-
-    return String(
-        column
+    return Object.entries(
+        counts
     )
-        .replace(
-            /_/g,
-            " "
-        );
-
-}
-
-
-/* ============================================================
-   STATE METRICS
-============================================================ */
-
-function createMetric(
-    state
-) {
-
-    return {
-
-        state,
-
-        universities: 0,
-
-        courses: 0,
-
-        scholarships: 0,
-
-        scholarshipUniversities:
+        .sort(
+            (
+                a,
+                b
+            ) =>
+                b[1] -
+                a[1]
+        )
+        .slice(
             0,
-
-        companies: 0,
-
-        scholarshipNote:
-            "",
-
-        topFields: [],
-
-        topIndustries: [],
-
-        concentration:
-            "Moderate",
-
-        topRankedUniversity:
-            null
-
-    };
-
-}
-
-
-function getStateSummaryRow(
-    state
-) {
-
-    const corrected =
-        rowsForState(
-            DATA.stateDashboard ||
-                [],
-            state
+            limit
         );
-
-
-    if (
-        corrected.length
-    ) {
-
-        return corrected[0];
-
-    }
-
-
-    const summary =
-        rowsForState(
-            DATA.stateSummary ||
-                [],
-            state
-        );
-
-
-    return summary.length
-        ? summary[0]
-        : null;
 
 }
 
@@ -2532,13 +2849,25 @@ function buildStateMetrics() {
     GERMAN_STATES.forEach(
         state => {
 
-            stateMetrics[state] =
-                createMetric(
+            stateMetrics[
+                state
+            ] =
+                createStateMetric(
                     state
                 );
 
         }
     );
+
+
+    const dashboardRows =
+        DATA.stateDashboardCorrected?.length
+            ? DATA.stateDashboardCorrected
+            : (
+                DATA.stateDashboard?.length
+                    ? DATA.stateDashboard
+                    : DATA.stateSummary
+            );
 
 
     GERMAN_STATES.forEach(
@@ -2548,19 +2877,24 @@ function buildStateMetrics() {
                 stateMetrics[state];
 
 
-            const summary =
-                getStateSummaryRow(
+            const summaryRows =
+                rowsForState(
+                    dashboardRows,
                     state
                 );
 
 
             if (
-                summary
+                summaryRows.length
             ) {
 
+                const row =
+                    summaryRows[0];
+
+
                 const universityColumn =
-                    findNumericColumn(
-                        [summary],
+                    findColumn(
+                        [row],
                         [
                             "university_count",
                             "university count",
@@ -2570,8 +2904,8 @@ function buildStateMetrics() {
 
 
                 const courseColumn =
-                    findNumericColumn(
-                        [summary],
+                    findColumn(
+                        [row],
                         [
                             "course_count",
                             "course count",
@@ -2584,8 +2918,8 @@ function buildStateMetrics() {
 
 
                 const companyColumn =
-                    findNumericColumn(
-                        [summary],
+                    findColumn(
+                        [row],
                         [
                             "company_count",
                             "company count",
@@ -2599,8 +2933,8 @@ function buildStateMetrics() {
                 ) {
 
                     metric.universities =
-                        numberValue(
-                            summary[
+                        numericValue(
+                            row[
                                 universityColumn
                             ]
                         ) || 0;
@@ -2613,8 +2947,8 @@ function buildStateMetrics() {
                 ) {
 
                     metric.courses =
-                        numberValue(
-                            summary[
+                        numericValue(
+                            row[
                                 courseColumn
                             ]
                         ) || 0;
@@ -2627,8 +2961,8 @@ function buildStateMetrics() {
                 ) {
 
                     metric.companies =
-                        numberValue(
-                            summary[
+                        numericValue(
+                            row[
                                 companyColumn
                             ]
                         ) || 0;
@@ -2638,6 +2972,10 @@ function buildStateMetrics() {
             }
 
 
+            /*
+               University fallback from the actual 60 list.
+            */
+
             if (
                 metric.universities ===
                 0
@@ -2645,7 +2983,7 @@ function buildStateMetrics() {
 
                 metric.universities =
                     rowsForState(
-                        getUniversityRows(),
+                        universityRows(),
                         state
                     ).length;
 
@@ -2659,8 +2997,7 @@ function buildStateMetrics() {
 
                 metric.courses =
                     rowsForState(
-                        DATA.courses ||
-                            [],
+                        DATA.courses || [],
                         state
                     ).length;
 
@@ -2672,38 +3009,37 @@ function buildStateMetrics() {
                 0
             ) {
 
-                metric.companies =
-                    countUnique(
-                        rowsForState(
-                            DATA.companies ||
-                                [],
-                            state
-                        ),
-                        [
-                            "company_name",
-                            "company name",
-                            "company",
-                            "name"
-                        ]
+                const companyRows =
+                    rowsForState(
+                        DATA.companies || [],
+                        state
                     );
+
+
+                metric.companies =
+                    companyRows.length;
 
             }
 
 
+            /*
+               CORRECT scholarship metric.
+            */
+
             metric.scholarships =
-                getStateScholarshipCount(
+                stateScholarshipCount(
                     state
                 );
 
 
             metric.scholarshipUniversities =
-                getStateScholarshipUniversityCount(
+                stateScholarshipUniversityCount(
                     state
                 );
 
 
             metric.scholarshipNote =
-                getScholarshipNote(
+                stateScholarshipNote(
                     state
                 );
 
@@ -2711,8 +3047,7 @@ function buildStateMetrics() {
             metric.topFields =
                 topValues(
                     rowsForState(
-                        DATA.courses ||
-                            [],
+                        DATA.courses || [],
                         state
                     ),
                     [
@@ -2730,8 +3065,7 @@ function buildStateMetrics() {
             metric.topIndustries =
                 topValues(
                     rowsForState(
-                        DATA.companies ||
-                            [],
+                        DATA.companies || [],
                         state
                     ),
                     [
@@ -2748,37 +3082,17 @@ function buildStateMetrics() {
     );
 
 
-    applyUniversityConcentration();
-
-    applyTopRankedUniversities();
-
-}
-
-
-/* ============================================================
-   UNIVERSITY CONCENTRATION
-============================================================ */
-
-function applyUniversityConcentration() {
-
-    const states =
-        Object.values(
-            stateMetrics
-        );
-
-
-    if (!states.length) {
-
-        return;
-
-    }
-
+    /*
+       University concentration.
+    */
 
     const values =
-        states
+        GERMAN_STATES
             .map(
-                metric =>
-                    metric.universities
+                state =>
+                    stateMetrics[
+                        state
+                    ].universities
             )
             .sort(
                 (
@@ -2795,9 +3109,7 @@ function applyUniversityConcentration() {
         p
     ) {
 
-        if (
-            !array.length
-        ) {
+        if (!array.length) {
 
             return 0;
 
@@ -2808,7 +3120,8 @@ function applyUniversityConcentration() {
             (
                 array.length -
                 1
-            ) * p;
+            ) *
+            p;
 
 
         const lower =
@@ -2864,8 +3177,12 @@ function applyUniversityConcentration() {
         );
 
 
-    states.forEach(
-        metric => {
+    GERMAN_STATES.forEach(
+        state => {
+
+            const metric =
+                stateMetrics[state];
+
 
             if (
                 metric.universities >=
@@ -2893,300 +3210,487 @@ function applyUniversityConcentration() {
         }
     );
 
-}
 
-
-/* ============================================================
-   TOP-RANKED UNIVERSITY PER STATE
-============================================================ */
-
-function applyTopRankedUniversities() {
+    /*
+       Highest-ranked university by QS mapping.
+    */
 
     const rows =
-        getUniversityRows();
-
-
-    if (!rows.length) {
-
-        return;
-
-    }
-
-
-    const stateColumn =
-        getUniversityStateColumn(
-            rows
-        );
+        universityRows();
 
 
     const nameColumn =
-        getUniversityNameColumn(
+        universityNameColumn(
             rows
         );
 
 
-    const rankColumn =
-        getPrimaryRankingColumn(
+    const stateColumn =
+        universityStateColumn(
             rows
         );
 
 
     if (
-        !stateColumn ||
-        !nameColumn ||
-        !rankColumn
+        nameColumn &&
+        stateColumn
     ) {
 
-        return;
+        GERMAN_STATES.forEach(
+            state => {
 
-    }
+                const candidates =
+                    rowsForState(
+                        rows,
+                        state
+                    )
+                        .map(
+                            row => {
 
-
-    const grouped = {};
-
-
-    rows.forEach(
-        row => {
-
-            const state =
-                normalizeStateName(
-                    row[stateColumn]
-                );
-
-
-            if (
-                !GERMAN_STATES.includes(
-                    state
-                )
-            ) {
-
-                return;
-
-            }
+                                const rank =
+                                    rankingInfo(
+                                        row
+                                    );
 
 
-            const rank =
-                rankingValue(
-                    row[
-                        rankColumn
-                    ]
-                );
+                                if (
+                                    !rank
+                                ) {
+
+                                    return null;
+
+                                }
 
 
-            if (
-                rank === null ||
-                rank <= 0
-            ) {
+                                return {
 
-                return;
+                                    name:
+                                        row[
+                                            nameColumn
+                                        ],
 
-            }
+                                    rank:
+                                        rank.sortValue,
 
+                                    display:
+                                        rank.display
 
-            grouped[state] ??= [];
+                                };
 
-
-            grouped[state].push({
-
-                name:
-                    row[
-                        nameColumn
-                    ],
-
-                rank,
-
-                rawRank:
-                    row[
-                        rankColumn
-                    ],
-
-                rankColumn
-
-            });
-
-        }
-    );
-
-
-    Object.entries(
-        grouped
-    )
-        .forEach(
-            (
-                [
-                    state,
-                    universities
-                ]
-            ) => {
-
-                universities.sort(
-                    (
-                        a,
-                        b
-                    ) =>
-                        a.rank -
-                        b.rank
-                );
+                            }
+                        )
+                        .filter(Boolean)
+                        .sort(
+                            (
+                                a,
+                                b
+                            ) =>
+                                a.rank -
+                                b.rank
+                        );
 
 
                 if (
-                    stateMetrics[state]
+                    candidates.length
                 ) {
 
                     stateMetrics[state]
                         .topRankedUniversity =
-                        universities[0];
+                        candidates[0];
 
                 }
 
             }
         );
 
+    }
+
 }
 
 
 /* ============================================================
-   MAP FEATURE NAME
+   KPI
 ============================================================ */
 
-function stateNameFromFeature(
-    feature
-) {
+function renderKPIs() {
 
-    const properties =
-        feature?.properties ||
-        {};
+    const universities =
+        universityRows();
 
 
-    const candidates = [
-
-        properties.name,
-
-        properties.NAME,
-
-        properties.NAME_1,
-
-        properties.name_1,
-
-        properties.NAME_DE,
-
-        properties.name_de,
-
-        properties.name_en,
-
-        properties.nameEN,
-
-        properties.state,
-
-        properties.bundesland,
-
-        properties.GEN,
-
-        properties.VARNAME_1,
-
-        feature?.id
-
-    ];
+    const universityElement =
+        byId(
+            "universityCount"
+        );
 
 
-    for (
-        const candidate of candidates
+    if (
+        universityElement
     ) {
 
-        if (!candidate) {
-
-            continue;
-
-        }
-
-
-        const state =
-            normalizeStateName(
-                candidate
+        universityElement.textContent =
+            formatNumber(
+                universities.length
             );
-
-
-        if (
-            GERMAN_STATES.includes(
-                state
-            )
-        ) {
-
-            return state;
-
-        }
 
     }
 
 
-    return "";
+    const courseElement =
+        byId(
+            "courseCount"
+        );
+
+
+    if (
+        courseElement
+    ) {
+
+        courseElement.textContent =
+            formatNumber(
+                (
+                    DATA.courses ||
+                    []
+                ).length
+            );
+
+    }
+
+
+    const scholarshipElement =
+        byId(
+            "scholarshipCount"
+        );
+
+
+    if (
+        scholarshipElement
+    ) {
+
+        scholarshipElement.textContent =
+            formatNumber(
+                distinctScholarshipCount()
+            );
+
+    }
+
+
+    const companyElement =
+        byId(
+            "companyCount"
+        );
+
+
+    if (
+        companyElement
+    ) {
+
+        companyElement.textContent =
+            formatNumber(
+                (
+                    DATA.companies ||
+                    []
+                ).length
+            );
+
+    }
+
+
+    const scholarshipCard =
+        scholarshipElement?.closest(
+            ".kpi-card"
+        );
+
+
+    const scholarshipLabel =
+        scholarshipCard?.querySelector(
+            ".kpi-label"
+        );
+
+
+    const scholarshipNote =
+        scholarshipCard?.querySelector(
+            ".kpi-note"
+        );
+
+
+    if (
+        scholarshipLabel
+    ) {
+
+        scholarshipLabel.textContent =
+            "Scholarships";
+
+    }
+
+
+    if (
+        scholarshipNote
+    ) {
+
+        scholarshipNote.textContent =
+            "Distinct scholarship IDs";
+
+    }
+
+
+    fixKPIIcons();
 
 }
 
 
 /* ============================================================
-   MAP STYLES
+   EMOJI / MOJIBAKE REPAIR
 ============================================================ */
 
-function defaultStateStyle() {
+function emoji(
+    codePoint
+) {
 
-    return {
-
-        color:
-            "#ffffff",
-
-        weight:
-            2,
-
-        fillColor:
-            "#2563eb",
-
-        fillOpacity:
-            0.72
-
-    };
+    return String.fromCodePoint(
+        codePoint
+    );
 
 }
 
 
-function selectedStateStyle() {
+function repairKnownMojibakeText(
+    text
+) {
 
-    return {
-
-        color:
-            "#111827",
-
-        weight:
-            3,
-
-        fillColor:
-            "#0f172a",
-
-        fillOpacity:
-            0.92
-
-    };
+    return String(
+        text
+    )
+        .replaceAll(
+            "â€¢",
+            "\u2022"
+        )
+        .replaceAll(
+            "â€“",
+            "\u2013"
+        )
+        .replaceAll(
+            "â€”",
+            "\u2014"
+        )
+        .replaceAll(
+            "â€™",
+            "\u2019"
+        )
+        .replaceAll(
+            "â€œ",
+            "\u201c"
+        )
+        .replaceAll(
+            "â€",
+            "\u201d"
+        )
+        .replaceAll(
+            "ðŸŽ“",
+            emoji(
+                0x1F393
+            )
+        )
+        .replaceAll(
+            "ðŸ“š",
+            emoji(
+                0x1F4DA
+            )
+        )
+        .replaceAll(
+            "ðŸ’°",
+            emoji(
+                0x1F4B0
+            )
+        )
+        .replaceAll(
+            "ðŸ¢",
+            emoji(
+                0x1F3E2
+            )
+        )
+        .replaceAll(
+            "ðŸŒ",
+            emoji(
+                0x1F310
+            )
+        )
+        .replaceAll(
+            "ðŸ—ºï¸",
+            emoji(
+                0x1F5FA
+            )
+        );
 
 }
 
 
-function hoverStateStyle() {
+function repairDOMText() {
 
-    return {
+    const walker =
+        document.createTreeWalker(
+            document.body,
+            NodeFilter.SHOW_TEXT
+        );
 
-        color:
-            "#ffffff",
 
-        weight:
-            3,
+    const nodes = [];
 
-        fillColor:
-            "#1d4ed8",
 
-        fillOpacity:
-            0.95
+    let node =
+        walker.nextNode();
 
-    };
+
+    while (node) {
+
+        nodes.push(
+            node
+        );
+
+        node =
+            walker.nextNode();
+
+    }
+
+
+    nodes.forEach(
+        textNode => {
+
+            textNode.nodeValue =
+                repairKnownMojibakeText(
+                    textNode.nodeValue
+                );
+
+        }
+    );
+
+
+    /*
+       Fix the header subtitle explicitly.
+    */
+
+    const bodyElements =
+        document.querySelectorAll(
+            "header *, body *"
+        );
+
+
+    bodyElements.forEach(
+        element => {
+
+            if (
+                element.children.length
+            ) {
+
+                return;
+
+            }
+
+
+            const text =
+                String(
+                    element.textContent ||
+                    ""
+                ).trim();
+
+
+            if (
+                text.length < 120 &&
+                text.includes(
+                    "Study"
+                ) &&
+                text.includes(
+                    "Scholarships"
+                ) &&
+                text.includes(
+                    "Universities"
+                ) &&
+                text.includes(
+                    "Careers"
+                )
+            ) {
+
+                element.textContent =
+                    [
+                        "Study",
+                        "Scholarships",
+                        "Universities",
+                        "Careers"
+                    ].join(
+                        " \u2022 "
+                    );
+
+            }
+
+        }
+    );
+
+}
+
+
+function fixKPIIcons() {
+
+    const icons =
+        [
+            ...document.querySelectorAll(
+                ".kpi-card .kpi-icon"
+            ),
+
+            ...document.querySelectorAll(
+                ".kpi-icon"
+            )
+        ];
+
+
+    /*
+       De-duplicate.
+    */
+
+    const unique =
+        [
+            ...new Set(
+                icons
+            )
+        ];
+
+
+    const iconValues = [
+
+        emoji(
+            0x1F393
+        ),
+
+        emoji(
+            0x1F4DA
+        ),
+
+        emoji(
+            0x1F4B0
+        ),
+
+        emoji(
+            0x1F3E2
+        )
+
+    ];
+
+
+    unique
+        .slice(
+            0,
+            4
+        )
+        .forEach(
+            (
+                element,
+                index
+            ) => {
+
+                element.textContent =
+                    iconValues[index];
+
+            }
+        );
 
 }
 
@@ -3216,12 +3720,17 @@ function renderMapDetail(
 
         panel.innerHTML = `
 
-            <div class="map-detail-empty">
+            <div
+                class="map-detail-empty"
+            >
 
-                <div class="map-detail-icon">
+                <div
+                    class="map-detail-icon"
+                >
 
-                    ${String.fromCodePoint(
-                        0x1F1E9,
+                    ${emoji(
+                        0x1F1E9
+                    )}${emoji(
                         0x1F1EA
                     )}
 
@@ -3235,9 +3744,9 @@ function renderMapDetail(
 
                 <p>
 
-                    Click a federal state on the map
-                    to inspect its regional study and
-                    career ecosystem.
+                    Click a federal state to inspect
+                    universities, study programs,
+                    scholarships and career data.
 
                 </p>
 
@@ -3252,7 +3761,9 @@ function renderMapDetail(
 
 
     const metric =
-        stateMetrics[state];
+        stateMetrics[
+            state
+        ];
 
 
     if (!metric) {
@@ -3260,7 +3771,9 @@ function renderMapDetail(
         panel.innerHTML = `
 
             <div class="empty-state">
+
                 No state analytics available.
+
             </div>
 
         `;
@@ -3271,153 +3784,32 @@ function renderMapDetail(
     }
 
 
-    const scholarshipExtra =
-        metric.scholarshipUniversities >
-        0
-
-            ? `
-
-                <small>
-
-                    ${formatNumber(
-                        metric.scholarshipUniversities
-                    )}
-
-                    universit${
-                        metric.scholarshipUniversities ===
-                        1
-                            ? "y"
-                            : "ies"
-                    }
-
-                    linked to these scholarship records.
-
-                </small>
-
-              `
-
-            : `
-
-                <small>
-
-                    No university-linked scholarship records
-                    are mapped to this state in the current
-                    summary. This does not mean scholarships
-                    are unavailable to students here.
-
-                </small>
-
-              `;
-
-
-    const ranking =
-        metric.topRankedUniversity;
-
-
-    const rankingHtml =
-        ranking
-
-            ? `
-
-                <div class="map-detail-block">
-
-                    <span class="detail-label">
-
-                        Highest-ranked university
-                        in available ranking data
-
-                    </span>
-
-
-                    <strong>
-
-                        ${escapeHtml(
-                            ranking.name
-                        )}
-
-                    </strong>
-
-
-                    <small>
-
-                        Ranking position:
-                        ${formatNumber(
-                            ranking.rank
-                        )}
-
-                        ·
-                        ${escapeHtml(
-                            rankingDisplayLabel(
-                                ranking.rankColumn
-                            )
-                        )}
-
-                    </small>
-
-                </div>
-
-              `
-
-            : `
-
-                <div class="map-detail-block muted-block">
-
-                    <span class="detail-label">
-                        University ranking
-                    </span>
-
-                    <strong>
-                        Ranking data unavailable
-                    </strong>
-
-                    <small>
-
-                        No numeric ranking position
-                        was detected.
-
-                    </small>
-
-                </div>
-
-              `;
-
-
-    const fieldHtml =
+    const fieldTags =
         metric.topFields.length
 
-            ? `
+            ? metric.topFields
+                .map(
+                    item => `
 
-                <div class="tag-list">
+                        <span
+                            class="data-tag"
+                        >
 
-                    ${
-                        metric.topFields
-                            .map(
-                                item => `
+                            ${escapeHtml(
+                                item[0]
+                            )}
 
-                                    <span class="data-tag">
+                            <b>
+                                ${formatNumber(
+                                    item[1]
+                                )}
+                            </b>
 
-                                        ${escapeHtml(
-                                            item[0]
-                                        )}
+                        </span>
 
-                                        <b>
-
-                                            ${formatNumber(
-                                                item[1]
-                                            )}
-
-                                        </b>
-
-                                    </span>
-
-                                `
-                            )
-                            .join("")
-                    }
-
-                </div>
-
-              `
+                    `
+                )
+                .join("")
 
             : `
 
@@ -3428,42 +3820,32 @@ function renderMapDetail(
               `;
 
 
-    const industryHtml =
+    const industryTags =
         metric.topIndustries.length
 
-            ? `
+            ? metric.topIndustries
+                .map(
+                    item => `
 
-                <div class="tag-list">
+                        <span
+                            class="data-tag"
+                        >
 
-                    ${
-                        metric.topIndustries
-                            .map(
-                                item => `
+                            ${escapeHtml(
+                                item[0]
+                            )}
 
-                                    <span class="data-tag">
+                            <b>
+                                ${formatNumber(
+                                    item[1]
+                                )}
+                            </b>
 
-                                        ${escapeHtml(
-                                            item[0]
-                                        )}
+                        </span>
 
-                                        <b>
-
-                                            ${formatNumber(
-                                                item[1]
-                                            )}
-
-                                        </b>
-
-                                    </span>
-
-                                `
-                            )
-                            .join("")
-                    }
-
-                </div>
-
-              `
+                    `
+                )
+                .join("")
 
             : `
 
@@ -3474,28 +3856,109 @@ function renderMapDetail(
               `;
 
 
+    const ranked =
+        metric.topRankedUniversity;
+
+
+    const rankingBlock =
+        ranked
+
+            ? `
+
+                <div
+                    class="map-detail-block"
+                >
+
+                    <span
+                        class="detail-label"
+                    >
+
+                        Highest-ranked university
+                        in this dataset
+
+                    </span>
+
+
+                    <strong>
+
+                        ${escapeHtml(
+                            ranked.name
+                        )}
+
+                    </strong>
+
+
+                    <small>
+
+                        QS World University Rankings 2027:
+                        ${escapeHtml(
+                            ranked.display
+                        )}
+
+                    </small>
+
+                </div>
+
+              `
+
+            : `
+
+                <div
+                    class="map-detail-block"
+                >
+
+                    <span
+                        class="detail-label"
+                    >
+                        University ranking
+                    </span>
+
+
+                    <strong>
+                        Ranking unavailable
+                    </strong>
+
+
+                    <small>
+                        No verified ranking was matched.
+                    </small>
+
+                </div>
+
+              `;
+
+
     panel.innerHTML = `
 
-        <div class="selected-state-name">
+        <div
+            class="selected-state-name"
+        >
 
-            <span class="state-badge">
-                Selected
+            <span
+                class="state-badge"
+            >
+                Selected state
             </span>
 
 
             <h4>
+
                 ${escapeHtml(
                     state
                 )}
+
             </h4>
 
         </div>
 
 
-        <div class="detail-metrics">
+        <div
+            class="detail-metrics"
+        >
 
-
-            <div class="detail-metric">
+            <div
+                class="detail-metric"
+            >
 
                 <span>
                     Universities
@@ -3513,7 +3976,9 @@ function renderMapDetail(
             </div>
 
 
-            <div class="detail-metric">
+            <div
+                class="detail-metric"
+            >
 
                 <span>
                     Study programs
@@ -3531,7 +3996,9 @@ function renderMapDetail(
             </div>
 
 
-            <div class="detail-metric">
+            <div
+                class="detail-metric"
+            >
 
                 <span>
                     Uni-linked scholarships
@@ -3549,7 +4016,9 @@ function renderMapDetail(
             </div>
 
 
-            <div class="detail-metric">
+            <div
+                class="detail-metric"
+            >
 
                 <span>
                     Companies
@@ -3566,20 +4035,50 @@ function renderMapDetail(
 
             </div>
 
-
         </div>
 
 
-        <div class="map-detail-block">
+        <div
+            class="map-detail-block"
+        >
 
-            <span class="detail-label">
-
+            <span
+                class="detail-label"
+            >
                 Scholarship interpretation
-
             </span>
 
 
-            ${scholarshipExtra}
+            ${
+                metric.scholarshipUniversities
+                    ? `
+
+                        <small>
+
+                            ${formatNumber(
+                                metric.scholarshipUniversities
+                            )}
+
+                            universit${
+                                metric.scholarshipUniversities ===
+                                1
+                                    ? "y"
+                                    : "ies"
+                            }
+
+                            linked to these records.
+
+                        </small>
+
+                      `
+                    : `
+                        <small>
+                            No university-linked scholarship records
+                            are mapped to this state in the current
+                            summary.
+                        </small>
+                      `
+            }
 
 
             <small>
@@ -3593,12 +4092,14 @@ function renderMapDetail(
         </div>
 
 
-        <div class="map-detail-block">
+        <div
+            class="map-detail-block"
+        >
 
-            <span class="detail-label">
-
+            <span
+                class="detail-label"
+            >
                 University concentration
-
             </span>
 
 
@@ -3613,618 +4114,67 @@ function renderMapDetail(
 
             <small>
 
-                Relative to the other German states
-                represented in this dataset.
+                Relative to the other German
+                states represented in this dataset.
 
             </small>
 
         </div>
 
 
-        <div class="map-detail-columns">
+        <div
+            class="map-detail-columns"
+        >
 
+            <div
+                class="map-detail-block"
+            >
 
-            <div class="map-detail-block">
-
-                <span class="detail-label">
+                <span
+                    class="detail-label"
+                >
                     Leading study fields
                 </span>
 
-                ${fieldHtml}
+
+                <div
+                    class="tag-list"
+                >
+
+                    ${fieldTags}
+
+                </div>
 
             </div>
 
 
-            <div class="map-detail-block">
+            <div
+                class="map-detail-block"
+            >
 
-                <span class="detail-label">
+                <span
+                    class="detail-label"
+                >
                     Leading industries
                 </span>
 
-                ${industryHtml}
+
+                <div
+                    class="tag-list"
+                >
+
+                    ${industryTags}
+
+                </div>
 
             </div>
-
 
         </div>
 
 
-        ${rankingHtml}
+        ${rankingBlock}
 
     `;
-
-}
-
-
-/* ============================================================
-   STATE SELECTOR
-============================================================ */
-
-function setupStateSelector() {
-
-    const select =
-        byId(
-            "stateSelect"
-        );
-
-
-    if (!select) {
-
-        return;
-
-    }
-
-
-    if (
-        select.dataset.ready ===
-        "true"
-    ) {
-
-        return;
-
-    }
-
-
-    const existing =
-        new Set(
-            [
-                ...select.options
-            ]
-                .map(
-                    option =>
-                        normalizeComparable(
-                            option.value
-                        )
-                )
-        );
-
-
-    GERMAN_STATES.forEach(
-        state => {
-
-            if (
-                existing.has(
-                    normalizeComparable(
-                        state
-                    )
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                state;
-
-
-            option.textContent =
-                state;
-
-
-            select.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    select.addEventListener(
-        "change",
-        () => {
-
-            const state =
-                select.value;
-
-
-            if (!state) {
-
-                selectedMapState =
-                    "";
-
-
-                renderMapDetail(
-                    ""
-                );
-
-
-                renderSelectedState(
-                    ""
-                );
-
-
-                const directoryFilter =
-                    byId(
-                        "universityStateFilter"
-                    );
-
-
-                if (
-                    directoryFilter
-                ) {
-
-                    directoryFilter.value =
-                        "";
-
-                }
-
-
-                renderUniversityDirectory();
-
-
-                if (
-                    geoJsonLayer
-                ) {
-
-                    geoJsonLayer.eachLayer(
-                        layer =>
-                            layer.setStyle(
-                                defaultStateStyle()
-                            )
-                    );
-
-                }
-
-
-                return;
-
-            }
-
-
-            selectState(
-                state
-            );
-
-        }
-    );
-
-
-    select.dataset.ready =
-        "true";
-
-}
-
-
-/* ============================================================
-   STATE SELECTION
-============================================================ */
-
-function selectState(
-    state,
-    updateMap = true
-) {
-
-    const normalized =
-        normalizeStateName(
-            state
-        );
-
-
-    if (
-        !GERMAN_STATES.includes(
-            normalized
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    selectedMapState =
-        normalized;
-
-
-    const select =
-        byId(
-            "stateSelect"
-        );
-
-
-    if (
-        select
-    ) {
-
-        const option =
-            [
-                ...select.options
-            ]
-                .find(
-                    item =>
-                        statesEqual(
-                            item.value,
-                            normalized
-                        )
-                );
-
-
-        if (
-            option
-        ) {
-
-            select.value =
-                option.value;
-
-        }
-
-    }
-
-
-    renderMapDetail(
-        normalized
-    );
-
-
-    renderSelectedState(
-        normalized
-    );
-
-
-    /*
-       Automatic university state filter.
-    */
-
-    const universityStateFilter =
-        byId(
-            "universityStateFilter"
-        );
-
-
-    if (
-        universityStateFilter
-    ) {
-
-        universityStateFilter.value =
-            normalized;
-
-
-        renderUniversityDirectory();
-
-    }
-
-
-    /*
-       Highlight selected map state.
-    */
-
-    if (
-        geoJsonLayer
-    ) {
-
-        geoJsonLayer.eachLayer(
-            layer => {
-
-                const layerState =
-                    stateNameFromFeature(
-                        layer.feature
-                    );
-
-
-                if (
-                    statesEqual(
-                        layerState,
-                        normalized
-                    )
-                ) {
-
-                    layer.setStyle(
-                        selectedStateStyle()
-                    );
-
-
-                    layer.bringToFront?.();
-
-                } else {
-
-                    layer.setStyle(
-                        defaultStateStyle()
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /*
-       Never move/zoom the map.
-    */
-
-    if (!updateMap) {
-
-        return;
-
-    }
-
-}
-
-
-/* ============================================================
-   MAP INITIALIZATION
-============================================================ */
-
-async function initializeMap() {
-
-    const mapElement =
-        byId(
-            "germanyMap"
-        );
-
-
-    if (!mapElement) {
-
-        return;
-
-    }
-
-
-    if (
-        typeof L ===
-        "undefined"
-    ) {
-
-        mapElement.innerHTML = `
-
-            <div class="map-loading error-map">
-
-                Leaflet could not load.
-
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
-    try {
-
-        germanyMap =
-            L.map(
-                "germanyMap",
-                {
-
-                    zoomControl:
-                        false,
-
-                    attributionControl:
-                        true,
-
-                    dragging:
-                        false,
-
-                    scrollWheelZoom:
-                        false,
-
-                    doubleClickZoom:
-                        false,
-
-                    touchZoom:
-                        false,
-
-                    boxZoom:
-                        false,
-
-                    keyboard:
-                        false,
-
-                    tap:
-                        false
-
-                }
-            );
-
-
-        germanyMap.setView(
-            [
-                51.05,
-                10.45
-            ],
-            6.2
-        );
-
-
-        const geojson =
-            await loadGeoJSON();
-
-
-        geoJsonLayer =
-            L.geoJSON(
-                geojson,
-                {
-
-                    style:
-                        defaultStateStyle,
-
-
-                    onEachFeature:
-                        (
-                            feature,
-                            layer
-                        ) => {
-
-                            const state =
-                                stateNameFromFeature(
-                                    feature
-                                );
-
-
-                            if (!state) {
-
-                                return;
-
-                            }
-
-
-                            layer.bindTooltip(
-                                escapeHtml(
-                                    state
-                                ),
-                                {
-
-                                    permanent:
-                                        true,
-
-                                    direction:
-                                        "center",
-
-                                    className:
-                                        "state-label",
-
-                                    opacity:
-                                        1,
-
-                                    sticky:
-                                        false,
-
-                                    interactive:
-                                        false
-
-                                }
-                            );
-
-
-                            layer.on(
-                                "mouseover",
-                                () => {
-
-                                    if (
-                                        !statesEqual(
-                                            selectedMapState,
-                                            state
-                                        )
-                                    ) {
-
-                                        layer.setStyle(
-                                            hoverStateStyle()
-                                        );
-
-                                    }
-
-                                }
-                            );
-
-
-                            layer.on(
-                                "mouseout",
-                                () => {
-
-                                    if (
-                                        !statesEqual(
-                                            selectedMapState,
-                                            state
-                                        )
-                                    ) {
-
-                                        layer.setStyle(
-                                            defaultStateStyle()
-                                        );
-
-                                    }
-
-                                }
-                            );
-
-
-                            layer.on(
-                                "click",
-                                event => {
-
-                                    L.DomEvent.stopPropagation(
-                                        event
-                                    );
-
-
-                                    selectState(
-                                        state
-                                    );
-
-                                }
-                            );
-
-                        }
-
-                }
-            )
-            .addTo(
-                germanyMap
-            );
-
-
-        mapElement
-            .querySelector(
-                ".map-loading"
-            )
-            ?.remove();
-
-
-        if (
-            selectedMapState
-        ) {
-
-            selectState(
-                selectedMapState,
-                false
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Germany map failed:",
-            error
-        );
-
-
-        mapElement.innerHTML = `
-
-            <div class="map-loading error-map">
-
-                Germany map could not be loaded.
-
-                <br><br>
-
-                The dashboard uses the local GeoJSON
-                first and a public fallback second.
-
-            </div>
-
-        `;
-
-    }
 
 }
 
@@ -4233,8 +4183,8 @@ async function initializeMap() {
    STATE OVERVIEW
 ============================================================ */
 
-function renderSelectedState(
-    selectedState = ""
+function renderStateOverview(
+    state = ""
 ) {
 
     const container =
@@ -4250,22 +4200,25 @@ function renderSelectedState(
     }
 
 
-    if (!selectedState) {
+    if (!state) {
 
         const metrics =
-            Object.values(
-                stateMetrics
+            GERMAN_STATES.map(
+                name =>
+                    stateMetrics[
+                        name
+                    ]
             );
 
 
         const universities =
             metrics.reduce(
                 (
-                    sum,
-                    metric
+                    total,
+                    item
                 ) =>
-                    sum +
-                    metric.universities,
+                    total +
+                    item.universities,
                 0
             );
 
@@ -4273,11 +4226,11 @@ function renderSelectedState(
         const courses =
             metrics.reduce(
                 (
-                    sum,
-                    metric
+                    total,
+                    item
                 ) =>
-                    sum +
-                    metric.courses,
+                    total +
+                    item.courses,
                 0
             );
 
@@ -4285,11 +4238,11 @@ function renderSelectedState(
         const companies =
             metrics.reduce(
                 (
-                    sum,
-                    metric
+                    total,
+                    item
                 ) =>
-                    sum +
-                    metric.companies,
+                    total +
+                    item.companies,
                 0
             );
 
@@ -4299,15 +4252,11 @@ function renderSelectedState(
             <div class="state-stat">
 
                 <span>
-                    States represented
+                    German states
                 </span>
 
                 <strong>
-
-                    ${formatNumber(
-                        GERMAN_STATES.length
-                    )}
-
+                    ${GERMAN_STATES.length}
                 </strong>
 
             </div>
@@ -4320,11 +4269,9 @@ function renderSelectedState(
                 </span>
 
                 <strong>
-
                     ${formatNumber(
                         universities
                     )}
-
                 </strong>
 
             </div>
@@ -4337,11 +4284,9 @@ function renderSelectedState(
                 </span>
 
                 <strong>
-
                     ${formatNumber(
                         courses
                     )}
-
                 </strong>
 
             </div>
@@ -4354,11 +4299,9 @@ function renderSelectedState(
                 </span>
 
                 <strong>
-
                     ${formatNumber(
                         companies
                     )}
-
                 </strong>
 
             </div>
@@ -4373,22 +4316,11 @@ function renderSelectedState(
 
     const metric =
         stateMetrics[
-            selectedState
+            state
         ];
 
 
     if (!metric) {
-
-        container.innerHTML = `
-
-            <div class="empty-state">
-
-                No data available for this state.
-
-            </div>
-
-        `;
-
 
         return;
 
@@ -4465,7 +4397,9 @@ function renderSelectedState(
         </div>
 
 
-        <div class="state-stat-note">
+        <div
+            class="state-stat-note"
+        >
 
             ${escapeHtml(
                 metric.scholarshipNote
@@ -4479,7 +4413,7 @@ function renderSelectedState(
 
 
 /* ============================================================
-   STATE UNIVERSITY TOTALS
+   STATE TOTAL LIST
 ============================================================ */
 
 function renderStateUniversityList() {
@@ -4498,9 +4432,13 @@ function renderStateUniversityList() {
 
 
     const rows =
-        Object.values(
-            stateMetrics
-        )
+        GERMAN_STATES
+            .map(
+                state =>
+                    stateMetrics[
+                        state
+                    ]
+            )
             .sort(
                 (
                     a,
@@ -4514,8 +4452,8 @@ function renderStateUniversityList() {
     const max =
         Math.max(
             ...rows.map(
-                item =>
-                    item.universities
+                row =>
+                    row.universities
             ),
             1
         );
@@ -4530,7 +4468,8 @@ function renderStateUniversityList() {
                         (
                             metric.universities /
                             max
-                        ) * 100;
+                        ) *
+                        100;
 
 
                     return `
@@ -4591,35 +4530,819 @@ function renderStateUniversityList() {
 
 
 /* ============================================================
+   STATE SELECTOR
+============================================================ */
+
+function setupStateSelector() {
+
+    const select =
+        byId(
+            "stateSelect"
+        );
+
+
+    if (!select) {
+
+        return;
+
+    }
+
+
+    if (
+        select.dataset.ready ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    const existing =
+        new Set(
+            [
+                ...select.options
+            ].map(
+                option =>
+                    comparableState(
+                        option.value
+                    )
+            )
+        );
+
+
+    GERMAN_STATES.forEach(
+        state => {
+
+            if (
+                existing.has(
+                    comparableState(
+                        state
+                    )
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                state;
+
+
+            option.textContent =
+                state;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    select.addEventListener(
+        "change",
+        () => {
+
+            selectState(
+                select.value
+            );
+
+        }
+    );
+
+
+    select.dataset.ready =
+        "true";
+
+}
+
+
+/* ============================================================
+   SELECT STATE
+============================================================ */
+
+function selectState(
+    state
+) {
+
+    if (
+        !state
+    ) {
+
+        selectedMapState =
+            "";
+
+
+        if (
+            selectedMapLayer
+        ) {
+
+            selectedMapLayer.setStyle(
+                mapDefaultStyle()
+            );
+
+            selectedMapLayer =
+                null;
+
+        }
+
+
+        renderStateOverview(
+            ""
+        );
+
+
+        renderMapDetail(
+            ""
+        );
+
+
+        const universityFilter =
+            byId(
+                "universityStateFilter"
+            );
+
+
+        if (
+            universityFilter
+        ) {
+
+            universityFilter.value =
+                "";
+
+        }
+
+
+        renderUniversityDirectory();
+
+        return;
+
+    }
+
+
+    const normalized =
+        normalizeStateName(
+            state
+        );
+
+
+    if (
+        !GERMAN_STATES.includes(
+            normalized
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    selectedMapState =
+        normalized;
+
+
+    const select =
+        byId(
+            "stateSelect"
+        );
+
+
+    if (select) {
+
+        const option =
+            [
+                ...select.options
+            ]
+                .find(
+                    item =>
+                        statesEqual(
+                            item.value,
+                            normalized
+                        )
+                );
+
+
+        if (
+            option
+        ) {
+
+            select.value =
+                option.value;
+
+        }
+
+    }
+
+
+    if (
+        selectedMapLayer
+    ) {
+
+        selectedMapLayer.setStyle(
+            mapDefaultStyle()
+        );
+
+    }
+
+
+    selectedMapLayer =
+        stateLayers[
+            normalized
+        ] ||
+        null;
+
+
+    if (
+        selectedMapLayer
+    ) {
+
+        selectedMapLayer.setStyle(
+            mapSelectedStyle()
+        );
+
+
+        selectedMapLayer.bringToFront();
+
+    }
+
+
+    renderStateOverview(
+        normalized
+    );
+
+
+    renderMapDetail(
+        normalized
+    );
+
+
+    const universityFilter =
+        byId(
+            "universityStateFilter"
+        );
+
+
+    if (
+        universityFilter
+    ) {
+
+        universityFilter.value =
+            normalized;
+
+    }
+
+
+    renderUniversityDirectory();
+
+}
+
+
+/* ============================================================
+   MAP
+============================================================ */
+
+function mapDefaultStyle() {
+
+    return {
+
+        color:
+            "#ffffff",
+
+        weight:
+            2,
+
+        opacity:
+            1,
+
+        fillColor:
+            "#3b82f6",
+
+        fillOpacity:
+            0.78
+
+    };
+
+}
+
+
+function mapHoverStyle() {
+
+    return {
+
+        color:
+            "#172033",
+
+        weight:
+            3,
+
+        opacity:
+            1,
+
+        fillColor:
+            "#1d4ed8",
+
+        fillOpacity:
+            0.95
+
+    };
+
+}
+
+
+function mapSelectedStyle() {
+
+    return {
+
+        color:
+            "#0f172a",
+
+        weight:
+            4,
+
+        opacity:
+            1,
+
+        fillColor:
+            "#111827",
+
+        fillOpacity:
+            0.95
+
+    };
+
+}
+
+
+function geoStateName(
+    feature
+) {
+
+    const properties =
+        feature?.properties ||
+        {};
+
+
+    const candidates = [
+
+        properties.name,
+
+        properties.NAME,
+
+        properties.NAME_1,
+
+        properties.name_1,
+
+        properties.NAME_DE,
+
+        properties.name_de,
+
+        properties.name_en,
+
+        properties.nameEN,
+
+        properties.GEN,
+
+        properties.state,
+
+        properties.bundesland,
+
+        feature?.id
+
+    ];
+
+
+    for (
+        const candidate of
+        candidates
+    ) {
+
+        if (!candidate) {
+
+            continue;
+
+        }
+
+
+        const normalized =
+            normalizeStateName(
+                candidate
+            );
+
+
+        if (
+            GERMAN_STATES.includes(
+                normalized
+            )
+        ) {
+
+            return normalized;
+
+        }
+
+
+        const comparable =
+            comparableState(
+                candidate
+            );
+
+
+        const matching =
+            GERMAN_STATES.find(
+                state =>
+                    comparableState(
+                        state
+                    ) === comparable
+            );
+
+
+        if (
+            matching
+        ) {
+
+            return matching;
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+async function fetchGeoJSON() {
+
+    try {
+
+        const local =
+            await fetch(
+                LOCAL_GEOJSON,
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (
+            local.ok
+        ) {
+
+            return await local.json();
+
+        }
+
+    } catch (
+        error
+    ) {
+
+        console.warn(
+            "Local GeoJSON unavailable.",
+            error
+        );
+
+    }
+
+
+    const remote =
+        await fetch(
+            REMOTE_GEOJSON,
+            {
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    if (
+        !remote.ok
+    ) {
+
+        throw new Error(
+            "Germany GeoJSON unavailable."
+        );
+
+    }
+
+
+    return await remote.json();
+
+}
+
+
+async function initializeGermanyMap() {
+
+    const mapElement =
+        byId(
+            "germanyMap"
+        );
+
+
+    if (!mapElement) {
+
+        return;
+
+    }
+
+
+    if (
+        typeof L ===
+        "undefined"
+    ) {
+
+        mapElement.innerHTML = `
+
+            <div
+                class="map-loading error-map"
+            >
+
+                Leaflet could not be loaded.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    try {
+
+        germanyMap =
+            L.map(
+                mapElement,
+                {
+
+                    dragging:
+                        false,
+
+                    scrollWheelZoom:
+                        false,
+
+                    doubleClickZoom:
+                        false,
+
+                    touchZoom:
+                        false,
+
+                    boxZoom:
+                        false,
+
+                    keyboard:
+                        false,
+
+                    zoomControl:
+                        true,
+
+                    attributionControl:
+                        true,
+
+                    tap:
+                        false
+
+                }
+            );
+
+
+        germanyMap.setView(
+            [
+                51.1,
+                10.45
+            ],
+            6.15
+        );
+
+
+        const geojson =
+            await fetchGeoJSON();
+
+
+        geoJsonLayer =
+            L.geoJSON(
+                geojson,
+                {
+
+                    style:
+                        mapDefaultStyle,
+
+
+                    onEachFeature:
+                        (
+                            feature,
+                            layer
+                        ) => {
+
+                            const state =
+                                geoStateName(
+                                    feature
+                                );
+
+
+                            if (!state) {
+
+                                return;
+
+                            }
+
+
+                            stateLayers[
+                                state
+                            ] =
+                                layer;
+
+
+                            layer.bindTooltip(
+                                escapeHtml(
+                                    state
+                                ),
+                                {
+
+                                    permanent:
+                                        true,
+
+                                    direction:
+                                        "center",
+
+                                    className:
+                                        "state-label",
+
+                                    opacity:
+                                        1,
+
+                                    interactive:
+                                        false
+
+                                }
+                            );
+
+
+                            layer.on(
+                                "mouseover",
+                                () => {
+
+                                    if (
+                                        layer !==
+                                        selectedMapLayer
+                                    ) {
+
+                                        layer.setStyle(
+                                            mapHoverStyle()
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+
+                            layer.on(
+                                "mouseout",
+                                () => {
+
+                                    if (
+                                        layer !==
+                                        selectedMapLayer
+                                    ) {
+
+                                        layer.setStyle(
+                                            mapDefaultStyle()
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+
+                            layer.on(
+                                "click",
+                                event => {
+
+                                    L.DomEvent
+                                        .stopPropagation(
+                                            event
+                                        );
+
+
+                                    selectState(
+                                        state
+                                    );
+
+                                }
+                            );
+
+                        }
+
+                }
+            )
+                .addTo(
+                    germanyMap
+                );
+
+
+        const status =
+            byId(
+                "mapStatus"
+            );
+
+
+        if (
+            status
+        ) {
+
+            status.textContent =
+                "Ready • click a state";
+
+            status.classList.add(
+                "is-ready"
+            );
+
+        }
+
+
+        mapElement
+            .querySelector(
+                ".map-loading"
+            )
+            ?.remove();
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            "Germany map initialization failed:",
+            error
+        );
+
+
+        const status =
+            byId(
+                "mapStatus"
+            );
+
+
+        if (
+            status
+        ) {
+
+            status.textContent =
+                "Map boundary data unavailable";
+
+        }
+
+
+        mapElement.innerHTML = `
+
+            <div
+                class="map-loading error-map"
+            >
+
+                <strong>
+                    Germany map unavailable
+                </strong>
+
+                <br><br>
+
+                The analytics dashboard
+                remains available.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
    REGIONAL SIGNALS
 ============================================================ */
 
 function renderRegionalSignals() {
 
-    const container =
-        byId(
-            "regionalSignals"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
     const states =
-        Object.values(
-            stateMetrics
+        GERMAN_STATES.map(
+            state =>
+                stateMetrics[
+                    state
+                ]
         );
-
-
-    if (!states.length) {
-
-        return;
-
-    }
 
 
     const highest =
@@ -4648,7 +5371,7 @@ function renderRegionalSignals() {
         )[0];
 
 
-    const courses =
+    const courseLeader =
         [
             ...states
         ].sort(
@@ -4662,58 +5385,70 @@ function renderRegionalSignals() {
 
 
     const cards =
-        container.querySelectorAll(
+        document.querySelectorAll(
             ".signal-card"
         );
 
 
     if (
-        cards[0]?.querySelector(
-            "strong"
-        )
-    ) {
-
         cards[0]
-            .querySelector(
+    ) {
+
+        const strong =
+            cards[0].querySelector(
                 "strong"
-            )
-            .textContent =
-            highest?.state ||
-            "—";
+            );
+
+
+        if (strong) {
+
+            strong.textContent =
+                highest?.state ||
+                "—";
+
+        }
 
     }
 
 
     if (
-        cards[1]?.querySelector(
-            "strong"
-        )
-    ) {
-
         cards[1]
-            .querySelector(
+    ) {
+
+        const strong =
+            cards[1].querySelector(
                 "strong"
-            )
-            .textContent =
-            lowest?.state ||
-            "—";
+            );
+
+
+        if (strong) {
+
+            strong.textContent =
+                lowest?.state ||
+                "—";
+
+        }
 
     }
 
 
     if (
-        cards[2]?.querySelector(
-            "strong"
-        )
+        cards[2]
     ) {
 
-        cards[2]
-            .querySelector(
+        const strong =
+            cards[2].querySelector(
                 "strong"
-            )
-            .textContent =
-            courses?.state ||
-            "—";
+            );
+
+
+        if (strong) {
+
+            strong.textContent =
+                courseLeader?.state ||
+                "—";
+
+        }
 
     }
 
@@ -4744,22 +5479,6 @@ function renderFieldList() {
         [];
 
 
-    if (!rows.length) {
-
-        container.innerHTML = `
-
-            <div class="empty-state">
-                Field analytics unavailable.
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
     const fieldColumn =
         findBestPopulatedColumn(
             rows,
@@ -4774,8 +5493,8 @@ function renderFieldList() {
         );
 
 
-    const numericColumn =
-        findNumericColumn(
+    const countColumn =
+        findColumn(
             rows,
             [
                 "course_count",
@@ -4791,13 +5510,15 @@ function renderFieldList() {
 
     if (
         !fieldColumn ||
-        !numericColumn
+        !countColumn
     ) {
 
         container.innerHTML = `
 
             <div class="empty-state">
-                Field metrics unavailable.
+
+                Field analytics unavailable.
+
             </div>
 
         `;
@@ -4808,7 +5529,7 @@ function renderFieldList() {
     }
 
 
-    const ranking =
+    const ranked =
         [
             ...rows
         ]
@@ -4818,16 +5539,16 @@ function renderFieldList() {
                     b
                 ) =>
                     (
-                        numberValue(
+                        numericValue(
                             b[
-                                numericColumn
+                                countColumn
                             ]
                         ) || 0
                     ) -
                     (
-                        numberValue(
+                        numericValue(
                             a[
-                                numericColumn
+                                countColumn
                             ]
                         ) || 0
                     )
@@ -4840,11 +5561,11 @@ function renderFieldList() {
 
     const max =
         Math.max(
-            ...ranking.map(
+            ...ranked.map(
                 row =>
-                    numberValue(
+                    numericValue(
                         row[
-                            numericColumn
+                            countColumn
                         ]
                     ) || 0
             ),
@@ -4853,70 +5574,68 @@ function renderFieldList() {
 
 
     container.innerHTML =
-        ranking
-            .map(
-                row => {
+        ranked.map(
+            row => {
 
-                    const value =
-                        numberValue(
-                            row[
-                                numericColumn
-                            ]
-                        ) || 0;
-
-
-                    const width =
-                        (
-                            value /
-                            max
-                        ) * 100;
+                const value =
+                    numericValue(
+                        row[
+                            countColumn
+                        ]
+                    ) || 0;
 
 
-                    return `
-
-                        <div class="ranking-item">
-
-                            <div style="flex:1">
-
-                                <div class="ranking-name">
-
-                                    ${escapeHtml(
-                                        row[
-                                            fieldColumn
-                                        ]
-                                    )}
-
-                                </div>
+                const width =
+                    (
+                        value /
+                        max
+                    ) * 100;
 
 
-                                <div class="ranking-bar">
+                return `
 
-                                    <span
-                                        style="
-                                            width:${width}%
-                                        "
-                                    ></span>
+                    <div class="ranking-item">
 
-                                </div>
+                        <div style="flex:1">
+
+                            <div class="ranking-name">
+
+                                ${escapeHtml(
+                                    row[
+                                        fieldColumn
+                                    ]
+                                )}
 
                             </div>
 
 
-                            <div class="ranking-value">
+                            <div class="ranking-bar">
 
-                                ${formatNumber(
-                                    value
-                                )}
+                                <span
+                                    style="
+                                        width:${width}%
+                                    "
+                                ></span>
 
                             </div>
 
                         </div>
 
-                    `;
 
-                }
-            )
-            .join("");
+                        <div class="ranking-value">
+
+                            ${formatNumber(
+                                value
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
 
 }
 
@@ -4945,22 +5664,6 @@ function renderIndustryList() {
         [];
 
 
-    if (!rows.length) {
-
-        container.innerHTML = `
-
-            <div class="empty-state">
-                Industry analytics unavailable.
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
     const industryColumn =
         findBestPopulatedColumn(
             rows,
@@ -4974,8 +5677,8 @@ function renderIndustryList() {
         );
 
 
-    const numericColumn =
-        findNumericColumn(
+    const countColumn =
+        findColumn(
             rows,
             [
                 "company_count",
@@ -4988,13 +5691,15 @@ function renderIndustryList() {
 
     if (
         !industryColumn ||
-        !numericColumn
+        !countColumn
     ) {
 
         container.innerHTML = `
 
             <div class="empty-state">
-                Industry metrics unavailable.
+
+                Industry analytics unavailable.
+
             </div>
 
         `;
@@ -5005,7 +5710,7 @@ function renderIndustryList() {
     }
 
 
-    const ranking =
+    const ranked =
         [
             ...rows
         ]
@@ -5015,16 +5720,16 @@ function renderIndustryList() {
                     b
                 ) =>
                     (
-                        numberValue(
+                        numericValue(
                             b[
-                                numericColumn
+                                countColumn
                             ]
                         ) || 0
                     ) -
                     (
-                        numberValue(
+                        numericValue(
                             a[
-                                numericColumn
+                                countColumn
                             ]
                         ) || 0
                     )
@@ -5037,11 +5742,11 @@ function renderIndustryList() {
 
     const max =
         Math.max(
-            ...ranking.map(
+            ...ranked.map(
                 row =>
-                    numberValue(
+                    numericValue(
                         row[
-                            numericColumn
+                            countColumn
                         ]
                     ) || 0
             ),
@@ -5050,70 +5755,68 @@ function renderIndustryList() {
 
 
     container.innerHTML =
-        ranking
-            .map(
-                row => {
+        ranked.map(
+            row => {
 
-                    const value =
-                        numberValue(
-                            row[
-                                numericColumn
-                            ]
-                        ) || 0;
-
-
-                    const width =
-                        (
-                            value /
-                            max
-                        ) * 100;
+                const value =
+                    numericValue(
+                        row[
+                            countColumn
+                        ]
+                    ) || 0;
 
 
-                    return `
-
-                        <div class="ranking-item">
-
-                            <div style="flex:1">
-
-                                <div class="ranking-name">
-
-                                    ${escapeHtml(
-                                        row[
-                                            industryColumn
-                                        ]
-                                    )}
-
-                                </div>
+                const width =
+                    (
+                        value /
+                        max
+                    ) * 100;
 
 
-                                <div class="ranking-bar">
+                return `
 
-                                    <span
-                                        style="
-                                            width:${width}%
-                                        "
-                                    ></span>
+                    <div class="ranking-item">
 
-                                </div>
+                        <div style="flex:1">
+
+                            <div class="ranking-name">
+
+                                ${escapeHtml(
+                                    row[
+                                        industryColumn
+                                    ]
+                                )}
 
                             </div>
 
 
-                            <div class="ranking-value">
+                            <div class="ranking-bar">
 
-                                ${formatNumber(
-                                    value
-                                )}
+                                <span
+                                    style="
+                                        width:${width}%
+                                    "
+                                ></span>
 
                             </div>
 
                         </div>
 
-                    `;
 
-                }
-            )
-            .join("");
+                        <div class="ranking-value">
+
+                            ${formatNumber(
+                                value
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
 
 }
 
@@ -5122,62 +5825,31 @@ function renderIndustryList() {
    GENERIC TABLE
 ============================================================ */
 
-function renderGenericTable(
-    containerId,
+function genericTable(
     rows,
-    maxColumns = 6,
-    maxRows = 30
+    columns,
+    maxRows
 ) {
-
-    const container =
-        byId(
-            containerId
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
 
     if (
         !rows ||
         !rows.length
     ) {
 
-        container.innerHTML = `
+        return `
 
             <div class="empty-state">
-                Analytics unavailable.
+                No data available.
             </div>
 
         `;
 
-
-        return;
-
     }
 
 
-    const columns =
-        Object.keys(
-            rows[0]
-        )
-            .slice(
-                0,
-                maxColumns
-            );
+    return `
 
-
-    container.innerHTML = `
-
-        <div
-            style="
-                overflow-x:auto;
-            "
-        >
+        <div class="generic-table-scroll">
 
             <table>
 
@@ -5188,17 +5860,18 @@ function renderGenericTable(
                         ${
                             columns
                                 .map(
-                                    column => `
+                                    column =>
+                                        `
 
-                                        <th>
+                                            <th>
 
-                                            ${escapeHtml(
-                                                column
-                                            )}
+                                                ${escapeHtml(
+                                                    column.label
+                                                )}
 
-                                        </th>
+                                            </th>
 
-                                    `
+                                        `
                                 )
                                 .join("")
                         }
@@ -5217,31 +5890,35 @@ function renderGenericTable(
                                 maxRows
                             )
                             .map(
-                                row => `
+                                row =>
+                                    `
 
-                                    <tr>
+                                        <tr>
 
-                                        ${
-                                            columns
-                                                .map(
-                                                    column => `
+                                            ${
+                                                columns
+                                                    .map(
+                                                        column =>
+                                                            `
 
-                                                        <td>
+                                                                <td>
 
-                                                            ${escapeHtml(
-                                                                row[column]
-                                                            )}
+                                                                    ${escapeHtml(
+                                                                        row[
+                                                                            column.key
+                                                                        ]
+                                                                    )}
 
-                                                        </td>
+                                                                </td>
 
-                                                    `
-                                                )
-                                                .join("")
-                                        }
+                                                            `
+                                                    )
+                                                    .join("")
+                                            }
 
-                                    </tr>
+                                        </tr>
 
-                                `
+                                    `
                             )
                             .join("")
                     }
@@ -5257,28 +5934,447 @@ function renderGenericTable(
 }
 
 
+/* ============================================================
+   INDUSTRY TABLE
+============================================================ */
+
 function renderIndustryTable() {
 
-    renderGenericTable(
-        "industryTable",
+    const container =
+        byId(
+            "industryTable"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    const rows =
         DATA.stateIndustrySummary ||
-            [],
-        5,
-        30
-    );
+        [];
+
+
+    if (!rows.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+                No state-industry data available.
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    const columns =
+        Object.keys(
+            rows[0]
+        )
+            .slice(
+                0,
+                6
+            )
+            .map(
+                key => ({
+
+                    key,
+
+                    label:
+                        key
+
+                })
+            );
+
+
+    container.innerHTML =
+        genericTable(
+            rows,
+            columns,
+            30
+        );
 
 }
 
 
+/* ============================================================
+   SCHOLARSHIP TABLE
+============================================================ */
+
 function renderScholarshipTable() {
 
-    renderGenericTable(
-        "scholarshipTable",
-        DATA.scholarshipSummary ||
-            [],
-        6,
-        30
-    );
+    const container =
+        byId(
+            "scholarshipTable"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    const rows =
+        DATA.scholarships ||
+        [];
+
+
+    if (!rows.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                Scholarship records unavailable.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    const nameColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "scholarship_name",
+                "scholarship name",
+                "name"
+            ]
+        );
+
+
+    const idColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "scholarship_id",
+                "scholarship id",
+                "id"
+            ]
+        );
+
+
+    const providerColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "provider",
+                "provider_name",
+                "provider name"
+            ]
+        );
+
+
+    const minColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "amount_min_eur",
+                "amount min eur",
+                "minimum amount"
+            ]
+        );
+
+
+    const maxColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "amount_max_eur",
+                "amount max eur",
+                "maximum amount"
+            ]
+        );
+
+
+    const durationColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "duration"
+            ]
+        );
+
+
+    const eligibilityColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "eligibility"
+            ]
+        );
+
+
+    const deadlineColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "deadline",
+                "application_deadline",
+                "application deadline"
+            ]
+        );
+
+
+    const studyLevelColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "study_level",
+                "study level",
+                "degree_level",
+                "degree level"
+            ]
+        );
+
+
+    const fieldColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "field",
+                "study_field",
+                "study field",
+                "subject"
+            ]
+        );
+
+
+    const universityColumn =
+        findBestPopulatedColumn(
+            rows,
+            [
+                "university_name",
+                "university name",
+                "university",
+                "institution"
+            ]
+        );
+
+
+    /*
+       Build a scholarship-specific view instead of
+       accidentally showing university_scholarship_summary.
+    */
+
+    const visibleRows =
+        rows.map(
+            row => ({
+
+                scholarship:
+                    nameColumn
+                        ? row[
+                            nameColumn
+                        ]
+                        : "",
+
+                id:
+                    idColumn
+                        ? row[
+                            idColumn
+                        ]
+                        : "",
+
+                provider:
+                    providerColumn
+                        ? row[
+                            providerColumn
+                        ]
+                        : "",
+
+                amount:
+                    (
+                        minColumn &&
+                        maxColumn &&
+                        (
+                            row[minColumn] ||
+                            row[maxColumn]
+                        )
+                    )
+                        ? `${row[minColumn] || "—"} – ${row[maxColumn] || "—"} EUR`
+                        : (
+                            minColumn
+                                ? `${row[minColumn]} EUR`
+                                : (
+                                    maxColumn
+                                        ? `${row[maxColumn]} EUR`
+                                        : "—"
+                                )
+                        ),
+
+                duration:
+                    durationColumn
+                        ? row[
+                            durationColumn
+                        ]
+                        : "",
+
+                eligibility:
+                    eligibilityColumn
+                        ? row[
+                            eligibilityColumn
+                        ]
+                        : "",
+
+                deadline:
+                    deadlineColumn
+                        ? row[
+                            deadlineColumn
+                        ]
+                        : "",
+
+                studyLevel:
+                    studyLevelColumn
+                        ? row[
+                            studyLevelColumn
+                        ]
+                        : "",
+
+                field:
+                    fieldColumn
+                        ? row[
+                            fieldColumn
+                        ]
+                        : "",
+
+                university:
+                    universityColumn
+                        ? row[
+                            universityColumn
+                        ]
+                        : ""
+
+            })
+        );
+
+
+    const columns = [
+
+        {
+            key:
+                "scholarship",
+
+            label:
+                "Scholarship"
+        },
+
+        {
+            key:
+                "id",
+
+            label:
+                "ID"
+        },
+
+        {
+            key:
+                "provider",
+
+            label:
+                "Provider"
+        },
+
+        {
+            key:
+                "amount",
+
+            label:
+                "Amount"
+        },
+
+        {
+            key:
+                "duration",
+
+            label:
+                "Duration"
+        },
+
+        {
+            key:
+                "eligibility",
+
+            label:
+                "Eligibility"
+        },
+
+        {
+            key:
+                "deadline",
+
+            label:
+                "Deadline"
+        },
+
+        {
+            key:
+                "studyLevel",
+
+            label:
+                "Study level"
+        },
+
+        {
+            key:
+                "field",
+
+            label:
+                "Field"
+        },
+
+        {
+            key:
+                "university",
+
+            label:
+                "University"
+        }
+
+    ];
+
+
+    container.innerHTML = `
+
+        <div
+            class="scholarship-data-note"
+        >
+
+            Showing scholarship records from
+            <strong>
+                scholarships_analytics.csv
+            </strong>.
+
+            The national KPI counts distinct
+            scholarship IDs. State-level scholarship
+            metrics are shown separately as
+            university-linked records.
+
+        </div>
+
+
+        ${
+            genericTable(
+                visibleRows,
+                columns,
+                40
+            )
+        }
+
+    `;
 
 }
 
@@ -5302,81 +6398,13 @@ function renderQuality() {
     }
 
 
-    const rows =
-        DATA.qualitySummary ||
-        [];
-
-
-    const scholarshipRows =
+    const qualityRows =
         DATA.scholarshipQuality ||
         [];
 
 
-    const cards = [];
-
-
-    if (
-        rows.length
-    ) {
-
-        const row =
-            rows[0];
-
-
-        Object.keys(
-            row
-        )
-            .slice(
-                0,
-                8
-            )
-            .forEach(
-                column => {
-
-                    cards.push({
-
-                        label:
-                            column,
-
-                        value:
-                            row[column]
-
-                    });
-
-                }
-            );
-
-    }
-
-
-    const distinct =
-        scholarshipRows.find(
-            row =>
-                String(
-                    row.metric ??
-                    ""
-                ).trim() ===
-                "distinct_scholarship_ids"
-        );
-
-
-    if (distinct) {
-
-        cards.push({
-
-            label:
-                "distinct_scholarship_ids",
-
-            value:
-                distinct.value
-
-        });
-
-    }
-
-
-    const source =
-        scholarshipRows.find(
+    const sourceRows =
+        qualityRows.find(
             row =>
                 String(
                     row.metric ??
@@ -5386,71 +6414,121 @@ function renderQuality() {
         );
 
 
-    if (source) {
-
-        cards.push({
-
-            label:
-                "scholarship_source_rows",
-
-            value:
-                source.value
-
-        });
-
-    }
+    const distinctRows =
+        qualityRows.find(
+            row =>
+                String(
+                    row.metric ??
+                    ""
+                ).trim() ===
+                "distinct_scholarship_ids"
+        );
 
 
-    if (!cards.length) {
-
-        cards.push({
-
-            label:
-                "Analytics status",
-
-            value:
-                "Available"
-
-        });
-
-    }
+    const linkedRows =
+        qualityRows.find(
+            row =>
+                String(
+                    row.metric ??
+                    ""
+                ).trim() ===
+                "rows_with_university_link"
+        );
 
 
-    container.innerHTML =
-        cards
-            .slice(
-                0,
-                9
-            )
-            .map(
-                card => `
-
-                    <div
-                        class="quality-card"
-                    >
-
-                        <span>
-
-                            ${escapeHtml(
-                                card.label
-                            )}
-
-                        </span>
+    const explicitStateRows =
+        qualityRows.find(
+            row =>
+                String(
+                    row.metric ??
+                    ""
+                ).trim() ===
+                "rows_with_explicit_state"
+        );
 
 
-                        <strong>
+    container.innerHTML = `
 
-                            ${escapeHtml(
-                                card.value
-                            )}
+        <div
+            class="quality-card"
+        >
 
-                        </strong>
+            <span>
+                Scholarship source rows
+            </span>
 
-                    </div>
+            <strong>
 
-                `
-            )
-            .join("");
+                ${formatNumber(
+                    sourceRows?.value ||
+                    DATA.scholarships.length
+                )}
+
+            </strong>
+
+        </div>
+
+
+        <div
+            class="quality-card"
+        >
+
+            <span>
+                Distinct scholarship IDs
+            </span>
+
+            <strong>
+
+                ${formatNumber(
+                    distinctRows?.value ||
+                    distinctScholarshipCount()
+                )}
+
+            </strong>
+
+        </div>
+
+
+        <div
+            class="quality-card"
+        >
+
+            <span>
+                University-linked rows
+            </span>
+
+            <strong>
+
+                ${formatNumber(
+                    linkedRows?.value ||
+                    0
+                )}
+
+            </strong>
+
+        </div>
+
+
+        <div
+            class="quality-card"
+        >
+
+            <span>
+                Explicit scholarship states
+            </span>
+
+            <strong>
+
+                ${formatNumber(
+                    explicitStateRows?.value ||
+                    0
+                )}
+
+            </strong>
+
+        </div>
+
+    `;
 
 }
 
@@ -5459,7 +6537,7 @@ function renderQuality() {
    UNIVERSITY DIRECTORY STYLES
 ============================================================ */
 
-function injectUniversityDirectoryStyles() {
+function injectUniversityStyles() {
 
     if (
         byId(
@@ -5489,7 +6567,7 @@ function injectUniversityDirectoryStyles() {
             width:
                 min(
                     1400px,
-                    calc(100% - 32px)
+                    calc(100% - 24px)
                 );
 
             margin:
@@ -5501,14 +6579,14 @@ function injectUniversityDirectoryStyles() {
             box-sizing:
                 border-box;
 
-            background:
-                #ffffff;
-
             border:
                 1px solid #e5e7eb;
 
             border-radius:
                 20px;
+
+            background:
+                #ffffff;
 
             box-shadow:
                 0 10px 30px rgba(
@@ -5548,11 +6626,11 @@ function injectUniversityDirectoryStyles() {
         #universityDirectory
         .university-directory-title {
 
-            flex:
-                1;
-
             min-width:
                 240px;
+
+            flex:
+                1;
 
         }
 
@@ -5563,11 +6641,14 @@ function injectUniversityDirectoryStyles() {
             margin:
                 0 0 6px;
 
+            color:
+                #0f172a;
+
             font-size:
                 26px;
 
-            color:
-                #0f172a;
+            line-height:
+                1.2;
 
         }
 
@@ -5626,7 +6707,7 @@ function injectUniversityDirectoryStyles() {
             grid-template-columns:
                 minmax(220px, 2fr)
                 minmax(160px, 1fr)
-                minmax(180px, 1fr)
+                minmax(190px, 1fr)
                 auto;
 
             gap:
@@ -5659,14 +6740,14 @@ function injectUniversityDirectoryStyles() {
             box-sizing:
                 border-box;
 
-            padding:
-                0 12px;
-
             border:
                 1px solid #dbe2ea;
 
             border-radius:
                 10px;
+
+            padding:
+                0 12px;
 
             background:
                 #ffffff;
@@ -5687,14 +6768,14 @@ function injectUniversityDirectoryStyles() {
             cursor:
                 pointer;
 
-            border-color:
-                #0f172a;
-
             background:
                 #0f172a;
 
             color:
                 #ffffff;
+
+            border-color:
+                #0f172a;
 
             font-weight:
                 800;
@@ -5741,6 +6822,9 @@ function injectUniversityDirectoryStyles() {
             overflow-x:
                 auto;
 
+            -webkit-overflow-scrolling:
+                touch;
+
             border:
                 1px solid #e5e7eb;
 
@@ -5757,7 +6841,7 @@ function injectUniversityDirectoryStyles() {
                 100%;
 
             min-width:
-                980px;
+                1050px;
 
             border-collapse:
                 collapse;
@@ -5835,7 +6919,7 @@ function injectUniversityDirectoryStyles() {
         .university-name {
 
             min-width:
-                260px;
+                270px;
 
             color:
                 #0f172a;
@@ -5845,6 +6929,33 @@ function injectUniversityDirectoryStyles() {
 
             line-height:
                 1.45;
+
+        }
+
+
+        #universityDirectory
+        .university-state {
+
+            display:
+                inline-flex;
+
+            padding:
+                5px 8px;
+
+            border-radius:
+                8px;
+
+            background:
+                #f8fafc;
+
+            color:
+                #475569;
+
+            font-weight:
+                700;
+
+            white-space:
+                nowrap;
 
         }
 
@@ -5862,7 +6973,7 @@ function injectUniversityDirectoryStyles() {
                 6px;
 
             min-width:
-                260px;
+                240px;
 
         }
 
@@ -5913,33 +7024,6 @@ function injectUniversityDirectoryStyles() {
 
 
         #universityDirectory
-        .university-state {
-
-            display:
-                inline-flex;
-
-            padding:
-                5px 8px;
-
-            border-radius:
-                8px;
-
-            background:
-                #f8fafc;
-
-            color:
-                #475569;
-
-            font-weight:
-                700;
-
-            white-space:
-                nowrap;
-
-        }
-
-
-        #universityDirectory
         details {
 
             margin-top:
@@ -5975,14 +7059,14 @@ function injectUniversityDirectoryStyles() {
             padding:
                 11px;
 
-            background:
-                #f8fafc;
-
             border:
                 1px solid #e2e8f0;
 
             border-radius:
                 10px;
+
+            background:
+                #f8fafc;
 
         }
 
@@ -6057,6 +7141,264 @@ function injectUniversityDirectoryStyles() {
         }
 
 
+        /* ----------------------------------------------------
+           MOBILE
+        ---------------------------------------------------- */
+
+        #universityDirectory
+        .university-mobile-list {
+
+            display:
+                none;
+
+        }
+
+
+        #universityDirectory
+        .university-mobile-card {
+
+            padding:
+                15px;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius:
+                14px;
+
+            background:
+                #ffffff;
+
+            margin-bottom:
+                10px;
+
+        }
+
+
+        #universityDirectory
+        .mobile-university-name {
+
+            color:
+                #0f172a;
+
+            font-weight:
+                800;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.4;
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        #universityDirectory
+        .mobile-university-meta {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                7px;
+
+            margin-bottom:
+                10px;
+
+        }
+
+
+        #universityDirectory
+        .mobile-meta-item {
+
+            padding:
+                8px;
+
+            border-radius:
+                9px;
+
+            background:
+                #f8fafc;
+
+        }
+
+
+        #universityDirectory
+        .mobile-meta-label {
+
+            display:
+                block;
+
+            color:
+                #64748b;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            margin-bottom:
+                2px;
+
+        }
+
+
+        #universityDirectory
+        .mobile-meta-value {
+
+            display:
+                block;
+
+            color:
+                #0f172a;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        #universityDirectory
+        .mobile-ranking {
+
+            display:
+                inline-flex;
+
+            padding:
+                6px 9px;
+
+            border-radius:
+                8px;
+
+            background:
+                #eff6ff;
+
+            color:
+                #1d4ed8;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            margin-bottom:
+                9px;
+
+        }
+
+
+        /* ----------------------------------------------------
+           SCHOLARSHIP TABLE
+        ---------------------------------------------------- */
+
+        .scholarship-data-note {
+
+            margin-bottom:
+                14px;
+
+            padding:
+                11px 13px;
+
+            border-radius:
+                10px;
+
+            background:
+                #f8fafc;
+
+            color:
+                #64748b;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        .generic-table-scroll {
+
+            width:
+                100%;
+
+            overflow-x:
+                auto;
+
+            -webkit-overflow-scrolling:
+                touch;
+
+        }
+
+
+        .generic-table-scroll table {
+
+            width:
+                100%;
+
+            min-width:
+                950px;
+
+            border-collapse:
+                collapse;
+
+        }
+
+
+        .generic-table-scroll th {
+
+            padding:
+                11px 12px;
+
+            text-align:
+                left;
+
+            background:
+                #f8fafc;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            font-size:
+                11px;
+
+            color:
+                #475569;
+
+        }
+
+
+        .generic-table-scroll td {
+
+            padding:
+                11px 12px;
+
+            vertical-align:
+                top;
+
+            border-bottom:
+                1px solid #eef2f7;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.45;
+
+        }
+
+
         @media (
             max-width: 900px
         ) {
@@ -6073,7 +7415,7 @@ function injectUniversityDirectoryStyles() {
 
 
         @media (
-            max-width: 640px
+            max-width: 700px
         ) {
 
             #universityDirectory {
@@ -6085,6 +7427,9 @@ function injectUniversityDirectoryStyles() {
                     18px auto;
 
                 padding:
+                    16px;
+
+                border-radius:
                     16px;
 
             }
@@ -6109,13 +7454,19 @@ function injectUniversityDirectoryStyles() {
 
 
             #universityDirectory
-            .university-detail-row {
+            .university-table-wrap {
 
-                grid-template-columns:
-                    1fr;
+                display:
+                    none;
 
-                gap:
-                    3px;
+            }
+
+
+            #universityDirectory
+            .university-mobile-list {
+
+                display:
+                    block;
 
             }
 
@@ -6132,1011 +7483,16 @@ function injectUniversityDirectoryStyles() {
 
 
 /* ============================================================
-   UNIVERSITY DIRECTORY HTML
+   UNIVERSITY DETAILS HTML
 ============================================================ */
 
-function ensureUniversityDirectory() {
-
-    let section =
-        byId(
-            "universityDirectory"
-        );
-
-
-    if (
-        section
-    ) {
-
-        setupUniversityDirectoryControls();
-
-        renderUniversityDirectory();
-
-        return;
-
-    }
-
-
-    injectUniversityDirectoryStyles();
-
-
-    section =
-        document.createElement(
-            "section"
-        );
-
-
-    section.id =
-        "universityDirectory";
-
-
-    section.innerHTML = `
-
-        <div
-            class="university-directory-header"
-        >
-
-            <div
-                class="university-directory-title"
-            >
-
-                <h2>
-                    University Directory
-                </h2>
-
-
-                <p>
-
-                    Explore every university in the
-                    current university analytics dataset,
-                    with available ranking information,
-                    state, city, type and full details.
-
-                </p>
-
-            </div>
-
-
-            <div
-                class="university-directory-count"
-                id="universityDirectoryCount"
-            >
-
-                Loading...
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="university-directory-controls"
-        >
-
-            <input
-                id="universitySearch"
-                type="search"
-                placeholder="Search university, city or state..."
-                autocomplete="off"
-            >
-
-
-            <select
-                id="universityStateFilter"
-            >
-
-                <option value="">
-                    All German states
-                </option>
-
-            </select>
-
-
-            <select
-                id="universityRankSort"
-            >
-
-                <option value="rank-asc">
-                    Ranking: Low → High
-                </option>
-
-
-                <option value="rank-desc">
-                    Ranking: High → Low
-                </option>
-
-
-                <option value="name-asc">
-                    Name: A → Z
-                </option>
-
-
-                <option value="state-asc">
-                    State: A → Z
-                </option>
-
-            </select>
-
-
-            <button
-                id="universityReset"
-                type="button"
-            >
-
-                Show all universities
-
-            </button>
-
-        </div>
-
-
-        <div
-            class="university-directory-summary"
-        >
-
-            <span
-                id="universityDirectorySummary"
-            >
-                Loading...
-            </span>
-
-
-            <span>
-
-                Ranking sort uses numeric ranking
-                positions only. Unranked entries stay last.
-
-            </span>
-
-        </div>
-
-
-        <div
-            class="university-table-wrap"
-        >
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            University
-                        </th>
-
-                        <th>
-                            Rankings
-                        </th>
-
-                        <th>
-                            State
-                        </th>
-
-                        <th>
-                            City
-                        </th>
-
-                        <th>
-                            Type
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody
-                    id="universityDirectoryBody"
-                >
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            class="university-empty"
-                        >
-
-                            Loading university data...
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    `;
-
-
-    const anchor =
-        byId(
-            "stateUniversityList"
-        );
-
-
-    if (
-        anchor
-    ) {
-
-        const parent =
-            anchor.closest(
-                "section, .card, .panel, .dashboard-card"
-            ) ||
-            anchor.parentElement;
-
-
-        if (
-            parent?.parentNode
-        ) {
-
-            parent.parentNode.insertBefore(
-                section,
-                parent.nextSibling
-            );
-
-        } else {
-
-            document.body.appendChild(
-                section
-            );
-
-        }
-
-    } else {
-
-        document.body.appendChild(
-            section
-        );
-
-    }
-
-
-    setupUniversityDirectoryControls();
-
-    renderUniversityDirectory();
-
-}
-
-
-/* ============================================================
-   UNIVERSITY DIRECTORY CONTROLS
-============================================================ */
-
-function setupUniversityDirectoryControls() {
-
-    const search =
-        byId(
-            "universitySearch"
-        );
-
-
-    const stateFilter =
-        byId(
-            "universityStateFilter"
-        );
-
-
-    const rankSort =
-        byId(
-            "universityRankSort"
-        );
-
-
-    const reset =
-        byId(
-            "universityReset"
-        );
-
-
-    if (
-        stateFilter &&
-        stateFilter.dataset.ready !==
-        "true"
-    ) {
-
-        /*
-           Prevent duplicate state options if they
-           already exist.
-        */
-
-        const existing =
-            new Set(
-                [
-                    ...stateFilter.options
-                ]
-                    .map(
-                        option =>
-                            normalizeComparable(
-                                option.value
-                            )
-                    )
-            );
-
-
-        GERMAN_STATES.forEach(
-            state => {
-
-                if (
-                    existing.has(
-                        normalizeComparable(
-                            state
-                        )
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    state;
-
-
-                option.textContent =
-                    state;
-
-
-                stateFilter.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-        stateFilter.dataset.ready =
-            "true";
-
-    }
-
-
-    if (
-        search &&
-        search.dataset.ready !==
-        "true"
-    ) {
-
-        search.addEventListener(
-            "input",
-            () =>
-                renderUniversityDirectory()
-        );
-
-
-        search.dataset.ready =
-            "true";
-
-    }
-
-
-    if (
-        stateFilter &&
-        stateFilter.dataset.listener !==
-        "true"
-    ) {
-
-        stateFilter.addEventListener(
-            "change",
-            () =>
-                renderUniversityDirectory()
-        );
-
-
-        stateFilter.dataset.listener =
-            "true";
-
-    }
-
-
-    if (
-        rankSort &&
-        rankSort.dataset.ready !==
-        "true"
-    ) {
-
-        rankSort.addEventListener(
-            "change",
-            () =>
-                renderUniversityDirectory()
-        );
-
-
-        rankSort.dataset.ready =
-            "true";
-
-    }
-
-
-    if (
-        reset &&
-        reset.dataset.ready !==
-        "true"
-    ) {
-
-        reset.addEventListener(
-            "click",
-            () => {
-
-                if (search) {
-
-                    search.value =
-                        "";
-
-                }
-
-
-                if (stateFilter) {
-
-                    stateFilter.value =
-                        "";
-
-                }
-
-
-                if (rankSort) {
-
-                    rankSort.value =
-                        "rank-asc";
-
-                }
-
-
-                renderUniversityDirectory();
-
-            }
-        );
-
-
-        reset.dataset.ready =
-            "true";
-
-    }
-
-}
-
-
-/* ============================================================
-   UNIVERSITY DIRECTORY FILTER + SORT
-============================================================ */
-
-function getUniversityDirectoryData() {
-
-    const rows =
-        getUniversityRows();
-
-
-    const nameColumn =
-        getUniversityNameColumn(
-            rows
-        );
-
-
-    const stateColumn =
-        getUniversityStateColumn(
-            rows
-        );
-
-
-    const cityColumn =
-        getUniversityCityColumn(
-            rows
-        );
-
-
-    const typeColumn =
-        getUniversityTypeColumn(
-            rows
-        );
-
-
-    const primaryRankColumn =
-        getPrimaryRankingColumn(
-            rows
-        );
-
-
-    const search =
-        String(
-            byId(
-                "universitySearch"
-            )?.value ||
-            ""
-        )
-            .trim()
-            .toLowerCase();
-
-
-    const selectedState =
-        String(
-            byId(
-                "universityStateFilter"
-            )?.value ||
-            ""
-        )
-            .trim();
-
-
-    const sort =
-        byId(
-            "universityRankSort"
-        )?.value ||
-        "rank-asc";
-
-
-    let filtered =
-        rows.filter(
-            row => {
-
-                if (
-                    search
-                ) {
-
-                    const searchText =
-                        Object.values(
-                            row
-                        )
-                            .join(" ")
-                            .toLowerCase();
-
-
-                    if (
-                        !searchText.includes(
-                            search
-                        )
-                    ) {
-
-                        return false;
-
-                    }
-
-                }
-
-
-                if (
-                    selectedState
-                ) {
-
-                    if (
-                        !stateColumn ||
-                        !statesEqual(
-                            row[
-                                stateColumn
-                            ],
-                            selectedState
-                        )
-                    ) {
-
-                        return false;
-
-                    }
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    /*
-       NAME SORT
-    */
-
-    if (
-        sort ===
-        "name-asc"
-    ) {
-
-        filtered.sort(
-            (
-                a,
-                b
-            ) => {
-
-                return String(
-                    a[
-                        nameColumn
-                    ] ||
-                    ""
-                )
-                    .localeCompare(
-                        String(
-                            b[
-                                nameColumn
-                            ] ||
-                            ""
-                        ),
-                        undefined,
-                        {
-                            sensitivity:
-                                "base"
-                        }
-                    );
-
-            }
-        );
-
-
-        return {
-
-            rows:
-                filtered,
-
-            allRows:
-                rows,
-
-            nameColumn,
-
-            stateColumn,
-
-            cityColumn,
-
-            typeColumn,
-
-            primaryRankColumn
-
-        };
-
-    }
-
-
-    /*
-       STATE SORT
-    */
-
-    if (
-        sort ===
-        "state-asc"
-    ) {
-
-        filtered.sort(
-            (
-                a,
-                b
-            ) => {
-
-                const first =
-                    String(
-                        a[
-                            stateColumn
-                        ] ||
-                        ""
-                    );
-
-
-                const second =
-                    String(
-                        b[
-                            stateColumn
-                        ] ||
-                        ""
-                    );
-
-
-                const stateCompare =
-                    first.localeCompare(
-                        second,
-                        undefined,
-                        {
-                            sensitivity:
-                                "base"
-                        }
-                    );
-
-
-                if (
-                    stateCompare !==
-                    0
-                ) {
-
-                    return stateCompare;
-
-                }
-
-
-                return String(
-                    a[
-                        nameColumn
-                    ] ||
-                    ""
-                )
-                    .localeCompare(
-                        String(
-                            b[
-                                nameColumn
-                            ] ||
-                            ""
-                        ),
-                        undefined,
-                        {
-                            sensitivity:
-                                "base"
-                        }
-                    );
-
-            }
-        );
-
-
-        return {
-
-            rows:
-                filtered,
-
-            allRows:
-                rows,
-
-            nameColumn,
-
-            stateColumn,
-
-            cityColumn,
-
-            typeColumn,
-
-            primaryRankColumn
-
-        };
-
-    }
-
-
-    /*
-       RANK SORT
-
-       IMPORTANT:
-       rankingValue() returns null for the text:
-           QS World University Rankings 2027
-
-       Therefore the sort only uses actual numeric ranks.
-    */
-
-    filtered.sort(
-        (
-            a,
-            b
-        ) => {
-
-            const aRank =
-                primaryRankColumn
-                    ? rankingValue(
-                        a[
-                            primaryRankColumn
-                        ]
-                    )
-                    : null;
-
-
-            const bRank =
-                primaryRankColumn
-                    ? rankingValue(
-                        b[
-                            primaryRankColumn
-                        ]
-                    )
-                    : null;
-
-
-            /*
-               Both unranked:
-               alphabetical tie breaker.
-            */
-
-            if (
-                aRank === null &&
-                bRank === null
-            ) {
-
-                return String(
-                    a[
-                        nameColumn
-                    ] ||
-                    ""
-                )
-                    .localeCompare(
-                        String(
-                            b[
-                                nameColumn
-                            ] ||
-                            ""
-                        ),
-                        undefined,
-                        {
-                            sensitivity:
-                                "base"
-                        }
-                    );
-
-            }
-
-
-            /*
-               Unranked entries always last.
-            */
-
-            if (
-                aRank === null
-            ) {
-
-                return 1;
-
-            }
-
-
-            if (
-                bRank === null
-            ) {
-
-                return -1;
-
-            }
-
-
-            /*
-               LOW -> HIGH
-            */
-
-            if (
-                sort ===
-                "rank-asc"
-            ) {
-
-                return (
-                    aRank -
-                    bRank
-                );
-
-            }
-
-
-            /*
-               HIGH -> LOW
-            */
-
-            return (
-                bRank -
-                aRank
-            );
-
-        }
-    );
-
-
-    return {
-
-        rows:
-            filtered,
-
-        allRows:
-            rows,
-
-        nameColumn,
-
-        stateColumn,
-
-        cityColumn,
-
-        typeColumn,
-
-        primaryRankColumn
-
-    };
-
-}
-
-
-/* ============================================================
-   UNIVERSITY RANKING BADGES
-============================================================ */
-
-function renderUniversityRankings(
-    row,
-    rankingColumns
-) {
-
-    const badges = [];
-
-
-    rankingColumns.forEach(
-        info => {
-
-            const raw =
-                row[
-                    info.column
-                ];
-
-
-            const rank =
-                rankingValue(
-                    raw
-                );
-
-
-            if (
-                rank === null ||
-                rank <= 0
-            ) {
-
-                return;
-
-            }
-
-
-            badges.push(`
-
-                <span
-                    class="ranking-pill"
-                >
-
-                    ${escapeHtml(
-                        rankingDisplayLabel(
-                            info.column
-                        )
-                    )}
-
-                    <b>
-
-                        ${escapeHtml(
-                            String(
-                                raw
-                            )
-                        )}
-
-                    </b>
-
-                </span>
-
-            `);
-
-        }
-    );
-
-
-    if (!badges.length) {
-
-        return `
-
-            <span
-                class="ranking-pill"
-            >
-
-                Not ranked
-
-            </span>
-
-        `;
-
-    }
-
-
-    return badges.join("");
-
-}
-
-
-/* ============================================================
-   UNIVERSITY DETAILS
-============================================================ */
-
-function renderUniversityDetails(
+function universityDetailsHTML(
     row
 ) {
 
     const entries =
         Object.entries(
-            row ||
-            {}
+            row
         )
             .filter(
                 (
@@ -7146,8 +7502,7 @@ function renderUniversityDetails(
                     ]
                 ) =>
                     String(
-                        value ??
-                        ""
+                        value ?? ""
                     ).trim() !== ""
             );
 
@@ -7156,9 +7511,11 @@ function renderUniversityDetails(
 
         return `
 
-            <div class="university-details">
+            <div
+                class="university-details"
+            >
 
-                No additional university data available.
+                No additional data.
 
             </div>
 
@@ -7169,7 +7526,9 @@ function renderUniversityDetails(
 
     return `
 
-        <div class="university-details">
+        <div
+            class="university-details"
+        >
 
             ${
                 entries
@@ -7221,6 +7580,882 @@ function renderUniversityDetails(
 
 
 /* ============================================================
+   UNIVERSITY DIRECTORY HTML
+============================================================ */
+
+function ensureUniversityDirectory() {
+
+    injectUniversityStyles();
+
+
+    let section =
+        byId(
+            "universityDirectory"
+        );
+
+
+    if (
+        !section
+    ) {
+
+        section =
+            document.createElement(
+                "section"
+            );
+
+
+        section.id =
+            "universityDirectory";
+
+
+        section.innerHTML = `
+
+            <div
+                class="university-directory-header"
+            >
+
+                <div
+                    class="university-directory-title"
+                >
+
+                    <h2>
+                        University Directory
+                    </h2>
+
+
+                    <p>
+
+                        All universities in the current
+                        60-university dataset, with QS 2027
+                        ranking information and detailed records.
+
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="university-directory-count"
+                    id="universityDirectoryCount"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+
+            <div
+                class="university-directory-controls"
+            >
+
+                <input
+                    id="universitySearch"
+                    type="search"
+                    placeholder="Search university, city or state..."
+                    autocomplete="off"
+                >
+
+
+                <select
+                    id="universityStateFilter"
+                >
+
+                    <option value="">
+                        All German states
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="universityRankSort"
+                >
+
+                    <option value="rank-asc">
+                        Ranking: Low → High
+                    </option>
+
+
+                    <option value="rank-desc">
+                        Ranking: High → Low
+                    </option>
+
+
+                    <option value="name-asc">
+                        Name: A → Z
+                    </option>
+
+
+                    <option value="state-asc">
+                        State: A → Z
+                    </option>
+
+                </select>
+
+
+                <button
+                    id="universityReset"
+                    type="button"
+                >
+                    Show all universities
+                </button>
+
+            </div>
+
+
+            <div
+                class="university-directory-summary"
+            >
+
+                <span
+                    id="universityDirectorySummary"
+                >
+                    Loading...
+                </span>
+
+
+                <span>
+
+                    QS 2027 rank bands are sorted
+                    by their lower bound.
+
+                </span>
+
+            </div>
+
+
+            <div
+                class="university-table-wrap"
+            >
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                University
+                            </th>
+
+                            <th>
+                                QS 2027
+                            </th>
+
+                            <th>
+                                State
+                            </th>
+
+                            <th>
+                                City
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="universityDirectoryBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div
+                class="university-mobile-list"
+                id="universityMobileList"
+            >
+
+            </div>
+
+        `;
+
+
+        const anchor =
+            byId(
+                "stateUniversityList"
+            );
+
+
+        if (
+            anchor?.parentElement?.parentElement
+        ) {
+
+            const parent =
+                anchor.parentElement.parentElement;
+
+
+            parent.parentNode.insertBefore(
+                section,
+                parent.nextSibling
+            );
+
+        } else if (
+            anchor?.parentElement
+        ) {
+
+            anchor.parentElement.parentNode
+                .insertBefore(
+                    section,
+                    anchor.parentElement.nextSibling
+                );
+
+        } else {
+
+            document.body.appendChild(
+                section
+            );
+
+        }
+
+    }
+
+
+    setupUniversityDirectory();
+
+    renderUniversityDirectory();
+
+}
+
+
+/* ============================================================
+   UNIVERSITY DIRECTORY CONTROLS
+============================================================ */
+
+function setupUniversityDirectory() {
+
+    const stateFilter =
+        byId(
+            "universityStateFilter"
+        );
+
+
+    const search =
+        byId(
+            "universitySearch"
+        );
+
+
+    const rankSort =
+        byId(
+            "universityRankSort"
+        );
+
+
+    const reset =
+        byId(
+            "universityReset"
+        );
+
+
+    if (
+        stateFilter &&
+        stateFilter.dataset.ready !==
+        "true"
+    ) {
+
+        const existing =
+            new Set(
+                [
+                    ...stateFilter.options
+                ]
+                    .map(
+                        option =>
+                            comparableState(
+                                option.value
+                            )
+                    )
+            );
+
+
+        GERMAN_STATES.forEach(
+            state => {
+
+                if (
+                    existing.has(
+                        comparableState(
+                            state
+                        )
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    state;
+
+
+                option.textContent =
+                    state;
+
+
+                stateFilter.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        stateFilter.addEventListener(
+            "change",
+            renderUniversityDirectory
+        );
+
+
+        stateFilter.dataset.ready =
+            "true";
+
+    }
+
+
+    if (
+        search &&
+        search.dataset.ready !==
+        "true"
+    ) {
+
+        search.addEventListener(
+            "input",
+            renderUniversityDirectory
+        );
+
+
+        search.dataset.ready =
+            "true";
+
+    }
+
+
+    if (
+        rankSort &&
+        rankSort.dataset.ready !==
+        "true"
+    ) {
+
+        rankSort.addEventListener(
+            "change",
+            renderUniversityDirectory
+        );
+
+
+        rankSort.dataset.ready =
+            "true";
+
+    }
+
+
+    if (
+        reset &&
+        reset.dataset.ready !==
+        "true"
+    ) {
+
+        reset.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    search
+                ) {
+
+                    search.value =
+                        "";
+
+                }
+
+
+                if (
+                    stateFilter
+                ) {
+
+                    stateFilter.value =
+                        "";
+
+                }
+
+
+                if (
+                    rankSort
+                ) {
+
+                    rankSort.value =
+                        "rank-asc";
+
+                }
+
+
+                renderUniversityDirectory();
+
+            }
+        );
+
+
+        reset.dataset.ready =
+            "true";
+
+    }
+
+}
+
+
+/* ============================================================
+   UNIVERSITY SORT
+============================================================ */
+
+function getUniversityDirectoryRows() {
+
+    const rows =
+        universityRows();
+
+
+    const nameColumn =
+        universityNameColumn(
+            rows
+        );
+
+
+    const stateColumn =
+        universityStateColumn(
+            rows
+        );
+
+
+    const cityColumn =
+        universityCityColumn(
+            rows
+        );
+
+
+    const typeColumn =
+        universityTypeColumn(
+            rows
+        );
+
+
+    const search =
+        String(
+            byId(
+                "universitySearch"
+            )?.value ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    const selectedState =
+        String(
+            byId(
+                "universityStateFilter"
+            )?.value ||
+            ""
+        ).trim();
+
+
+    let filtered =
+        rows.filter(
+            row => {
+
+                if (
+                    search
+                ) {
+
+                    const haystack =
+                        Object.values(
+                            row
+                        )
+                            .join(" ")
+                            .toLowerCase();
+
+
+                    if (
+                        !haystack.includes(
+                            search
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+
+                if (
+                    selectedState
+                ) {
+
+                    if (
+                        !stateColumn ||
+                        !statesEqual(
+                            row[
+                                stateColumn
+                            ],
+                            selectedState
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    const mode =
+        byId(
+            "universityRankSort"
+        )?.value ||
+        "rank-asc";
+
+
+    /*
+       NAME
+    */
+
+    if (
+        mode ===
+        "name-asc"
+    ) {
+
+        filtered.sort(
+            (
+                a,
+                b
+            ) =>
+                String(
+                    a[
+                        nameColumn
+                    ] ||
+                    ""
+                )
+                    .localeCompare(
+                        String(
+                            b[
+                                nameColumn
+                            ] ||
+                            ""
+                        ),
+                        undefined,
+                        {
+                            sensitivity:
+                                "base"
+                        }
+                    )
+        );
+
+
+        return {
+
+            rows:
+                filtered,
+
+            allRows:
+                rows,
+
+            nameColumn,
+
+            stateColumn,
+
+            cityColumn,
+
+            typeColumn
+
+        };
+
+    }
+
+
+    /*
+       STATE
+    */
+
+    if (
+        mode ===
+        "state-asc"
+    ) {
+
+        filtered.sort(
+            (
+                a,
+                b
+            ) => {
+
+                const first =
+                    normalizeStateName(
+                        a[
+                            stateColumn
+                        ]
+                    );
+
+
+                const second =
+                    normalizeStateName(
+                        b[
+                            stateColumn
+                        ]
+                    );
+
+
+                const compare =
+                    first.localeCompare(
+                        second,
+                        undefined,
+                        {
+                            sensitivity:
+                                "base"
+                        }
+                    );
+
+
+                if (
+                    compare !==
+                    0
+                ) {
+
+                    return compare;
+
+                }
+
+
+                return String(
+                    a[
+                        nameColumn
+                    ] ||
+                    ""
+                )
+                    .localeCompare(
+                        String(
+                            b[
+                                nameColumn
+                            ] ||
+                            ""
+                        )
+                    );
+
+            }
+        );
+
+
+        return {
+
+            rows:
+                filtered,
+
+            allRows:
+                rows,
+
+            nameColumn,
+
+            stateColumn,
+
+            cityColumn,
+
+            typeColumn
+
+        };
+
+    }
+
+
+    /*
+       RANKING
+
+       THIS IS THE IMPORTANT FIX.
+
+       It NEVER reads 2027 from the text
+       "QS World University Rankings 2027".
+
+       It uses the verified QS_2027 mapping
+       or a genuine numeric field.
+    */
+
+    filtered.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const rankA =
+                rankingInfo(
+                    a
+                );
+
+
+            const rankB =
+                rankingInfo(
+                    b
+                );
+
+
+            if (
+                !rankA &&
+                !rankB
+            ) {
+
+                return String(
+                    a[
+                        nameColumn
+                    ] ||
+                    ""
+                )
+                    .localeCompare(
+                        String(
+                            b[
+                                nameColumn
+                            ] ||
+                            ""
+                        )
+                    );
+
+            }
+
+
+            /*
+               Unranked last.
+            */
+
+            if (
+                !rankA
+            ) {
+
+                return 1;
+
+            }
+
+
+            if (
+                !rankB
+            ) {
+
+                return -1;
+
+            }
+
+
+            if (
+                mode ===
+                "rank-desc"
+            ) {
+
+                return (
+                    rankB.sortValue -
+                    rankA.sortValue
+                );
+
+            }
+
+
+            return (
+                rankA.sortValue -
+                rankB.sortValue
+            );
+
+        }
+    );
+
+
+    return {
+
+        rows:
+            filtered,
+
+        allRows:
+            rows,
+
+        nameColumn,
+
+        stateColumn,
+
+        cityColumn,
+
+        typeColumn
+
+    };
+
+}
+
+
+/* ============================================================
+   RANK BADGE
+============================================================ */
+
+function rankingBadgeHTML(
+    row
+) {
+
+    const info =
+        rankingInfo(
+            row
+        );
+
+
+    if (!info) {
+
+        return `
+
+            <span
+                class="ranking-pill"
+            >
+
+                Not ranked
+
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span
+            class="ranking-pill"
+        >
+
+            QS 2027
+
+            <b>
+
+                ${escapeHtml(
+                    info.display
+                )}
+
+            </b>
+
+        </span>
+
+    `;
+
+}
+
+
+/* ============================================================
    UNIVERSITY DIRECTORY RENDER
 ============================================================ */
 
@@ -7232,7 +8467,16 @@ function renderUniversityDirectory() {
         );
 
 
-    if (!body) {
+    const mobile =
+        byId(
+            "universityMobileList"
+        );
+
+
+    if (
+        !body &&
+        !mobile
+    ) {
 
         return;
 
@@ -7240,7 +8484,7 @@ function renderUniversityDirectory() {
 
 
     const result =
-        getUniversityDirectoryData();
+        getUniversityDirectoryRows();
 
 
     const rows =
@@ -7265,16 +8509,6 @@ function renderUniversityDirectory() {
 
     const typeColumn =
         result.typeColumn;
-
-
-    const primaryRankColumn =
-        result.primaryRankColumn;
-
-
-    const rankingColumns =
-        getRankingColumns(
-            allRows
-        );
 
 
     const countBadge =
@@ -7305,121 +8539,269 @@ function renderUniversityDirectory() {
         summary
     ) {
 
-        if (
+        summary.textContent =
             rows.length ===
             allRows.length
-        ) {
 
-            summary.textContent =
-                `Showing all ${formatNumber(
+                ? `Showing all ${formatNumber(
                     allRows.length
-                )} universities`;
+                )} universities`
 
-        } else {
-
-            summary.textContent =
-                `Showing ${formatNumber(
+                : `Showing ${formatNumber(
                     rows.length
                 )} of ${formatNumber(
                     allRows.length
                 )} universities`;
+
+    }
+
+
+    /*
+       DESKTOP TABLE
+    */
+
+    if (
+        body
+    ) {
+
+        if (!rows.length) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="university-empty"
+                    >
+
+                        No universities match
+                        the current filter.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        } else {
+
+            body.innerHTML =
+                rows.map(
+                    row => {
+
+                        const name =
+                            nameColumn
+                                ? row[
+                                    nameColumn
+                                ]
+                                : "";
+
+
+                        const state =
+                            stateColumn
+                                ? normalizeStateName(
+                                    row[
+                                        stateColumn
+                                    ]
+                                )
+                                : "";
+
+
+                        const city =
+                            cityColumn
+                                ? row[
+                                    cityColumn
+                                ]
+                                : "";
+
+
+                        const type =
+                            typeColumn
+                                ? row[
+                                    typeColumn
+                                ]
+                                : "";
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+
+                                    <div
+                                        class="university-name"
+                                    >
+
+                                        ${escapeHtml(
+                                            name
+                                        )}
+
+                                    </div>
+
+
+                                    <details>
+
+                                        <summary>
+
+                                            View all university details
+
+                                        </summary>
+
+
+                                        ${universityDetailsHTML(
+                                            row
+                                        )}
+
+                                    </details>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div
+                                        class="university-rankings"
+                                    >
+
+                                        ${rankingBadgeHTML(
+                                            row
+                                        )}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="university-state"
+                                    >
+
+                                        ${escapeHtml(
+                                            state ||
+                                            "—"
+                                        )}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    ${escapeHtml(
+                                        city ||
+                                        "—"
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${escapeHtml(
+                                        type ||
+                                        "—"
+                                    )}
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                )
+                    .join("");
 
         }
 
     }
 
 
+    /*
+       MOBILE CARDS
+
+       This prevents the table columns from becoming
+       visually scrambled on small screens.
+    */
+
     if (
-        !rows.length
+        mobile
     ) {
 
-        body.innerHTML = `
+        if (!rows.length) {
 
-            <tr>
+            mobile.innerHTML = `
 
-                <td
-                    colspan="5"
+                <div
                     class="university-empty"
                 >
 
-                    No universities match your
-                    current search/filter.
+                    No universities match
+                    the current filter.
 
-                </td>
+                </div>
 
-            </tr>
+            `;
 
-        `;
+        } else {
 
+            mobile.innerHTML =
+                rows.map(
+                    row => {
 
-        return;
-
-    }
-
-
-    body.innerHTML =
-        rows
-            .map(
-                (
-                    row,
-                    index
-                ) => {
-
-                    const name =
-                        nameColumn
-                            ? String(
-                                row[
+                        const name =
+                            nameColumn
+                                ? row[
                                     nameColumn
-                                ] ??
-                                ""
-                            ).trim()
-                            : (
-                                `University ${
-                                    index + 1
-                                }`
+                                ]
+                                : "";
+
+
+                        const state =
+                            stateColumn
+                                ? normalizeStateName(
+                                    row[
+                                        stateColumn
+                                    ]
+                                )
+                                : "—";
+
+
+                        const city =
+                            cityColumn
+                                ? row[
+                                    cityColumn
+                                ]
+                                : "—";
+
+
+                        const type =
+                            typeColumn
+                                ? row[
+                                    typeColumn
+                                ]
+                                : "—";
+
+
+                        const ranking =
+                            rankingInfo(
+                                row
                             );
 
 
-                    const state =
-                        stateColumn
-                            ? normalizeStateName(
-                                row[
-                                    stateColumn
-                                ]
-                            )
-                            : "";
+                        return `
 
-
-                    const city =
-                        cityColumn
-                            ? String(
-                                row[
-                                    cityColumn
-                                ] ??
-                                ""
-                            ).trim()
-                            : "";
-
-
-                    const type =
-                        typeColumn
-                            ? String(
-                                row[
-                                    typeColumn
-                                ] ??
-                                ""
-                            ).trim()
-                            : "";
-
-
-                    return `
-
-                        <tr>
-
-                            <td>
+                            <div
+                                class="university-mobile-card"
+                            >
 
                                 <div
-                                    class="university-name"
+                                    class="mobile-university-name"
                                 >
 
                                     ${escapeHtml(
@@ -7429,215 +8811,131 @@ function renderUniversityDirectory() {
                                 </div>
 
 
+                                <div
+                                    class="mobile-ranking"
+                                >
+
+                                    ${
+                                        ranking
+                                            ? `QS 2027 · ${
+                                                escapeHtml(
+                                                    ranking.display
+                                                )
+                                            }`
+                                            : "Ranking unavailable"
+                                    }
+
+                                </div>
+
+
+                                <div
+                                    class="mobile-university-meta"
+                                >
+
+                                    <div
+                                        class="mobile-meta-item"
+                                    >
+
+                                        <span
+                                            class="mobile-meta-label"
+                                        >
+                                            State
+                                        </span>
+
+
+                                        <span
+                                            class="mobile-meta-value"
+                                        >
+
+                                            ${escapeHtml(
+                                                state
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <div
+                                        class="mobile-meta-item"
+                                    >
+
+                                        <span
+                                            class="mobile-meta-label"
+                                        >
+                                            City
+                                        </span>
+
+
+                                        <span
+                                            class="mobile-meta-value"
+                                        >
+
+                                            ${escapeHtml(
+                                                city
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <div
+                                        class="mobile-meta-item"
+                                    >
+
+                                        <span
+                                            class="mobile-meta-label"
+                                        >
+                                            Type
+                                        </span>
+
+
+                                        <span
+                                            class="mobile-meta-value"
+                                        >
+
+                                            ${escapeHtml(
+                                                type
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
                                 <details>
 
                                     <summary>
-
                                         View all university details
-
                                     </summary>
 
 
-                                    ${renderUniversityDetails(
+                                    ${universityDetailsHTML(
                                         row
                                     )}
 
                                 </details>
 
-                            </td>
+                            </div>
 
+                        `;
 
-                            <td>
-
-                                <div
-                                    class="university-rankings"
-                                >
-
-                                    ${renderUniversityRankings(
-                                        row,
-                                        rankingColumns
-                                    )}
-
-                                </div>
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="university-state"
-                                >
-
-                                    ${escapeHtml(
-                                        state ||
-                                        "—"
-                                    )}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    city ||
-                                    "—"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    type ||
-                                    "—"
-                                )}
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-
-    /*
-       Diagnostic information in console.
-    */
-
-    console.log(
-        "University directory:",
-        {
-            total:
-                allRows.length,
-
-            showing:
-                rows.length,
-
-            primaryRankingColumn:
-                primaryRankColumn,
-
-            rankingColumns:
-                rankingColumns.map(
-                    item =>
-                        item.column
+                    }
                 )
+                    .join("");
+
         }
-    );
+
+    }
 
 }
 
 
 /* ============================================================
-   KPI
-============================================================ */
-
-function renderKPIs() {
-
-    const universityRows =
-        getUniversityRows();
-
-
-    updateKPI(
-        "universityCount",
-        universityRows.length
-    );
-
-
-    updateKPI(
-        "courseCount",
-        (
-            DATA.courses ||
-            []
-        ).length
-    );
-
-
-    updateKPI(
-        "scholarshipCount",
-        distinctScholarshipCount()
-    );
-
-
-    updateKPI(
-        "companyCount",
-        (
-            DATA.companies ||
-            []
-        ).length
-    );
-
-
-    /*
-       Existing optional labels.
-    */
-
-    const scholarshipLabel =
-        byId(
-            "scholarshipCountLabel"
-        );
-
-
-    if (
-        scholarshipLabel
-    ) {
-
-        scholarshipLabel.textContent =
-            "Distinct scholarships";
-
-    }
-
-
-    const scholarshipNote =
-        byId(
-            "scholarshipCountNote"
-        );
-
-
-    if (
-        scholarshipNote
-    ) {
-
-        scholarshipNote.textContent =
-            "Unique scholarship IDs in dataset";
-
-    }
-
-}
-
-
-function updateKPI(
-    id,
-    value
-) {
-
-    const element =
-        byId(id);
-
-
-    if (!element) {
-
-        return;
-
-    }
-
-
-    element.textContent =
-        formatNumber(
-            value
-        );
-
-}
-
-
-/* ============================================================
-   INITIALIZATION
+   STARTUP
 ============================================================ */
 
 async function initializeDashboard() {
@@ -7645,28 +8943,21 @@ async function initializeDashboard() {
     try {
 
         /*
-           Repair old mojibake before rendering.
-        */
-
-        repairBrokenEmojis();
-
-
-        /*
-           Load every dataset.
+           Load first.
         */
 
         await loadAllData();
 
 
         /*
-           Build state analytics.
+           Build analytics.
         */
 
         buildStateMetrics();
 
 
         /*
-           Render normal dashboard.
+           Standard dashboard.
         */
 
         renderKPIs();
@@ -7675,10 +8966,14 @@ async function initializeDashboard() {
         setupStateSelector();
 
 
-        renderSelectedState();
+        renderStateOverview(
+            ""
+        );
 
 
-        renderMapDetail();
+        renderMapDetail(
+            ""
+        );
 
 
         renderStateUniversityList();
@@ -7696,6 +8991,11 @@ async function initializeDashboard() {
         renderIndustryTable();
 
 
+        /*
+           IMPORTANT:
+           scholarshipTable now uses REAL scholarship records.
+        */
+
         renderScholarshipTable();
 
 
@@ -7703,35 +9003,42 @@ async function initializeDashboard() {
 
 
         /*
-           Restore university directory.
+           Restored full university directory.
         */
 
         ensureUniversityDirectory();
 
 
         /*
-           Initialize map last.
+           Germany map.
         */
 
-        await initializeMap();
+        await initializeGermanyMap();
 
 
         /*
-           Run emoji repair again because some DOM sections
-           may have been created after the first pass.
+           Fix encoding AFTER all dynamic sections exist.
         */
 
-        repairBrokenEmojis();
+        repairDOMText();
+
+
+        fixKPIIcons();
 
 
         console.log(
-            "Germany Admit AI Helper loaded successfully."
+            "=========================================="
+        );
+
+
+        console.log(
+            "GERMANY ADMIT AI HELPER"
         );
 
 
         console.log(
             "Universities:",
-            getUniversityRows().length
+            universityRows().length
         );
 
 
@@ -7742,14 +9049,20 @@ async function initializeDashboard() {
 
 
         console.log(
-            "Primary ranking:",
-            getPrimaryRankingColumn(
-                getUniversityRows()
-            )
+            "Detected QS rankings:",
+            Object.keys(
+                QS_2027
+            ).length
         );
 
 
-    } catch (error) {
+        console.log(
+            "=========================================="
+        );
+
+    } catch (
+        error
+    ) {
 
         console.error(
             "Dashboard initialization failed:",
@@ -7765,15 +9078,13 @@ async function initializeDashboard() {
                     class="error-state"
                 >
 
-                    Dashboard could not load
-                    its analytics data.
+                    Dashboard could not initialize.
 
                     <br><br>
 
-                    Check the browser console
-                    and confirm that the analytics
-                    CSV files exist under
-                    outputs/analytics/.
+                    ${escapeHtml(
+                        error.message
+                    )}
 
                 </div>
 
