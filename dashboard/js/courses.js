@@ -1,8 +1,8 @@
-"use strict";
+﻿"use strict";
 
 /* ============================================================
    GERMANY ADMIT AI HELPER
-   STUDY PROGRAMME EXPLORER — REVISED VERSION
+   STUDY PROGRAMME EXPLORER â€” REVISED VERSION
 
    Preserves app.js and existing dashboard sections.
 
@@ -1282,7 +1282,7 @@
             const label = [
                 course.programme,
                 course.field
-            ].filter(Boolean).join(" — ");
+            ].filter(Boolean).join(" â€” ");
 
             const key = normalise(label);
 
@@ -1726,8 +1726,10 @@
     ======================================================== */
 
     function createSection() {
-        if ($("courseExplorer")) {
-            return $("courseExplorer");
+        const existingCourseExplorer = $("courseExplorer");
+
+        if (existingCourseExplorer) {
+            existingCourseExplorer.remove();
         }
 
         addStyles();
@@ -1751,7 +1753,7 @@
                 </div>
 
                 <div class="ce-count" id="ceTotal">
-                    Loading course records…
+                    Loading course recordsâ€¦
                 </div>
             </div>
 
@@ -1810,7 +1812,7 @@
                     <input
                         id="ceSearch"
                         type="search"
-                        placeholder="Try commerce, computer science, AI, engineering…"
+                        placeholder="Try commerce, computer science, AI, engineeringâ€¦"
                         autocomplete="off"
                     >
                 </div>
@@ -1845,9 +1847,9 @@
                     <label for="ceSort">Sort results</label>
 
                     <select id="ceSort">
-                        <option value="programme">Programme A–Z</option>
-                        <option value="university">University A–Z</option>
-                        <option value="state">State A–Z</option>
+                        <option value="programme">Programme Aâ€“Z</option>
+                        <option value="university">University Aâ€“Z</option>
+                        <option value="state">State Aâ€“Z</option>
                     </select>
                 </div>
 
@@ -1871,7 +1873,7 @@
 
             <div class="ce-summary">
                 <span id="ceResultsCount">
-                    Loading…
+                    Loadingâ€¦
                 </span>
 
                 <span>
@@ -1900,7 +1902,7 @@
         if (anchor) {
             const sectionParent =
                 anchor.closest(
-                    ".section, section, .data-card"
+                    ".section, section"
                 ) || anchor.parentElement;
 
             if (
@@ -1962,7 +1964,7 @@
             const label = [
                 course.programme,
                 course.field
-            ].filter(Boolean).join(" — ");
+            ].filter(Boolean).join(" â€” ");
 
             const key = normalise(label);
 
@@ -2236,13 +2238,13 @@
                         displayValue(course.university)
                     )}
 
-                    ·
+                    Â·
 
                     ${escapeHtml(
                         displayValue(course.city)
                     )}
 
-                    ·
+                    Â·
 
                     ${escapeHtml(
                         displayValue(course.state)
@@ -2562,7 +2564,7 @@
         if (summary) {
             summary.textContent =
                 matching.length
-                    ? `Showing ${(start + 1).toLocaleString()}–` +
+                    ? `Showing ${(start + 1).toLocaleString()}â€“` +
                       `${Math.min(start + PAGE_SIZE, matching.length).toLocaleString()} ` +
                       `of ${matching.length.toLocaleString()} matching records.`
                     : `No matching records for these filters. ` +
@@ -2786,7 +2788,7 @@
     ======================================================== */
 
     async function initialise() {
-        if (state.loading || $("courseExplorer")) {
+        if (state.loading) {
             return;
         }
 
@@ -2796,7 +2798,7 @@
 
         $("ceList").innerHTML = `
             <div class="ce-empty">
-                Loading programme data…
+                Loading programme dataâ€¦
             </div>
         `;
 
