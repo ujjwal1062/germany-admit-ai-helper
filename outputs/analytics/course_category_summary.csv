@@ -1,0 +1,166 @@
+﻿summary_type,category,count,percentage
+degree_category,Master's,2444,34.93
+degree_category,Other / level not stated,1946,27.82
+degree_category,Bachelor's / Undergraduate,1702,24.33
+degree_category,Teaching / Lehramt,699,9.99
+degree_category,State Examination,155,2.22
+degree_category,PhD / Doctoral,42,0.6
+degree_category,Vocational Training,8,0.11
+field_category,Other / not stated,2563,36.64
+field_category,Business & Economics,684,9.78
+field_category,Humanities & Languages,682,9.75
+field_category,Natural & Life Sciences,545,7.79
+field_category,Engineering & Technology,542,7.75
+field_category,Computer Science & IT,318,4.55
+field_category,Social Sciences & Psychology,305,4.36
+field_category,Education & Teaching,292,4.17
+field_category,Mathematics & Statistics,171,2.44
+field_category,Medicine & Health,170,2.43
+field_category,Law & Public Administration,106,1.52
+field_category,AI & Data Science,82,1.17
+field_category,Teaching,74,1.06
+field_category,"Arts, Media & Design",69,0.99
+field_category,Languages,69,0.99
+field_category,Environment & Sustainability,61,0.87
+field_category,Architecture & Planning,39,0.56
+field_category,Theology,27,0.39
+field_category,Languages & Area Studies,18,0.26
+field_category,Earth Sciences,16,0.23
+field_category,Interdisciplinary / Other,16,0.23
+field_category,Education,15,0.21
+field_category,Transport & Logistics,13,0.19
+field_category,Geosciences,12,0.17
+field_category,Area Studies,10,0.14
+field_category,Agricultural Sciences,9,0.13
+field_category,Interdisciplinary,7,0.1
+field_category,European Studies,5,0.07
+field_category,Geography,5,0.07
+field_category,Neuroscience,4,0.06
+field_category,Natural/Earth Sciences,4,0.06
+field_category,Cognitive Science,3,0.04
+field_category,Sport Sciences,3,0.04
+field_category,German Studies,3,0.04
+field_category,Health,3,0.04
+field_category,Agriculture,3,0.04
+field_category,Performing Arts,2,0.03
+field_category,Continuing Education,2,0.03
+field_category,Hospitality & Tourism,2,0.03
+field_category,English Studies,2,0.03
+field_category,Philology,2,0.03
+field_category,Forest Sciences,2,0.03
+field_category,Business/Teaching,2,0.03
+field_category,Education/Business,2,0.03
+field_category,Business Information Systems,2,0.03
+field_category,Sports,2,0.03
+field_category,Nanoscience,2,0.03
+field_category,Study Orientation,2,0.03
+field_category,Materials Science,2,0.03
+field_category,Philology/Area Studies,2,0.03
+field_category,Life/Earth Sciences,1,0.01
+field_category,Food Sciences,1,0.01
+field_category,Sciences,1,0.01
+field_category,Business,1,0.01
+field_category,Marine Sciences,1,0.01
+field_category,Languages/Area Studies,1,0.01
+field_category,Information Systems,1,0.01
+field_category,Conservation,1,0.01
+field_category,International Studies / Peace & Conflict,1,0.01
+field_category,Political Theory,1,0.01
+field_category,Urban Studies,1,0.01
+field_category,Geodesy / Geoinformation,1,0.01
+field_category,French Studies,1,0.01
+field_category,Italian Studies,1,0.01
+field_category,Spanish Studies,1,0.01
+field_category,Health / Neurorehabilitation,1,0.01
+field_category,Sport Science,1,0.01
+field_category,Sport Science / Health,1,0.01
+field_category,Safety Science,1,0.01
+field_category,Communication / Information,1,0.01
+state,Not stated,3768,53.86
+state,North Rhine-Westphalia,569,8.13
+state,Saxony-Anhalt,364,5.2
+state,Lower Saxony,330,4.72
+state,Thuringia,272,3.89
+state,Hesse,254,3.63
+state,Bavaria,241,3.44
+state,Baden-Württemberg,227,3.24
+state,Saxony,176,2.52
+state,Brandenburg,143,2.04
+state,Rhineland-Palatinate,121,1.73
+state,Schleswig-Holstein,117,1.67
+state,Saarland,107,1.53
+state,Berlin,99,1.42
+state,Bremen,91,1.3
+state,Mecklenburg-Vorpommern,69,0.99
+state,Hamburg,48,0.69
+language,German,2713,38.78
+language,Not stated,1872,26.76
+language,English,689,9.85
+language,German/English,233,3.33
+language,Programme-specific,232,3.32
+language,Programme-specific; RUB catalogue supports German/English filtering,197,2.82
+language,English/German,161,2.3
+language,German / programme-dependent,131,1.87
+language,Programme-specific; FAU faculty rules apply,130,1.86
+language,German / English depending on programme,122,1.74
+language,Programme-specific; verify official programme page,119,1.7
+language,German / programme-specific,64,0.91
+language,German; English,49,0.7
+language,Bilingual,31,0.44
+language,"German, English",26,0.37
+language,English / programme-specific,24,0.34
+language,German and English,18,0.26
+language,German/French,15,0.21
+language,German / English,14,0.2
+language,English / German,12,0.17
+language,German & English,11,0.16
+language,German; French,10,0.14
+language,"English, German",10,0.14
+language,German/Spanish,9,0.13
+language,English / German / French,9,0.13
+language,German; Spanish,7,0.1
+language,German; Italian,7,0.1
+language,German/Italian,6,0.09
+language,German or English,5,0.07
+language,French/German,5,0.07
+language,German/Chinese,4,0.06
+language,Spanish/German,3,0.04
+language,German / French,3,0.04
+language,German/Russian,3,0.04
+language,German/Dutch,3,0.04
+language,"German, English, French, Italian, Spanish",3,0.04
+language,German/study language,3,0.04
+language,Italian/German,3,0.04
+language,German / Spanish,3,0.04
+language,German / Italian,3,0.04
+language,German / Russian,2,0.03
+language,German; English; Spanish,2,0.03
+language,German/other languages,2,0.03
+language,English; selected electives German,1,0.01
+language,German; French; Italian; Spanish,1,0.01
+language,Spanish,1,0.01
+language,German; English; Other languages,1,0.01
+language,"French, German, English",1,0.01
+language,"English, German, French, Italian, Spanish",1,0.01
+language,German/Turkish,1,0.01
+language,German and/or English,1,0.01
+language,German; Other languages,1,0.01
+language,"German, Italian",1,0.01
+language,"Spanish, German, English",1,0.01
+language,"Italian, German, English",1,0.01
+language,German/other,1,0.01
+language,German/English/Chinese,1,0.01
+language,"Spanish, English, German",1,0.01
+language,"Italian, English, German",1,0.01
+language,"French, English, German",1,0.01
+language,"German, Spanish",1,0.01
+language,"French, German, Italian, Spanish",1,0.01
+language,Depends on course selection,1,0.01
+language,"French, German",1,0.01
+language,German/Latin,1,0.01
+language,English/Spanish,1,0.01
+language,German/English/Japanese,1,0.01
+language,German/English/other,1,0.01
+language,German/Japanese,1,0.01
+language,English/Bilingual,1,0.01
+language,German/French/Italian/Spanish,1,0.01

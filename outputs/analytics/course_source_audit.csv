@@ -1,0 +1,3 @@
+﻿source_file,sheet_name,source_rows,programme_name_rows,programme_rows_with_university,rows_with_entry_requirements
+data\raw\German_Universities_All_Datasets_Master.csv,,7461,6996,6754,6081
+data\raw\German_Universities_All_Datasets_Master.xlsx,Master,7461,6996,6754,6081

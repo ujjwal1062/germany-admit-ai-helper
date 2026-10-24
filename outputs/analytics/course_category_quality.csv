@@ -1,0 +1,14 @@
+﻿metric,value
+selected_source_rows,7461
+extracted_programme_rows,6996
+rows_with_university,6754
+missing_university,242
+missing_degree_type,0
+unclassified_degree,1946
+missing_field,0
+missing_language,1872
+missing_entry_requirements,915
+missing_language_requirements,5533
+missing_tuition_fee,870
+rows_with_official_programme_url,397
+possible_duplicate_course_rows,451
