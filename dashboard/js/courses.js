@@ -1,46 +1,47 @@
+"use strict";
+
 /* ============================================================
-   GERMANY ADMIT AI HELPER — COURSE EXPLORER
+   GERMANY ADMIT AI HELPER
+   STUDY PROGRAMME EXPLORER — REVISED VERSION
 
-   Standalone module. Does not replace the existing dashboard.
+   Preserves app.js and existing dashboard sections.
 
-   Source:
-     ../outputs/analytics/courses_analytics.csv
-
-   Features:
-     - Bachelor's, Master's, PhD / Doctoral, Teaching, All Courses
-     - Previous bachelor's degree selection for Master's
-     - Field-of-study filtering
-     - University, state and language filters
-     - Admission status filter
-     - Programme requirements and language requirements
-     - Tuition fees, semester contributions, ECTS and duration
-     - Application deadlines and official links
-     - Responsive cards for mobile
-     - Pagination for large datasets
+   Fixes:
+   - Recognise common degree abbreviations
+   - Infer fields from programme titles when missing
+   - Search by subject synonyms such as commerce/business
+   - Show courses without forcing a field selection
+   - Preserve all 14,922 source records where available
+   - Show actual source requirements and official URLs
+   - Cache searchable text to reduce lag
+   - Render only 20 cards per page
+   - Support responsive mobile browsing
+   - Do not invent individual PhD programmes
 ============================================================ */
 
 (function () {
     "use strict";
 
-    const COURSE_CSV_URL =
+    const CSV_URL =
         "../outputs/analytics/courses_analytics.csv";
 
     const PAGE_SIZE = 20;
 
-    let allCourses = [];
-    let doctoralFallbackCourses = [];
-    let currentPage = 0;
-    let selectedPreviousBachelor = null;
-    let previousBachelorOptions = new Map();
-    let activeFieldOptions = [];
-    let fieldExplanation = "";
+    const state = {
+        rows: [],
+        page: 0,
+        selectedBachelor: null,
+        bachelorLookup: new Map(),
+        timer: null,
+        loading: false
+    };
 
-    const el = (id) =>
+    const $ = (id) =>
         document.getElementById(id);
 
 
     /* ========================================================
-       HELPERS
+       NORMALISATION
     ======================================================== */
 
     function normalise(value) {
@@ -54,6 +55,9 @@
             .replace(/\s+/g, " ");
     }
 
+    function compact(value) {
+        return normalise(value).replace(/\s/g, "");
+    }
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -64,69 +68,41 @@
             .replaceAll("'", "&#039;");
     }
 
+    function isEmpty(value) {
+        const text = normalise(value);
 
-    function pretty(value) {
-        const text = String(value ?? "").trim();
-
-        return text || "Not provided in dataset";
+        return !text ||
+            [
+                "na",
+                "n a",
+                "n a",
+                "not available",
+                "not provided",
+                "not provided in dataset",
+                "unknown",
+                "null",
+                "none",
+                "other not stated"
+            ].includes(text);
     }
 
-
-    function getValue(row, candidates) {
-        if (!row) return "";
-
-        const keys = Object.keys(row);
-
-        const keyMap = new Map(
-            keys.map((key) => [
-                normalise(key),
-                key
-            ])
-        );
-
-        for (const candidate of candidates) {
-            const key = keyMap.get(
-                normalise(candidate)
-            );
-
-            if (
-                key &&
-                String(row[key] ?? "").trim() !== ""
-            ) {
-                return String(row[key]).trim();
-            }
-        }
-
-        for (const candidate of candidates) {
-            const wanted = normalise(candidate);
-
-            const key = keys.find((item) =>
-                normalise(item).includes(wanted) ||
-                wanted.includes(normalise(item))
-            );
-
-            if (
-                key &&
-                String(row[key] ?? "").trim() !== ""
-            ) {
-                return String(row[key]).trim();
-            }
-        }
-
-        return "";
+    function displayValue(value) {
+        return isEmpty(value)
+            ? "Not provided in source data"
+            : String(value).trim();
     }
 
 
     /* ========================================================
        CSV PARSER
 
-       Supports quoted cells, commas, escaped quotes and
-       line breaks inside quoted cells.
+       Supports quoted commas, escaped quotes and embedded
+       line breaks in quoted cells.
     ======================================================== */
 
-    function parseCsv(text) {
-        const source = String(text ?? "")
-            .replace(/^\uFEFF/, "");
+    function parseCSV(text) {
+        const source =
+            String(text ?? "").replace(/^\uFEFF/, "");
 
         const rows = [];
 
@@ -138,11 +114,7 @@
             const ch = source[i];
             const next = source[i + 1];
 
-            if (
-                ch === '"' &&
-                quoted &&
-                next === '"'
-            ) {
+            if (ch === '"' && quoted && next === '"') {
                 cell += '"';
                 i++;
                 continue;
@@ -160,13 +132,10 @@
             }
 
             if (
-                (ch === "\n" || ch === "\r") &&
+                (ch === "\r" || ch === "\n") &&
                 !quoted
             ) {
-                if (
-                    ch === "\r" &&
-                    next === "\n"
-                ) {
+                if (ch === "\r" && next === "\n") {
                     i++;
                 }
 
@@ -175,8 +144,7 @@
 
                 if (
                     row.some(
-                        (part) =>
-                            String(part).trim() !== ""
+                        value => String(value).trim() !== ""
                     )
                 ) {
                     rows.push(row);
@@ -194,8 +162,7 @@
 
             if (
                 row.some(
-                    (part) =>
-                        String(part).trim() !== ""
+                    value => String(value).trim() !== ""
                 )
             ) {
                 rows.push(row);
@@ -205,311 +172,915 @@
         if (!rows.length) return [];
 
         const headers = rows[0].map(
-            (header) => String(header ?? "").trim()
+            value => String(value ?? "").trim()
         );
 
-        return rows.slice(1).map(
-            (values, index) => {
-                const record = {
-                    __course_row_id: index + 1
-                };
+        return rows.slice(1).map(values => {
+            const record = {};
 
-                headers.forEach((header, col) => {
-                    record[header] =
-                        String(values[col] ?? "").trim();
-                });
+            headers.forEach((header, index) => {
+                record[header] =
+                    String(values[index] ?? "").trim();
+            });
 
-                return record;
+            return record;
+        });
+    }
+
+
+    /* ========================================================
+       COLUMN LOOKUP
+
+       Exact aliases are checked before partial matches.
+    ======================================================== */
+
+    function getValue(row, aliases) {
+        const keys = Object.keys(row || {});
+
+        const byNormalisedName = new Map();
+
+        keys.forEach(key => {
+            byNormalisedName.set(normalise(key), key);
+        });
+
+        for (const alias of aliases) {
+            const key =
+                byNormalisedName.get(normalise(alias));
+
+            if (
+                key &&
+                String(row[key] ?? "").trim() !== ""
+            ) {
+                return String(row[key]).trim();
             }
+        }
+
+        for (const alias of aliases) {
+            const wanted = normalise(alias);
+
+            const key = keys.find(column => {
+                const actual = normalise(column);
+
+                return actual.includes(wanted) ||
+                    wanted.includes(actual);
+            });
+
+            if (
+                key &&
+                String(row[key] ?? "").trim() !== ""
+            ) {
+                return String(row[key]).trim();
+            }
+        }
+
+        return "";
+    }
+
+
+    /* ========================================================
+       FIELD CLASSIFICATION
+
+       Keep the original field when it is meaningful.
+       Infer from programme / faculty when the field is blank.
+    ======================================================== */
+
+    const FIELD_RULES = [
+        {
+            label: "AI & Data Science",
+            terms: [
+                "artificial intelligence",
+                "machine learning",
+                "data science",
+                "data analytics",
+                "big data",
+                "computational data",
+                "intelligent systems",
+                "deep learning"
+            ]
+        },
+        {
+            label: "Computer Science & IT",
+            terms: [
+                "computer science",
+                "informatics",
+                "information technology",
+                "software engineering",
+                "cyber security",
+                "cybersecurity",
+                "information systems",
+                "computer engineering",
+                "computing",
+                "web development"
+            ]
+        },
+        {
+            label: "Engineering & Technology",
+            terms: [
+                "engineering",
+                "aerospace",
+                "mechanical",
+                "electrical",
+                "electronic engineering",
+                "civil engineering",
+                "chemical engineering",
+                "industrial engineering",
+                "automotive",
+                "robotics",
+                "mechatronics",
+                "materials engineering",
+                "energy engineering",
+                "renewable energy",
+                "process engineering"
+            ]
+        },
+        {
+            label: "Architecture & Built Environment",
+            terms: [
+                "architecture",
+                "urban planning",
+                "urban design",
+                "spatial planning",
+                "civil construction",
+                "built environment",
+                "landscape architecture"
+            ]
+        },
+        {
+            label: "Business, Economics & Commerce",
+            terms: [
+                "business administration",
+                "business studies",
+                "commerce",
+                "commercial",
+                "management",
+                "economics",
+                "economy",
+                "accounting",
+                "finance",
+                "marketing",
+                "entrepreneurship",
+                "international business",
+                "business intelligence",
+                "business analytics",
+                "bwl",
+                "volkswirtschaft",
+                "wirtschaft",
+                "handel"
+            ]
+        },
+        {
+            label: "Medicine & Health",
+            terms: [
+                "medicine",
+                "medical",
+                "health science",
+                "health sciences",
+                "public health",
+                "nursing",
+                "pharmacy",
+                "dentistry",
+                "biomedical",
+                "clinical",
+                "physiotherapy",
+                "healthcare"
+            ]
+        },
+        {
+            label: "Natural & Life Sciences",
+            terms: [
+                "natural sciences",
+                "life sciences",
+                "biology",
+                "biological",
+                "chemistry",
+                "physics",
+                "biotechnology",
+                "molecular biology",
+                "microbiology",
+                "biochemistry",
+                "geoscience",
+                "geology",
+                "astronomy"
+            ]
+        },
+        {
+            label: "Mathematics & Statistics",
+            terms: [
+                "mathematics",
+                "mathematical",
+                "statistics",
+                "statistical",
+                "actuarial science",
+                "operations research"
+            ]
+        },
+        {
+            label: "Agriculture & Environmental Sciences",
+            terms: [
+                "agriculture",
+                "agricultural",
+                "forestry",
+                "environmental science",
+                "environmental studies",
+                "ecology",
+                "sustainability",
+                "climate",
+                "conservation",
+                "agronomy",
+                "natural resource"
+            ]
+        },
+        {
+            label: "Transport & Logistics",
+            terms: [
+                "transport",
+                "logistics",
+                "supply chain",
+                "maritime",
+                "shipping",
+                "port management",
+                "aviation management",
+                "railway",
+                "traffic engineering"
+            ]
+        },
+        {
+            label: "Law & Public Administration",
+            terms: [
+                "law",
+                "legal studies",
+                "jurisprudence",
+                "public administration",
+                "public policy",
+                "governance"
+            ]
+        },
+        {
+            label: "Social Sciences & Psychology",
+            terms: [
+                "psychology",
+                "sociology",
+                "social science",
+                "social sciences",
+                "political science",
+                "international relations",
+                "social work",
+                "criminology",
+                "behavioural science",
+                "behavioral science"
+            ]
+        },
+        {
+            label: "Education & Teaching",
+            terms: [
+                "teacher training",
+                "teacher education",
+                "teaching degree",
+                "lehramt",
+                "education",
+                "educational science",
+                "educational sciences",
+                "pedagogy",
+                "didactics"
+            ]
+        },
+        {
+            label: "Arts, Media & Design",
+            terms: [
+                "art and design",
+                "art studies",
+                "fine arts",
+                "design",
+                "graphic design",
+                "media studies",
+                "communication studies",
+                "film studies",
+                "music",
+                "performing arts",
+                "visual arts",
+                "photography"
+            ]
+        },
+        {
+            label: "Humanities & Languages",
+            terms: [
+                "humanities",
+                "history",
+                "philosophy",
+                "literature",
+                "linguistics",
+                "language studies",
+                "languages",
+                "archaeology",
+                "cultural studies",
+                "religious studies",
+                "ancient studies"
+            ]
+        },
+        {
+            label: "Hospitality & Tourism",
+            terms: [
+                "hospitality",
+                "tourism",
+                "hotel management",
+                "event management"
+            ]
+        }
+    ];
+
+
+    function inferField(courseName, faculty, originalField) {
+        const raw = String(originalField ?? "").trim();
+
+        if (
+            raw &&
+            !isEmpty(raw) &&
+            ![
+                "other",
+                "not stated",
+                "other / not stated"
+            ].includes(normalise(raw))
+        ) {
+            return raw;
+        }
+
+        const text = normalise(
+            `${courseName} ${faculty}`
         );
+
+        for (const rule of FIELD_RULES) {
+            if (
+                rule.terms.some(term =>
+                    text.includes(normalise(term))
+                )
+            ) {
+                return rule.label;
+            }
+        }
+
+        return "Other / not stated";
     }
 
 
     /* ========================================================
        DEGREE CLASSIFICATION
 
-       Teaching is detected first so Bachelor/Master of
-       Education programmes are placed in the Teaching route.
-
-       The university-level phd_available flag is not treated
-       as proof that an individual PhD programme is listed.
+       The compact form is important:
+       B.Sc. -> bsc
+       M.Sc. -> msc
+       B.A.  -> ba
+       M.A.  -> ma
     ======================================================== */
 
-    function classifyCourse(row) {
-        const degree = normalise(
-            getValue(row, [
-                "degree_type",
-                "degree type",
-                "degree"
-            ])
-        );
+    function classifyDegree(
+        programme,
+        degreeType,
+        field
+    ) {
+        const title = normalise(programme);
+        const degree = normalise(degreeType);
+        const degreeCode = compact(degreeType);
+        const subject = normalise(field);
 
-        const field = normalise(
-            getValue(row, [
-                "field_of_study",
-                "field of study",
-                "subject",
-                "field"
-            ])
-        );
+        /*
+           Teaching routes first.
+           M.Ed. and B.Ed. are explicitly teaching degrees.
+        */
 
-        const programme = normalise(
-            getValue(row, [
-                "programme_name",
-                "program_name",
-                "programme name",
-                "course_name",
-                "course name"
-            ])
-        );
+        const educationCode =
+            /^(bed|med|bachelorofeducation|masterofeducation)$/
+                .test(degreeCode);
 
-        const teaching =
-            degree.includes("bachelor of education") ||
-            degree.includes("master of education") ||
-            degree.includes("teaching") ||
-            degree.includes("lehramt") ||
-            field.includes("teaching degree") ||
-            field.includes("teacher education") ||
-            programme.includes("teaching degree") ||
-            programme.includes("lehramt") ||
-            programme.includes("teacher education");
+        const isTeaching =
+            educationCode ||
+            title.includes("lehramt") ||
+            title.includes("teacher training") ||
+            title.includes("teacher education") ||
+            title.includes("teaching degree") ||
+            subject.includes("teaching") ||
+            subject.includes("teacher education") ||
+            title.includes("(teacher training)") ||
+            title.includes("(teaching)");
 
-        if (teaching) return "teaching";
+        if (isTeaching) {
+            return "teaching";
+        }
 
-        if (
-            /(^| )(phd|ph d|doctor of philosophy|doctoral|doctorate|promotion)( |$)/
-                .test(degree) ||
-            /(^| )(phd|ph d|doctor of philosophy|doctoral programme|doctoral program|doctorate)( |$)/
-                .test(programme)
-        ) {
+
+        /*
+           PhD / doctorate.
+        */
+
+        const isDoctoral =
+            degree.includes("phd") ||
+            degree.includes("doctor of philosophy") ||
+            degree.includes("doctoral") ||
+            degree.includes("doctorate") ||
+            degree.includes("promotion") ||
+            /^(phd|doctorate|doctoral|doctorofphilosophy)$/
+                .test(degreeCode) ||
+            title.includes("doctoral programme") ||
+            title.includes("doctoral program");
+
+        if (isDoctoral) {
             return "phd";
         }
 
-        if (
+
+        /*
+           Master's degrees.
+        */
+
+        const isMaster =
             degree.includes("master") ||
-            degree.startsWith("msc ") ||
-            degree.startsWith("ma ")
-        ) {
+            degree.includes("postgraduate") ||
+            /^(msc|ms|ma|meng|mba|llm|mphil|mfa|mph|mtech|mcom|mbl)$/
+                .test(degreeCode) ||
+            /^(msc|ms|ma|meng|mba|llm|mphil|mfa|mph|mtech|mcom|mbl)(major|minor|hons|honours|honors)$/
+                .test(degreeCode);
+
+        if (isMaster) {
             return "master";
         }
 
-        if (
+
+        /*
+           Bachelor's / undergraduate degrees.
+
+           State Examination is included in the undergraduate
+           route because German law and medicine programmes may
+           use it instead of a Bachelor's award.
+        */
+
+        const isBachelor =
             degree.includes("bachelor") ||
-            degree.startsWith("bsc ") ||
-            degree.startsWith("ba ")
-        ) {
+            degree.includes("undergraduate") ||
+            degree.includes("state examination") ||
+            degree.includes("staatsexamen") ||
+            degree.includes("erstes staatsexamen") ||
+            /^(bsc|ba|beng|bba|bcom|llb|barch|bdes|bfa|bphil|bmus)$/
+                .test(degreeCode) ||
+            /^(bsc|ba|beng|bba|bcom|llb|barch|bdes|bfa|bphil|bmus)(major|minor|hons|honours|honors)$/
+                .test(degreeCode);
+
+        if (isBachelor) {
             return "bachelor";
         }
 
-        if (
-            programme.includes("doctoral programme") ||
-            programme.includes("doctoral program")
-        ) {
-            return "phd";
-        }
+
+        /*
+           Do not guess degree levels from the university's
+           phd_available flag or from admission requirements.
+        */
 
         return "other";
     }
 
 
-    /* ========================================================
-       NORMALISE DATASET ROWS
+    function degreeLabel(level) {
+        const labels = {
+            bachelor: "Bachelor's / Undergraduate",
+            master: "Master's",
+            phd: "PhD / Doctoral",
+            teaching: "Teaching / Lehramt",
+            other: "Other / level not stated"
+        };
 
-       These map the columns to consistent internal properties.
+        return labels[level] || "Other / level not stated";
+    }
+
+
+    /* ========================================================
+       SYNONYMS FOR USER SEARCH
+
+       Commerce should find business / economics courses even
+       if the word "commerce" is absent from the title.
     ======================================================== */
 
-    function standardise(row) {
-        return {
-            raw: row,
+    const SEARCH_SYNONYMS = {
+        commerce: [
+            "commerce",
+            "commercial",
+            "business administration",
+            "business",
+            "management",
+            "economics",
+            "economy",
+            "accounting",
+            "finance",
+            "marketing",
+            "trade",
+            "bwl",
+            "wirtschaft",
+            "handel"
+        ],
 
-            programme: getValue(row, [
-                "programme_name",
-                "programme name",
-                "program_name",
-                "program name",
-                "course_name",
-                "course name",
-                "course",
-                "title"
-            ]),
+        business: [
+            "commerce",
+            "commercial",
+            "business administration",
+            "business",
+            "management",
+            "economics",
+            "accounting",
+            "finance",
+            "marketing",
+            "bwl",
+            "wirtschaft"
+        ],
 
-            degree: getValue(row, [
-                "degree_type",
-                "degree type",
-                "degree"
-            ]),
+        "business administration": [
+            "business administration",
+            "business management",
+            "management",
+            "commerce",
+            "economics",
+            "bwl",
+            "wirtschaft"
+        ],
 
-            field: getValue(row, [
-                "field_of_study",
-                "field of study",
-                "subject",
-                "field"
-            ]),
+        "ai ml": [
+            "artificial intelligence",
+            "machine learning",
+            "data science",
+            "computer science",
+            "informatics",
+            "computing",
+            "intelligent systems"
+        ],
 
-            university: getValue(row, [
-                "university",
-                "university_name",
-                "university name",
-                "institution"
-            ]),
+        ai: [
+            "artificial intelligence",
+            "machine learning",
+            "data science",
+            "computer science",
+            "informatics",
+            "intelligent systems"
+        ],
 
-            state: getValue(row, [
+        "machine learning": [
+            "machine learning",
+            "artificial intelligence",
+            "data science",
+            "computer science",
+            "informatics",
+            "deep learning"
+        ],
+
+        computing: [
+            "computer science",
+            "computing",
+            "informatics",
+            "information technology",
+            "software engineering",
+            "cybersecurity",
+            "data science"
+        ],
+
+        cs: [
+            "computer science",
+            "computing",
+            "informatics",
+            "information technology"
+        ],
+
+        engineering: [
+            "engineering",
+            "aerospace",
+            "mechanical",
+            "electrical",
+            "civil",
+            "chemical engineering",
+            "industrial engineering",
+            "robotics",
+            "mechatronics"
+        ],
+
+        medicine: [
+            "medicine",
+            "medical",
+            "health science",
+            "health sciences",
+            "clinical",
+            "biomedical"
+        ],
+
+        teaching: [
+            "teaching",
+            "teacher training",
+            "teacher education",
+            "lehramt",
+            "education"
+        ]
+    };
+
+
+    function matchesSearch(course, query) {
+        if (!query) return true;
+
+        const q = normalise(query);
+
+        if (course.searchText.includes(q)) {
+            return true;
+        }
+
+        const synonyms = SEARCH_SYNONYMS[q];
+
+        if (synonyms) {
+            return synonyms.some(term =>
+                course.searchText.includes(
+                    normalise(term)
+                )
+            );
+        }
+
+        /*
+           Free-text search: all query words must be present,
+           unless the exact phrase has already matched.
+        */
+
+        const words = q.split(" ").filter(Boolean);
+
+        return words.length > 1 &&
+            words.every(word =>
+                course.searchText.includes(word)
+            );
+    }
+
+
+    /* ========================================================
+       NORMALISE ONE COURSE
+
+       Every source column is preserved in `raw`, so the detail
+       view can show metadata even if it is not a recognised
+       standard field.
+    ======================================================== */
+
+    function standardise(raw, index) {
+        const programme = getValue(raw, [
+            "programme_name",
+            "program_name",
+            "programme",
+            "program",
+            "course_name",
+            "course_title",
+            "study_programme",
+            "study_program",
+            "degree_programme",
+            "degree_program",
+            "title"
+        ]);
+
+        const university = getValue(raw, [
+            "university",
+            "university_name",
+            "institution",
+            "institution_name"
+        ]);
+
+        const degree = getValue(raw, [
+            "degree_type",
+            "degree",
+            "degree_level",
+            "study_level",
+            "programme_level",
+            "program_level",
+            "qualification",
+            "qualification_type",
+            "award",
+            "academic_degree"
+        ]);
+
+        const fieldRaw = getValue(raw, [
+            "field_of_study",
+            "study_field",
+            "subject_area",
+            "study_area",
+            "subject",
+            "discipline",
+            "field",
+            "programme_field",
+            "program_field"
+        ]);
+
+        const faculty = getValue(raw, [
+            "faculty",
+            "department",
+            "school",
+            "faculty_department"
+        ]);
+
+        const field = inferField(
+            programme,
+            faculty,
+            fieldRaw
+        );
+
+        const level = classifyDegree(
+            programme,
+            degree,
+            `${fieldRaw} ${faculty}`
+        );
+
+        const course = {
+            index,
+
+            raw,
+
+            programme,
+
+            university,
+
+            degree,
+
+            level,
+
+            levelLabel:
+                degreeLabel(level),
+
+            field,
+
+            fieldRaw,
+
+            faculty,
+
+            state: getValue(raw, [
                 "state",
                 "federal_state",
-                "federal state",
                 "bundesland"
             ]),
 
-            city: getValue(row, [
+            city: getValue(raw, [
                 "city",
                 "location"
             ]),
 
-            universityType: getValue(row, [
+            universityType: getValue(raw, [
                 "university_type",
-                "university type",
-                "institution_type"
+                "institution_type",
+                "university type"
             ]),
 
-            rank: getValue(row, [
+            rank: getValue(raw, [
                 "qs_world_university_ranking_2027",
-                "qs world university ranking 2027",
-                "qs ranking",
-                "qs rank"
+                "qs_world_university_ranking_2027",
+                "qs_rank",
+                "qs ranking"
             ]),
 
-            language: getValue(row, [
+            language: getValue(raw, [
                 "language_of_instruction",
-                "language of instruction",
-                "language"
+                "language",
+                "instruction_language"
             ]),
 
-            mode: getValue(row, [
+            mode: getValue(raw, [
                 "study_mode",
-                "study mode",
                 "mode"
             ]),
 
-            semester: getValue(row, [
+            semester: getValue(raw, [
                 "start_semester",
-                "start semester",
-                "intake",
-                "semester"
+                "semester",
+                "intake"
             ]),
 
-            admission: getValue(row, [
+            admission: getValue(raw, [
                 "admission_status",
-                "admission status",
-                "admission"
+                "admission_restriction",
+                "admission",
+                "admission_type"
             ]),
 
-            duration: getValue(row, [
+            duration: getValue(raw, [
                 "standard_duration",
-                "standard duration",
-                "duration"
+                "duration",
+                "study_duration"
             ]),
 
-            ects: getValue(row, [
+            ects: getValue(raw, [
                 "ects",
                 "credits",
                 "credit_points"
             ]),
 
-            tuition: getValue(row, [
+            tuition: getValue(raw, [
                 "tuition_fee",
-                "tuition fee",
-                "tuition"
+                "tuition",
+                "tuition_fees"
             ]),
 
-            semesterContribution: getValue(row, [
+            contribution: getValue(raw, [
                 "semester_contribution",
-                "semester contribution",
-                "semester_fee"
+                "semester_fee",
+                "semester_fees"
             ]),
 
-            entryRequirements: getValue(row, [
+            entryRequirements: getValue(raw, [
                 "entry_requirements",
-                "entry requirements",
                 "admission_requirements",
-                "admission requirements"
+                "entry requirement"
             ]),
 
-            languageRequirements: getValue(row, [
+            languageRequirements: getValue(raw, [
                 "language_requirements",
-                "language requirements",
                 "language_requirement"
             ]),
 
-            deadline: getValue(row, [
+            deadline: getValue(raw, [
                 "application_deadline",
-                "application deadline",
                 "deadline"
             ]),
 
-            applicationRoute: getValue(row, [
+            applicationRoute: getValue(raw, [
                 "application_route",
-                "application route",
                 "application_process"
             ]),
 
-            faculty: getValue(row, [
-                "faculty",
-                "department"
-            ]),
-
-            phdAvailable: getValue(row, [
+            phdAvailable: getValue(raw, [
                 "phd_available",
-                "phd available",
                 "doctoral_available"
             ]),
 
-            catalogueUrl: getValue(row, [
+            catalogueUrl: getValue(raw, [
                 "official_programme_catalogue",
-                "official programme catalogue",
                 "programme_url",
                 "official_course_url"
             ]),
 
-            bachelorMasterUrl: getValue(row, [
-                "official_bachelor_master",
-                "official bachelor master"
+            bachelorMasterUrl: getValue(raw, [
+                "official_bachelor_master"
             ]),
 
-            applicationUrl: getValue(row, [
+            applicationUrl: getValue(raw, [
                 "official_application",
-                "official application",
                 "application_url"
             ]),
 
-            feesUrl: getValue(row, [
+            feesUrl: getValue(raw, [
                 "official_fees",
-                "official fees",
                 "fees_url"
             ]),
 
-            lastChecked: getValue(row, [
-                "last_checked",
-                "last checked",
-                "source_checked_at"
+            requirementsUrl: getValue(raw, [
+                "official_requirements_source",
+                "official_requirements_url"
             ]),
 
-            category: classifyCourse(row)
+            lastChecked: getValue(raw, [
+                "last_checked",
+                "source_checked_at"
+            ])
         };
+
+        /*
+           Precompute searchable corpus once. Filtering does
+           not normalise all CSV columns repeatedly on every key.
+        */
+
+        course.searchText = normalise([
+            ...Object.values(raw),
+            course.programme,
+            course.university,
+            course.degree,
+            course.field,
+            course.faculty,
+            course.state,
+            course.city
+        ].join(" "));
+
+        course.normalisedState =
+            normalise(course.state);
+
+        course.normalisedField =
+            normalise(course.field);
+
+        course.normalisedLanguage =
+            normalise(course.language);
+
+        course.normalisedAdmission =
+            normalise(course.admission);
+
+        return course;
     }
 
+
+    /* ========================================================
+       OPTIONS
+    ======================================================== */
 
     function uniqueSorted(values) {
         const map = new Map();
 
-        values.forEach((value) => {
-            const display = String(value ?? "").trim();
+        values.forEach(value => {
+            const text = String(value ?? "").trim();
 
-            if (!display) return;
+            if (isEmpty(text)) return;
 
-            const key = normalise(display);
+            const key = normalise(text);
 
-            if (key && !map.has(key)) {
-                map.set(key, display);
+            if (!map.has(key)) {
+                map.set(key, text);
             }
         });
 
@@ -524,422 +1095,247 @@
     }
 
 
-    function distinctFieldValues(rows) {
-        return uniqueSorted(
-            rows.map(
-                (row) => row.field || "Other / not stated"
-            )
-        );
-    }
-
-
-    function isBachelorSource(row) {
-        const degree = normalise(row.degree);
-
-        return (
-            degree.includes("bachelor") ||
-            degree.startsWith("bsc ") ||
-            degree.startsWith("ba ")
-        );
-    }
-
-
-    /* ========================================================
-       MASTER'S FIELD SUGGESTIONS
-
-       This uses field labels, programme titles and available
-       entry-requirement text to suggest relevant fields.
-
-       It does not claim to establish formal admission
-       eligibility, because the dataset does not contain a
-       verified subject-to-eligibility matrix.
-    ======================================================== */
-
-    const FIELD_FAMILIES = [
-        [
-            "computing",
-            [
-                "computer science",
-                "computing",
-                "informatics",
-                "information technology",
-                "data science",
-                "artificial intelligence",
-                "software engineering"
-            ]
-        ],
-        [
-            "engineering",
-            [
-                "engineering",
-                "mechanical",
-                "electrical",
-                "civil engineering",
-                "industrial",
-                "technology",
-                "mechatronics",
-                "process engineering"
-            ]
-        ],
-        [
-            "natural sciences",
-            [
-                "natural sciences",
-                "physics",
-                "chemistry",
-                "biology",
-                "life sciences",
-                "earth sciences",
-                "geoscience",
-                "environment",
-                "mathematics",
-                "statistics"
-            ]
-        ],
-        [
-            "business",
-            [
-                "business",
-                "management",
-                "economics",
-                "finance",
-                "accounting",
-                "marketing",
-                "commerce",
-                "entrepreneurship"
-            ]
-        ],
-        [
-            "social sciences",
-            [
-                "social sciences",
-                "sociology",
-                "political science",
-                "politics",
-                "psychology",
-                "public policy",
-                "communication",
-                "education"
-            ]
-        ],
-        [
-            "humanities",
-            [
-                "humanities",
-                "history",
-                "philosophy",
-                "languages",
-                "literature",
-                "culture",
-                "arts",
-                "linguistics"
-            ]
-        ],
-        [
-            "law",
-            [
-                "law",
-                "legal studies",
-                "jurisprudence"
-            ]
-        ],
-        [
-            "health",
-            [
-                "medicine",
-                "health",
-                "nursing",
-                "pharmacy",
-                "biomedical",
-                "public health",
-                "dentistry"
-            ]
-        ],
-        [
-            "teaching",
-            [
-                "teaching",
-                "teacher",
-                "lehramt",
-                "education"
-            ]
-        ]
-    ];
-
-
-    function familiesFor(text) {
-        const n = normalise(text);
-
-        return FIELD_FAMILIES
-            .filter(([, keywords]) =>
-                keywords.some(
-                    (keyword) =>
-                        n.includes(normalise(keyword))
-                )
-            )
-            .map(([family]) => family);
-    }
-
-
-    function relatedMasterFields(previousBachelor) {
-        const masterCourses = allCourses.filter(
-            (course) =>
-                course.category === "master"
-        );
-
-        const fields = distinctFieldValues(masterCourses);
-
-        if (!previousBachelor || !fields.length) {
-            fieldExplanation =
-                "Choose your completed bachelor's degree first. " +
-                "The dataset does not provide a formal subject-to-admission eligibility matrix.";
-
-            return [];
-        }
-
-        const priorField =
-            previousBachelor.field || "";
-
-        const priorName =
-            previousBachelor.programme || "";
-
-        const priorFamilies = new Set([
-            ...familiesFor(priorField),
-            ...familiesFor(priorName)
-        ]);
-
-        const priorTokens = normalise(
-            `${priorName} ${priorField}`
-        )
-            .split(" ")
-            .filter(
-                (token) =>
-                    token.length >= 5 &&
-                    ![
-                        "bachelor",
-                        "science",
-                        "degree",
-                        "study",
-                        "studies",
-                        "programme",
-                        "program",
-                        "arts",
-                        "applied"
-                    ].includes(token)
-            );
-
-
-        const scored = masterCourses.map((course) => {
-            let score = 0;
-
-            const targetField =
-                course.field || "Other / not stated";
-
-            const targetNorm =
-                normalise(targetField);
-
-            const reqNorm =
-                normalise(course.entryRequirements);
-
-            const titleNorm =
-                normalise(course.programme);
-
-
-            if (
-                targetNorm === normalise(priorField) &&
-                priorField
-            ) {
-                score += 100;
-            }
-
-
-            const targetFamilies = new Set([
-                ...familiesFor(targetField),
-                ...familiesFor(course.programme)
-            ]);
-
-            for (const family of priorFamilies) {
-                if (targetFamilies.has(family)) {
-                    score += 35;
-                    break;
-                }
-            }
-
-
-            if (
-                priorField &&
-                reqNorm.includes(normalise(priorField))
-            ) {
-                score += 45;
-            }
-
-
-            if (
-                priorName &&
-                reqNorm.includes(normalise(priorName))
-            ) {
-                score += 60;
-            }
-
-
-            const meaningfulTokenHits =
-                priorTokens.filter(
-                    (token) =>
-                        reqNorm.includes(token) ||
-                        titleNorm.includes(token)
-                );
-
-            score +=
-                Math.min(
-                    meaningfulTokenHits.length,
-                    3
-                ) * 4;
-
-
-            return {
-                field: targetField,
-                score
-            };
-        });
-
-
-        const bestByField = new Map();
-
-        scored.forEach((item) => {
-            const key = normalise(item.field);
-
-            const old = bestByField.get(key);
-
-            if (
-                !old ||
-                old.score < item.score
-            ) {
-                bestByField.set(key, item);
-            }
-        });
-
-
-        const matched = [...bestByField.values()]
-            .filter((item) => item.score > 0)
-            .sort(
-                (a, b) =>
-                    b.score - a.score ||
-                    a.field.localeCompare(b.field)
-            );
-
-
-        if (matched.length) {
-            const threshold =
-                matched[0].score >= 100
-                    ? Math.max(35, matched[0].score - 70)
-                    : Math.max(1, matched[0].score - 25);
-
-
-            const relevant =
-                matched
-                    .filter(
-                        (item) =>
-                            item.score >= threshold
-                    )
-                    .map(
-                        (item) =>
-                            item.field
-                    );
-
-
-            fieldExplanation =
-                "Fields are suggested using the dataset's field labels " +
-                "and available degree-requirement text. This is a discovery " +
-                "aid, not an official eligibility decision. Verify each programme's requirements.";
-
-            return uniqueSorted(relevant);
-        }
-
-
-        fieldExplanation =
-            "The dataset does not contain a structured compatibility " +
-            "mapping for this bachelor's degree. All master's fields are " +
-            "shown rather than incorrectly excluding possible options. " +
-            "Check each course's entry requirements and official page.";
-
-        return fields;
-    }
-
-
-    /* ========================================================
-       SELECT HELPERS
-    ======================================================== */
-
-    function setSelectOptions(
-        select,
-        values,
-        placeholder,
-        includeAll
-    ) {
+    function setSelect(select, values, allLabel) {
         if (!select) return;
 
-        const previous = select.value;
+        const oldValue = select.value;
 
-        const items = [];
+        select.innerHTML = [
+            `<option value="__all__">${escapeHtml(allLabel)}</option>`,
+            ...values.map(value =>
+                `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`
+            )
+        ].join("");
 
-        if (includeAll) {
-            items.push(
-                '<option value="__all__">All fields</option>'
-            );
+        if (
+            [...select.options].some(
+                option => option.value === oldValue
+            )
+        ) {
+            select.value = oldValue;
         } else {
-            items.push(
-                `<option value="">${escapeHtml(placeholder)}</option>`
-            );
-        }
-
-        values.forEach((value) => {
-            items.push(
-                `<option value="${escapeHtml(value)}">` +
-                `${escapeHtml(value)}</option>`
-            );
-        });
-
-        select.innerHTML = items.join("");
-
-        const exists = [
-            ...select.options
-        ].some(
-            (option) =>
-                option.value === previous
-        );
-
-        if (exists) {
-            select.value = previous;
-        } else {
-            select.value = includeAll ? "__all__" : "";
+            select.value = "__all__";
         }
     }
 
 
-    /* ========================================================
-       RESPONSIVE CSS
+    function routeCourses(level) {
+        if (level === "all") {
+            return state.rows;
+        }
 
-       All course-explorer styles are scoped to this module,
-       preserving the existing dashboard CSS.
+        return state.rows.filter(
+            course => course.level === level
+        );
+    }
+
+
+    function previousBachelorOptions() {
+        return state.rows.filter(
+            course =>
+                course.level === "bachelor" &&
+                course.programme
+        );
+    }
+
+
+    function fieldListFor(level) {
+        const courses = routeCourses(level);
+
+        let values = uniqueSorted(
+            courses.map(course => course.field)
+        );
+
+        /*
+           Master's degree selection reorders suggestions.
+           It does NOT remove other fields; the user can still
+           explore every Master's programme.
+        */
+
+        if (
+            level === "master" &&
+            state.selectedBachelor
+        ) {
+            const priorField =
+                normalise(
+                    state.selectedBachelor.field
+                );
+
+            const priorName =
+                normalise(
+                    state.selectedBachelor.programme
+                );
+
+            const priorText =
+                `${priorField} ${priorName}`;
+
+            values.sort((a, b) => {
+                const score = value => {
+                    const text = normalise(value);
+                    let result = 0;
+
+                    if (
+                        priorField &&
+                        text === priorField
+                    ) {
+                        result += 100;
+                    }
+
+                    if (
+                        text &&
+                        priorText.includes(text)
+                    ) {
+                        result += 20;
+                    }
+
+                    const familyMatches =
+                        FIELD_RULES.some(rule =>
+                            rule.label === value &&
+                            rule.terms.some(term =>
+                                priorText.includes(
+                                    normalise(term)
+                                )
+                            )
+                        );
+
+                    if (familyMatches) {
+                        result += 30;
+                    }
+
+                    return result;
+                };
+
+                return score(b) - score(a) ||
+                    a.localeCompare(b);
+            });
+        }
+
+        return values;
+    }
+
+
+    function updateFields() {
+        const level =
+            $("courseDegreeLevel")?.value || "all";
+
+        const select =
+            $("courseField");
+
+        if (!select) return;
+
+        const options =
+            fieldListFor(level);
+
+        setSelect(
+            select,
+            options,
+            "All fields"
+        );
+    }
+
+
+    function updateFilterOptions() {
+        setSelect(
+            $("courseState"),
+            uniqueSorted(
+                state.rows.map(course => course.state)
+            ),
+            "All states"
+        );
+
+        setSelect(
+            $("courseLanguage"),
+            uniqueSorted(
+                state.rows.map(course => course.language)
+            ),
+            "All languages"
+        );
+
+        setSelect(
+            $("courseAdmission"),
+            uniqueSorted(
+                state.rows.map(course => course.admission)
+            ),
+            "All admission statuses"
+        );
+    }
+
+
+    /* ========================================================
+       PREVIOUS BACHELOR LOOKUP
     ======================================================== */
 
-    function ensureCourseExplorerStyles() {
-        if (el("course-explorer-styles")) return;
+    function makeBachelorOptions() {
+        const list =
+            $("coursePreviousBachelorOptions");
 
-        const style = document.createElement("style");
+        if (!list) return;
 
-        style.id = "course-explorer-styles";
+        const courses =
+            previousBachelorOptions();
+
+        state.bachelorLookup.clear();
+
+        const options = [];
+
+        courses.forEach(course => {
+            const label = [
+                course.programme,
+                course.field
+            ].filter(Boolean).join(" — ");
+
+            const key = normalise(label);
+
+            if (
+                !key ||
+                state.bachelorLookup.has(key)
+            ) {
+                return;
+            }
+
+            state.bachelorLookup.set(key, course);
+
+            options.push({
+                label,
+                key
+            });
+        });
+
+        options.sort(
+            (a, b) =>
+                a.label.localeCompare(b.label)
+        );
+
+        list.innerHTML =
+            options.map(item =>
+                `<option value="${escapeHtml(item.label)}"></option>`
+            ).join("");
+    }
+
+
+    /* ========================================================
+       CSS
+    ======================================================== */
+
+    function addStyles() {
+        if ($("course-explorer-styles")) return;
+
+        const style =
+            document.createElement("style");
+
+        style.id =
+            "course-explorer-styles";
 
         style.textContent = `
             #courseExplorer {
                 width: min(1400px, calc(100% - 24px));
                 margin: 28px auto;
                 padding: 24px;
-                box-sizing: border-box;
-                background: #fff;
                 border: 1px solid #e5e7eb;
                 border-radius: 20px;
+                background: #fff;
                 box-shadow: 0 10px 30px rgba(15,23,42,.06);
+                box-sizing: border-box;
                 color: #172033;
             }
 
@@ -947,155 +1343,155 @@
                 box-sizing: border-box;
             }
 
-            #courseExplorer .course-heading {
+            #courseExplorer .ce-head {
                 display: flex;
-                gap: 16px;
                 justify-content: space-between;
                 align-items: flex-start;
                 flex-wrap: wrap;
-                margin-bottom: 16px;
+                gap: 16px;
+                margin-bottom: 18px;
             }
 
             #courseExplorer h2 {
                 margin: 0 0 7px;
                 font-size: 26px;
-                line-height: 1.2;
+                line-height: 1.25;
                 color: #0f172a;
             }
 
-            #courseExplorer .course-subtitle {
+            #courseExplorer .ce-subtitle {
                 margin: 0;
+                max-width: 850px;
                 color: #64748b;
                 font-size: 14px;
-                line-height: 1.6;
-                max-width: 900px;
+                line-height: 1.65;
             }
 
-            #courseExplorer .course-count-badge {
-                white-space: nowrap;
-                border-radius: 999px;
+            #courseExplorer .ce-count {
                 padding: 9px 12px;
+                border-radius: 999px;
                 background: #eff6ff;
                 color: #1d4ed8;
                 font-size: 12px;
                 font-weight: 800;
+                white-space: nowrap;
             }
 
-            #courseExplorer .course-controls {
+            #courseExplorer .ce-controls {
                 display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(3, minmax(0,1fr));
                 gap: 12px;
                 margin: 18px 0 12px;
             }
 
-            #courseExplorer .course-control {
+            #courseExplorer .ce-search-controls {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            #courseExplorer .ce-control {
                 display: flex;
                 flex-direction: column;
                 gap: 6px;
                 min-width: 0;
             }
 
-            #courseExplorer .course-control label {
+            #courseExplorer .ce-control label {
                 font-size: 12px;
                 font-weight: 800;
                 color: #334155;
             }
 
             #courseExplorer input,
-            #courseExplorer select {
+            #courseExplorer select,
+            #courseExplorer button {
                 width: 100%;
                 min-height: 44px;
+                padding: 9px 11px;
                 border: 1px solid #dbe2ea;
                 border-radius: 10px;
-                padding: 9px 11px;
-                background: #fff;
+                background: white;
                 color: #0f172a;
                 font: inherit;
                 min-width: 0;
             }
 
-            #courseExplorer .course-search-row {
-                display: grid;
-                grid-template-columns: 2fr 1fr 1fr;
-                gap: 12px;
-                margin-bottom: 12px;
+            #courseExplorer .ce-reset {
+                background: #0f172a;
+                border-color: #0f172a;
+                color: white;
+                font-weight: 800;
+                cursor: pointer;
             }
 
-            #courseExplorer .course-note {
-                margin: 12px 0;
+            #courseExplorer .ce-note {
+                margin: 14px 0;
                 padding: 12px 14px;
                 border: 1px solid #dbeafe;
                 border-radius: 11px;
                 background: #f8fbff;
                 color: #475569;
                 font-size: 12px;
-                line-height: 1.6;
+                line-height: 1.65;
+                overflow-wrap: anywhere;
             }
 
-            #courseExplorer .course-note strong {
-                color: #1e40af;
+            #courseExplorer .ce-note strong {
+                color: #1d4ed8;
             }
 
-            #courseExplorer .course-results-summary {
+            #courseExplorer .ce-summary {
                 display: flex;
-                gap: 12px;
                 justify-content: space-between;
                 align-items: center;
                 flex-wrap: wrap;
-                margin: 15px 0;
+                gap: 10px;
+                margin: 16px 0;
                 color: #64748b;
-                font-size: 13px;
-                line-height: 1.5;
+                font-size: 12px;
+                line-height: 1.6;
             }
 
-            #courseExplorer .course-list {
+            #courseExplorer .ce-list {
                 display: grid;
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
 
-            #courseExplorer .course-card {
+            #courseExplorer .ce-card {
                 border: 1px solid #e5e7eb;
                 border-radius: 14px;
-                padding: 17px;
-                background: #fff;
+                padding: 16px;
+                background: white;
                 min-width: 0;
             }
 
-            #courseExplorer .course-card-head {
-                display: flex;
-                gap: 12px;
-                justify-content: space-between;
-                align-items: flex-start;
-                flex-wrap: wrap;
-                margin-bottom: 12px;
-            }
-
-            #courseExplorer .course-title {
-                font-size: 17px;
-                font-weight: 800;
-                color: #0f172a;
-                line-height: 1.4;
-                overflow-wrap: anywhere;
+            #courseExplorer .ce-card-title {
                 margin: 0 0 5px;
+                font-size: 16px;
+                font-weight: 800;
+                line-height: 1.45;
+                color: #0f172a;
+                overflow-wrap: anywhere;
             }
 
-            #courseExplorer .course-university {
+            #courseExplorer .ce-university {
                 font-size: 13px;
                 color: #475569;
-                line-height: 1.5;
+                line-height: 1.6;
                 overflow-wrap: anywhere;
             }
 
-            #courseExplorer .course-badges {
+            #courseExplorer .ce-badges {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 6px;
-                margin-top: 8px;
+                margin-top: 9px;
             }
 
-            #courseExplorer .course-badge {
-                display: inline-flex;
+            #courseExplorer .ce-badge {
                 padding: 5px 8px;
                 border-radius: 8px;
                 background: #f1f5f9;
@@ -1105,33 +1501,28 @@
                 line-height: 1.4;
             }
 
-            #courseExplorer .course-badge.blue {
+            #courseExplorer .ce-badge.blue {
                 background: #eff6ff;
                 color: #1d4ed8;
             }
 
-            #courseExplorer .course-badge.green {
-                background: #ecfdf5;
-                color: #047857;
-            }
-
-            #courseExplorer .course-facts {
+            #courseExplorer .ce-facts {
                 display: grid;
-                grid-template-columns: repeat(4, minmax(0, 1fr));
+                grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 8px;
-                margin: 12px 0;
+                margin: 13px 0;
             }
 
-            #courseExplorer .course-fact {
+            #courseExplorer .ce-fact {
                 min-width: 0;
+                padding: 10px;
                 border-radius: 9px;
-                padding: 9px;
                 background: #f8fafc;
             }
 
-            #courseExplorer .course-fact-label {
+            #courseExplorer .ce-fact-label {
                 display: block;
-                margin-bottom: 4px;
+                margin-bottom: 5px;
                 color: #64748b;
                 font-size: 10px;
                 font-weight: 800;
@@ -1139,164 +1530,166 @@
                 letter-spacing: .03em;
             }
 
-            #courseExplorer .course-fact-value {
+            #courseExplorer .ce-fact-value {
                 display: block;
                 color: #0f172a;
                 font-size: 12px;
-                font-weight: 700;
                 line-height: 1.5;
                 overflow-wrap: anywhere;
                 white-space: pre-wrap;
             }
 
             #courseExplorer details {
-                margin-top: 9px;
-                border-top: 1px solid #eef2f7;
+                margin-top: 12px;
                 padding-top: 10px;
+                border-top: 1px solid #eef2f7;
             }
 
             #courseExplorer summary {
                 cursor: pointer;
+                color: #2563eb;
                 font-size: 12px;
                 font-weight: 800;
-                color: #2563eb;
+                line-height: 1.6;
             }
 
-            #courseExplorer .course-requirements {
+            #courseExplorer .ce-requirements {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
-                margin-top: 10px;
+                margin-top: 12px;
             }
 
-            #courseExplorer .course-requirement {
+            #courseExplorer .ce-requirement {
                 min-width: 0;
                 padding: 12px;
+                border: 1px solid #e2e8f0;
                 border-radius: 10px;
                 background: #f8fafc;
-                border: 1px solid #e2e8f0;
             }
 
-            #courseExplorer .course-requirement h4 {
+            #courseExplorer .ce-requirement h4 {
                 margin: 0 0 7px;
                 font-size: 12px;
                 color: #334155;
             }
 
-            #courseExplorer .course-requirement p {
+            #courseExplorer .ce-requirement p {
                 margin: 0;
                 color: #475569;
                 font-size: 12px;
-                line-height: 1.65;
+                line-height: 1.7;
                 white-space: pre-wrap;
                 overflow-wrap: anywhere;
             }
 
-            #courseExplorer .course-links {
+            #courseExplorer .ce-all-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            #courseExplorer .ce-detail {
+                min-width: 0;
+                padding: 9px;
+                border-radius: 8px;
+                background: #f8fafc;
+            }
+
+            #courseExplorer .ce-detail-key {
+                display: block;
+                margin-bottom: 4px;
+                color: #64748b;
+                font-size: 10px;
+                font-weight: 800;
+                overflow-wrap: anywhere;
+            }
+
+            #courseExplorer .ce-detail-value {
+                display: block;
+                color: #334155;
+                font-size: 11px;
+                line-height: 1.6;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+            }
+
+            #courseExplorer .ce-links {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
                 margin-top: 12px;
             }
 
-            #courseExplorer .course-link {
+            #courseExplorer .ce-link {
                 display: inline-block;
                 padding: 8px 10px;
                 border: 1px solid #dbeafe;
-                background: #eff6ff;
                 border-radius: 9px;
+                background: #eff6ff;
                 color: #1d4ed8;
-                text-decoration: none;
                 font-size: 11px;
                 font-weight: 800;
+                text-decoration: none;
                 overflow-wrap: anywhere;
             }
 
-            #courseExplorer .course-link:hover {
-                background: #dbeafe;
-            }
-
-            #courseExplorer .course-empty {
-                padding: 30px 18px;
-                text-align: center;
+            #courseExplorer .ce-empty {
+                padding: 28px 16px;
                 border: 1px dashed #cbd5e1;
-                border-radius: 13px;
+                border-radius: 12px;
                 color: #64748b;
-                font-size: 14px;
+                text-align: center;
+                font-size: 13px;
                 line-height: 1.7;
             }
 
-            #courseExplorer .course-pagination {
+            #courseExplorer .ce-pagination {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 gap: 12px;
-                margin-top: 18px;
                 flex-wrap: wrap;
+                margin-top: 18px;
             }
 
-            #courseExplorer .course-pagination button {
+            #courseExplorer .ce-pagination button {
+                width: auto;
                 min-height: 40px;
                 padding: 8px 14px;
-                border: 1px solid #cbd5e1;
-                border-radius: 9px;
-                background: #fff;
-                color: #0f172a;
-                font: inherit;
-                font-weight: 800;
                 cursor: pointer;
+                font-weight: 800;
             }
 
-            #courseExplorer .course-pagination button:disabled {
-                opacity: .4;
+            #courseExplorer .ce-pagination button:disabled {
                 cursor: not-allowed;
+                opacity: .4;
             }
 
-            #courseExplorer .course-pagination span {
-                font-size: 12px;
+            #courseExplorer .ce-pagination span {
                 color: #64748b;
-            }
-
-            #courseExplorer .course-reset {
-                min-height: 44px;
-                border: 0;
-                border-radius: 10px;
-                padding: 9px 14px;
-                background: #0f172a;
-                color: #fff;
-                font-weight: 800;
-                cursor: pointer;
-            }
-
-            #courseExplorer .course-inline-message {
                 font-size: 12px;
-                color: #64748b;
-                line-height: 1.6;
-                margin-top: 6px;
-            }
-
-            #courseExplorer .course-prior-wrap[hidden] {
-                display: none !important;
             }
 
             @media (max-width: 900px) {
-                #courseExplorer .course-controls {
+                #courseExplorer .ce-controls {
                     grid-template-columns: 1fr 1fr;
                 }
 
-                #courseExplorer .course-search-row {
+                #courseExplorer .ce-search-controls {
                     grid-template-columns: 1fr 1fr;
                 }
 
-                #courseExplorer .course-facts {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                #courseExplorer .ce-facts {
+                    grid-template-columns: repeat(2,minmax(0,1fr));
                 }
             }
 
             @media (max-width: 600px) {
                 #courseExplorer {
                     width: calc(100% - 16px);
-                    padding: 15px;
+                    padding: 14px;
                     margin: 18px auto;
                     border-radius: 15px;
                 }
@@ -1305,25 +1698,19 @@
                     font-size: 22px;
                 }
 
-                #courseExplorer .course-controls,
-                #courseExplorer .course-search-row {
+                #courseExplorer .ce-controls,
+                #courseExplorer .ce-search-controls,
+                #courseExplorer .ce-requirements,
+                #courseExplorer .ce-all-details {
                     grid-template-columns: 1fr;
                 }
 
-                #courseExplorer .course-facts {
+                #courseExplorer .ce-facts {
                     grid-template-columns: 1fr 1fr;
                 }
 
-                #courseExplorer .course-requirements {
-                    grid-template-columns: 1fr;
-                }
-
-                #courseExplorer .course-card {
+                #courseExplorer .ce-card {
                     padding: 13px;
-                }
-
-                #courseExplorer .course-title {
-                    font-size: 15px;
                 }
             }
         `;
@@ -1333,17 +1720,17 @@
 
 
     /* ========================================================
-       CREATE THE EXPLORER
+       CREATE SECTION
 
-       Inserts a new section without replacing existing cards.
+       Does not replace existing index.html sections.
     ======================================================== */
 
-    function createCourseExplorer() {
-        if (el("courseExplorer")) {
-            return el("courseExplorer");
+    function createSection() {
+        if ($("courseExplorer")) {
+            return $("courseExplorer");
         }
 
-        ensureCourseExplorerStyles();
+        addStyles();
 
         const section =
             document.createElement("section");
@@ -1351,200 +1738,178 @@
         section.id = "courseExplorer";
 
         section.innerHTML = `
-            <div class="course-heading">
+            <div class="ce-head">
                 <div>
                     <h2>Study Programme Explorer</h2>
 
-                    <p class="course-subtitle">
-                        Explore programmes by degree route, subject,
-                        university and state. Open a programme to see
-                        available entry requirements, language requirements,
+                    <p class="ce-subtitle">
+                        Browse the course dataset by degree level,
+                        subject, university, language and state.
+                        Open any programme to inspect its requirements,
                         fees, deadlines and official links.
-                        Other qualification types remain available under
-                        All courses rather than being forced into the
-                        wrong category.
                     </p>
                 </div>
 
-                <div
-                    class="course-count-badge"
-                    id="courseExplorerTotal"
-                >
-                    Loading courses…
+                <div class="ce-count" id="ceTotal">
+                    Loading course records…
                 </div>
             </div>
 
-            <div class="course-controls">
-                <div class="course-control">
-                    <label for="courseDegreeLevel">
-                        1. Choose study route
+            <div class="ce-controls">
+                <div class="ce-control">
+                    <label for="ceLevel">
+                        1. Study level
                     </label>
 
-                    <select id="courseDegreeLevel">
+                    <select id="ceLevel">
                         <option value="all">All courses</option>
-                        <option value="bachelor">Bachelor's</option>
+                        <option value="bachelor">Bachelor's / Undergraduate</option>
                         <option value="master">Master's</option>
                         <option value="phd">PhD / Doctoral</option>
                         <option value="teaching">Teaching / Lehramt</option>
+                        <option value="other">Other / level not stated</option>
                     </select>
                 </div>
 
-                <div class="course-control">
-                    <label for="courseField">
-                        2. Choose subject / field
+                <div class="ce-control">
+                    <label for="ceField">
+                        2. Subject / field
                     </label>
 
-                    <select id="courseField">
+                    <select id="ceField">
                         <option value="__all__">All fields</option>
                     </select>
                 </div>
 
                 <div
-                    class="course-control course-prior-wrap"
-                    id="coursePriorWrap"
+                    class="ce-control"
+                    id="ceBachelorWrap"
                     hidden
                 >
-                    <label for="coursePreviousBachelor">
-                        Master's route: your completed bachelor's degree
+                    <label for="ceBachelor">
+                        Previous Bachelor's degree (optional)
                     </label>
 
                     <input
-                        id="coursePreviousBachelor"
-                        list="coursePreviousBachelorOptions"
-                        placeholder="Type and select your bachelor's programme"
+                        id="ceBachelor"
+                        list="ceBachelorOptions"
+                        placeholder="Type or choose a programme"
                         autocomplete="off"
                     >
 
-                    <datalist id="coursePreviousBachelorOptions"></datalist>
-
-                    <div class="course-inline-message">
-                        Choose a programme from the suggestions.
-                        Its field helps suggest related master's fields.
-                    </div>
+                    <datalist id="ceBachelorOptions"></datalist>
                 </div>
             </div>
 
-            <div class="course-search-row">
-                <div class="course-control">
-                    <label for="courseSearch">
-                        Search courses and requirements
+            <div class="ce-search-controls">
+                <div class="ce-control">
+                    <label for="ceSearch">
+                        Search programme, subject or requirements
                     </label>
 
                     <input
-                        id="courseSearch"
+                        id="ceSearch"
                         type="search"
-                        placeholder="Programme, university, subject, requirement…"
+                        placeholder="Try commerce, computer science, AI, engineering…"
                         autocomplete="off"
                     >
                 </div>
 
-                <div class="course-control">
-                    <label for="courseState">State</label>
+                <div class="ce-control">
+                    <label for="ceState">German state</label>
 
-                    <select id="courseState">
+                    <select id="ceState">
                         <option value="__all__">All states</option>
                     </select>
                 </div>
 
-                <div class="course-control">
-                    <label for="courseLanguage">
-                        Language of instruction
-                    </label>
+                <div class="ce-control">
+                    <label for="ceLanguage">Language of instruction</label>
 
-                    <select id="courseLanguage">
+                    <select id="ceLanguage">
                         <option value="__all__">All languages</option>
                     </select>
                 </div>
             </div>
 
-            <div class="course-search-row">
-                <div class="course-control">
-                    <label for="courseAdmission">
-                        Admission status
-                    </label>
+            <div class="ce-search-controls">
+                <div class="ce-control">
+                    <label for="ceAdmission">Admission status</label>
 
-                    <select id="courseAdmission">
-                        <option value="__all__">
-                            All admission statuses
-                        </option>
+                    <select id="ceAdmission">
+                        <option value="__all__">All admission statuses</option>
                     </select>
                 </div>
 
-                <div class="course-control">
-                    <label for="courseSort">Sort results</label>
+                <div class="ce-control">
+                    <label for="ceSort">Sort results</label>
 
-                    <select id="courseSort">
+                    <select id="ceSort">
                         <option value="programme">Programme A–Z</option>
                         <option value="university">University A–Z</option>
                         <option value="state">State A–Z</option>
                     </select>
                 </div>
 
-                <div
-                    class="course-control"
-                    style="justify-content:flex-end"
-                >
+                <div class="ce-control">
                     <label>&nbsp;</label>
 
                     <button
-                        class="course-reset"
-                        id="courseReset"
                         type="button"
+                        class="ce-reset"
+                        id="ceReset"
                     >
                         Reset course filters
                     </button>
                 </div>
             </div>
 
-            <div
-                class="course-note"
-                id="courseExplorerNote"
-            >
-                <strong>How to use:</strong>
-                Choose a study route, then select a subject or field
-                to list courses. For a master's search, select your
-                previous bachelor's degree first.
+            <div class="ce-note" id="ceNote">
+                All courses are shown by default. Choose a study level
+                and field to narrow the results.
             </div>
 
-            <div class="course-results-summary">
-                <span id="courseResultsCount">
-                    Loading course records…
+            <div class="ce-summary">
+                <span id="ceResultsCount">
+                    Loading…
                 </span>
 
                 <span>
-                    A maximum of 20 records is shown per page
-                    to keep the site responsive on mobile.
+                    20 programmes per page for faster mobile browsing.
                 </span>
             </div>
 
-            <div
-                class="course-list"
-                id="courseList"
-            ></div>
+            <div class="ce-list" id="ceList"></div>
 
             <div
-                class="course-pagination"
-                id="coursePagination"
+                class="ce-pagination"
+                id="cePagination"
             ></div>
         `;
 
 
-        const anchor =
-            el("fieldList") ||
-            el("stateUniversityList") ||
-            el("industryList") ||
-            el("scholarshipTable");
+        /*
+           Put the explorer after the existing study fields section.
+        */
 
+        const anchor =
+            $("fieldList") ||
+            $("stateUniversityList") ||
+            $("industryList");
 
         if (anchor) {
-            const card = anchor.closest(
-                "section, .dashboard-section, .analytics-card, .panel, .card"
-            ) || anchor.parentElement;
+            const sectionParent =
+                anchor.closest(
+                    ".section, section, .data-card"
+                ) || anchor.parentElement;
 
-            if (card && card.parentNode) {
-                card.parentNode.insertBefore(
+            if (
+                sectionParent &&
+                sectionParent.parentNode
+            ) {
+                sectionParent.parentNode.insertBefore(
                     section,
-                    card.nextSibling
+                    sectionParent.nextSibling
                 );
             } else {
                 document.body.appendChild(section);
@@ -1558,163 +1923,189 @@
 
 
     /* ========================================================
-       DOCTORAL AVAILABILITY
+       PREVIOUS BACHELOR SUGGESTION
 
-       If individual PhD programme rows are absent but the source
-       has a university-level phd_available indicator, display one
-       clearly labelled record per university. Never label it as an
-       individual verified PhD course.
+       Suggestions influence field ordering but never guarantee
+       or block eligibility.
     ======================================================== */
 
-    function explicitDoctoralRows() {
-        return allCourses.filter(
-            (course) =>
-                course.category === "phd"
-        );
+    function findBachelorSelection() {
+        const input = $("ceBachelor");
+
+        if (!input) return;
+
+        const key = normalise(input.value);
+
+        state.selectedBachelor =
+            state.bachelorLookup.get(key) || null;
+
+        updateFields();
+
+        render();
     }
 
 
-    function doctoralIndicated(value) {
-        const n = normalise(value);
+    function setupBachelorOptions() {
+        const datalist =
+            $("ceBachelorOptions");
 
-        if (
-            !n ||
-            n === "no" ||
-            n.startsWith("no ") ||
-            n.includes("not available") ||
-            n.includes("not offer")
-        ) {
-            return false;
-        }
+        if (!datalist) return;
 
-        return (
-            n === "yes" ||
-            n.includes("doctoral") ||
-            n.includes("doctorate") ||
-            n.includes("phd") ||
-            n.includes("doctor of philosophy") ||
-            n.includes("promotion")
-        );
-    }
+        const bachelorCourses =
+            routeCourses("bachelor");
 
+        const labels = new Map();
 
-    function buildDoctoralAvailabilityFallback(courses) {
-        if (
-            courses.some(
-                (course) =>
-                    course.category === "phd"
-            )
-        ) {
-            return [];
-        }
+        bachelorCourses.forEach(course => {
+            if (!course.programme) return;
 
-        const byUniversity = new Map();
+            const label = [
+                course.programme,
+                course.field
+            ].filter(Boolean).join(" — ");
 
-        courses.forEach((course) => {
-            if (
-                !doctoralIndicated(course.phdAvailable) ||
-                !course.university
-            ) {
-                return;
+            const key = normalise(label);
+
+            if (!labels.has(key)) {
+                labels.set(key, {
+                    label,
+                    course
+                });
             }
-
-            const key =
-                `${normalise(course.university)}|${normalise(course.state)}`;
-
-            if (byUniversity.has(key)) {
-                return;
-            }
-
-            byUniversity.set(key, {
-                ...course,
-
-                programme:
-                    `Doctoral opportunities at ${course.university}`,
-
-                degree:
-                    "Doctoral availability (university-level indicator)",
-
-                field:
-                    "Check university doctoral catalogue",
-
-                language:
-                    "Programme-specific; verify official source",
-
-                mode:
-                    "Programme-specific; verify official source",
-
-                semester:
-                    "Programme-specific; verify official source",
-
-                admission:
-                    "Individual doctoral programme requirements apply",
-
-                duration:
-                    "Programme-specific; verify official source",
-
-                ects:
-                    "Not specified at university level",
-
-                tuition:
-                    "Check official doctoral programme / fees page",
-
-                semesterContribution:
-                    course.semesterContribution ||
-                    "Check official university fees page",
-
-                entryRequirements:
-                    "The source dataset indicates doctoral / PhD " +
-                    "availability at university level. It does not " +
-                    "provide a distinct PhD programme row here. Check " +
-                    "the official doctoral catalogue for supervisor " +
-                    "availability, subject-specific prerequisites, " +
-                    "funding and application procedure.",
-
-                languageRequirements:
-                    "Programme-specific. Confirm the required language, " +
-                    "accepted certificates and minimum scores on the " +
-                    "official doctoral programme page.",
-
-                deadline:
-                    "Programme-specific; verify official source",
-
-                applicationRoute:
-                    "Use the university's official doctoral school, " +
-                    "graduate centre or programme page.",
-
-                category:
-                    "phd",
-
-                isDoctoralFallback:
-                    true
-            });
         });
 
-        return [...byUniversity.values()].sort(
+        state.bachelorLookup.clear();
+
+        const sorted = [...labels.values()].sort(
             (a, b) =>
-                a.university.localeCompare(b.university)
+                a.label.localeCompare(b.label)
         );
+
+        datalist.innerHTML =
+            sorted.map(item => {
+                state.bachelorLookup.set(
+                    normalise(item.label),
+                    item.course
+                );
+
+                return `
+                    <option value="${escapeHtml(item.label)}"></option>
+                `;
+            }).join("");
     }
 
 
     /* ========================================================
-       SAFE LINKS AND COURSE CARDS
+       RESULT HELPERS
+    ======================================================== */
+
+    function visibleCourses() {
+        const level =
+            $("ceLevel")?.value || "all";
+
+        const field =
+            $("ceField")?.value || "__all__";
+
+        const stateFilter =
+            $("ceState")?.value || "__all__";
+
+        const languageFilter =
+            $("ceLanguage")?.value || "__all__";
+
+        const admissionFilter =
+            $("ceAdmission")?.value || "__all__";
+
+        const query =
+            $("ceSearch")?.value || "";
+
+
+        let result =
+            routeCourses(level);
+
+
+        if (field !== "__all__") {
+            const selected = normalise(field);
+
+            result = result.filter(course =>
+                normalise(course.field) === selected
+            );
+        }
+
+
+        if (stateFilter !== "__all__") {
+            const selected = normalise(stateFilter);
+
+            result = result.filter(course =>
+                course.normalisedState === selected
+            );
+        }
+
+
+        if (languageFilter !== "__all__") {
+            const selected = normalise(languageFilter);
+
+            result = result.filter(course =>
+                course.normalisedLanguage === selected
+            );
+        }
+
+
+        if (admissionFilter !== "__all__") {
+            const selected = normalise(admissionFilter);
+
+            result = result.filter(course =>
+                course.normalisedAdmission === selected
+            );
+        }
+
+
+        if (query.trim()) {
+            result = result.filter(course =>
+                matchesSearch(course, query)
+            );
+        }
+
+
+        const sort =
+            $("ceSort")?.value || "programme";
+
+        const fieldMap = {
+            programme: "programme",
+            university: "university",
+            state: "state"
+        };
+
+        const key = fieldMap[sort] || "programme";
+
+        result = [...result].sort((a, b) =>
+            String(a[key] || "").localeCompare(
+                String(b[key] || ""),
+                undefined,
+                { sensitivity: "base" }
+            )
+        );
+
+        return result;
+    }
+
+
+    /* ========================================================
+       COURSE CARDS
     ======================================================== */
 
     function safeUrl(value) {
-        const text = String(value ?? "").trim();
+        const raw = String(value ?? "").trim();
 
-        if (!text) return "";
+        if (!raw) return "";
 
         try {
             const url = new URL(
-                text,
+                raw,
                 window.location.href
             );
 
             if (
-                url.protocol !== "https:" &&
-                url.protocol !== "http:"
+                !["http:", "https:"].includes(url.protocol)
             ) {
                 return "";
             }
@@ -1726,15 +2117,15 @@
     }
 
 
-    function linkButton(label, url) {
-        const href = safeUrl(url);
+    function linkButton(label, value) {
+        const url = safeUrl(value);
 
-        if (!href) return "";
+        if (!url) return "";
 
         return `
             <a
-                class="course-link"
-                href="${escapeHtml(href)}"
+                class="ce-link"
+                href="${escapeHtml(url)}"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -1746,125 +2137,141 @@
 
     function fact(label, value) {
         return `
-            <div class="course-fact">
-                <span class="course-fact-label">
+            <div class="ce-fact">
+                <span class="ce-fact-label">
                     ${escapeHtml(label)}
                 </span>
 
-                <span class="course-fact-value">
-                    ${escapeHtml(pretty(value))}
+                <span class="ce-fact-value">
+                    ${escapeHtml(displayValue(value))}
                 </span>
             </div>
         `;
     }
 
 
-    function renderCourseCard(course) {
-        const rank =
-            course.rank
-                ? `QS 2027: ${course.rank}`
-                : "QS rank not listed";
+    function allSourceDetails(course) {
+        const entries =
+            Object.entries(course.raw)
+                .filter(([key, value]) => {
+                    if (isEmpty(value)) return false;
+
+                    const header = normalise(key);
+
+                    return ![
+                        "index",
+                        "sr no",
+                        "sr no.",
+                        "row number"
+                    ].includes(header);
+                });
+
+        if (!entries.length) {
+            return `
+                <div class="ce-empty">
+                    No additional source fields were provided for this record.
+                </div>
+            `;
+        }
+
+        return `
+            <div class="ce-all-details">
+                ${
+                    entries.map(([key, value]) => `
+                        <div class="ce-detail">
+                            <span class="ce-detail-key">
+                                ${escapeHtml(key)}
+                            </span>
+
+                            <span class="ce-detail-value">
+                                ${escapeHtml(value)}
+                            </span>
+                        </div>
+                    `).join("")
+                }
+            </div>
+        `;
+    }
 
 
-        const admission =
-            course.admission
-                ? `
-                    <span class="course-badge ${
-                        /restricted|nc/i.test(course.admission)
-                            ? "blue"
-                            : "green"
-                    }">
-                        ${escapeHtml(course.admission)}
-                    </span>
-                `
-                : "";
-
-
+    function renderCard(course) {
         const links = [
             linkButton(
                 "Official programme catalogue",
                 course.catalogueUrl
             ),
-
             linkButton(
                 "Bachelor / Master information",
                 course.bachelorMasterUrl
             ),
-
             linkButton(
                 "Official application",
                 course.applicationUrl
             ),
-
             linkButton(
                 "Official fees",
                 course.feesUrl
+            ),
+            linkButton(
+                "Requirements source",
+                course.requirementsUrl
             )
-        ]
-            .filter(Boolean)
-            .join("");
+        ].filter(Boolean).join("");
 
 
-        const doctoralNote =
-            course.isDoctoralFallback
-                ? `
-                    <div class="course-note">
-                        <strong>Important:</strong>
-                        This is a university-level doctoral availability
-                        indicator, not a separately listed PhD course.
-                        Use the official doctoral catalogue for individual
-                        subject and admission details.
-                    </div>
-                `
-                : "";
+        const degree =
+            course.degree || course.levelLabel;
 
 
         return `
-            <article class="course-card">
-                <div class="course-card-head">
-                    <div style="min-width:0;flex:1">
-                        <h3 class="course-title">
-                            ${escapeHtml(
-                                pretty(course.programme)
-                            )}
-                        </h3>
+            <article class="ce-card">
+                <h3 class="ce-card-title">
+                    ${escapeHtml(
+                        displayValue(course.programme)
+                    )}
+                </h3>
 
-                        <div class="course-university">
-                            ${escapeHtml(
-                                pretty(course.university)
-                            )}
-                            ·
-                            ${escapeHtml(
-                                pretty(course.city)
-                            )},
-                            ${escapeHtml(
-                                pretty(course.state)
-                            )}
-                        </div>
+                <div class="ce-university">
+                    ${escapeHtml(
+                        displayValue(course.university)
+                    )}
 
-                        <div class="course-badges">
-                            <span class="course-badge blue">
-                                ${escapeHtml(
-                                    pretty(course.degree)
-                                )}
-                            </span>
+                    ·
 
-                            <span class="course-badge">
-                                ${escapeHtml(
-                                    pretty(course.field)
-                                )}
-                            </span>
+                    ${escapeHtml(
+                        displayValue(course.city)
+                    )}
 
-                            ${admission}
-                        </div>
-                    </div>
+                    ·
+
+                    ${escapeHtml(
+                        displayValue(course.state)
+                    )}
                 </div>
 
-                ${doctoralNote}
+                <div class="ce-badges">
+                    <span class="ce-badge blue">
+                        ${escapeHtml(degree)}
+                    </span>
 
-                <div class="course-facts">
+                    <span class="ce-badge">
+                        ${escapeHtml(course.field)}
+                    </span>
+
+                    ${
+                        course.admission
+                            ? `
+                                <span class="ce-badge">
+                                    ${escapeHtml(course.admission)}
+                                </span>
+                              `
+                            : ""
+                    }
+                </div>
+
+                <div class="ce-facts">
                     ${fact(
-                        "Instruction language",
+                        "Language",
                         course.language
                     )}
 
@@ -1895,91 +2302,67 @@
 
                     ${fact(
                         "Semester contribution",
-                        course.semesterContribution
+                        course.contribution
                     )}
 
                     ${fact(
                         "Application deadline",
                         course.deadline
                     )}
-
-                    ${fact(
-                        "University type",
-                        course.universityType
-                    )}
-
-                    ${fact(
-                        "Faculty / department",
-                        course.faculty
-                    )}
-
-                    ${fact(
-                        "QS 2027 ranking",
-                        rank
-                    )}
-
-                    ${fact(
-                        "Last checked",
-                        course.lastChecked
-                    )}
                 </div>
 
                 <details>
                     <summary>
                         View entry requirements, language requirements
-                        and application details
+                        and all available source details
                     </summary>
 
-                    <div class="course-requirements">
-                        <div class="course-requirement">
+                    <div class="ce-requirements">
+                        <div class="ce-requirement">
                             <h4>Entry / admission requirements</h4>
-
-                            <p>
-                                ${escapeHtml(
-                                    pretty(course.entryRequirements)
-                                )}
-                            </p>
+                            <p>${escapeHtml(
+                                displayValue(
+                                    course.entryRequirements
+                                )
+                            )}</p>
                         </div>
 
-                        <div class="course-requirement">
+                        <div class="ce-requirement">
                             <h4>Language requirements</h4>
-
-                            <p>
-                                ${escapeHtml(
-                                    pretty(course.languageRequirements)
-                                )}
-                            </p>
+                            <p>${escapeHtml(
+                                displayValue(
+                                    course.languageRequirements
+                                )
+                            )}</p>
                         </div>
 
-                        <div class="course-requirement">
+                        <div class="ce-requirement">
                             <h4>Application route</h4>
-
-                            <p>
-                                ${escapeHtml(
-                                    pretty(course.applicationRoute)
-                                )}
-                            </p>
+                            <p>${escapeHtml(
+                                displayValue(
+                                    course.applicationRoute
+                                )
+                            )}</p>
                         </div>
 
-                        <div class="course-requirement">
-                            <h4>
-                                Doctoral availability note
-                            </h4>
-
-                            <p>
-                                ${escapeHtml(
-                                    pretty(course.phdAvailable)
-                                )}
-                            </p>
+                        <div class="ce-requirement">
+                            <h4>University-level doctoral availability</h4>
+                            <p>${escapeHtml(
+                                displayValue(
+                                    course.phdAvailable
+                                )
+                            )}</p>
                         </div>
                     </div>
 
-                    <div class="course-links">
+                    ${allSourceDetails(course)}
+
+                    <div class="ce-links">
                         ${
                             links ||
                             `
-                                <span class="course-inline-message">
-                                    No official links were provided for this row.
+                                <span>
+                                    No official URL was provided for this record.
                                 </span>
                             `
                         }
@@ -1991,729 +2374,309 @@
 
 
     /* ========================================================
-       DATA FOR SELECTED DEGREE LEVEL
+       FIELD OPTIONS
+
+       "All fields" stays available at every study level, so
+       users can immediately see courses without selecting one.
     ======================================================== */
 
-    function currentLevel() {
-        return (
-            el("courseDegreeLevel")?.value ||
-            "all"
-        );
-    }
+    function updateFields() {
+        const level =
+            $("ceLevel")?.value || "all";
 
+        const select =
+            $("ceField");
 
-    function coursesForLevel(level) {
-        if (level === "all") {
-            return allCourses;
-        }
+        const bachelorWrap =
+            $("ceBachelorWrap");
 
-        if (
-            level === "phd" &&
-            !explicitDoctoralRows().length
-        ) {
-            return doctoralFallbackCourses;
-        }
+        if (!select) return;
 
-        return allCourses.filter(
-            (course) =>
-                course.category === level
-        );
-    }
-
-
-    function previousBachelorLabel(course) {
-        return (
-            `${course.programme} — ` +
-            `${course.field || "Field not stated"}`
-        );
-    }
-
-
-    /* ========================================================
-       PREVIOUS BACHELOR DEGREE OPTIONS
-    ======================================================== */
-
-    function setupBachelorDatalist() {
-        const datalist =
-            el("coursePreviousBachelorOptions");
-
-        if (!datalist) return;
-
-        const map = new Map();
-
-        allCourses
-            .filter(isBachelorSource)
-            .forEach((course) => {
-                if (!course.programme) return;
-
-                const label =
-                    previousBachelorLabel(course);
-
-                const key =
-                    normalise(label);
-
-                if (!map.has(key)) {
-                    map.set(key, {
-                        label,
-                        course
-                    });
-                }
-            });
-
-
-        previousBachelorOptions =
-            new Map();
-
-
-        const options =
-            [...map.values()].sort(
-                (a, b) =>
-                    a.label.localeCompare(
-                        b.label
-                    )
-            );
-
-
-        datalist.innerHTML =
-            options.map((item) => {
-                previousBachelorOptions.set(
-                    item.label,
-                    item.course
-                );
-
-                return `
-                    <option value="${
-                        escapeHtml(item.label)
-                    }"></option>
-                `;
-            }).join("");
-    }
-
-
-    /* ========================================================
-       DYNAMIC FIELD OPTIONS
-    ======================================================== */
-
-    function updateFieldOptions() {
-        const level = currentLevel();
-
-        const fieldSelect =
-            el("courseField");
-
-        const priorWrap =
-            el("coursePriorWrap");
-
-        const priorInput =
-            el("coursePreviousBachelor");
-
-        if (!fieldSelect) return;
-
-        fieldExplanation = "";
-
-        if (priorWrap) {
-            priorWrap.hidden =
+        if (bachelorWrap) {
+            bachelorWrap.hidden =
                 level !== "master";
         }
 
+        const oldField = select.value;
 
-        if (level === "master") {
-            if (
-                !selectedPreviousBachelor &&
-                priorInput
-            ) {
-                fieldSelect.disabled = true;
+        const options = uniqueSorted(
+            routeCourses(level).map(course =>
+                course.field
+            )
+        );
 
-                setSelectOptions(
-                    fieldSelect,
-                    [],
-                    "Choose your bachelor's degree first",
-                    false
-                );
+        setSelect(
+            select,
+            options,
+            "All fields"
+        );
 
-                fieldExplanation =
-                    "For master's programmes, choose your completed " +
-                    "bachelor's programme first. Then the available " +
-                    "field options will be suggested from the master's dataset.";
-
-                activeFieldOptions = [];
-
-                updateCourseNote();
-
-                return;
-            }
-
-            fieldSelect.disabled = false;
-
-            const options =
-                relatedMasterFields(
-                    selectedPreviousBachelor
-                );
-
-            activeFieldOptions = options;
-
-            setSelectOptions(
-                fieldSelect,
-                options,
-                "Choose a master's field",
-                false
-            );
-        } else if (level === "all") {
-            fieldSelect.disabled = false;
-
-            const options =
-                distinctFieldValues(allCourses);
-
-            activeFieldOptions = options;
-
-            setSelectOptions(
-                fieldSelect,
-                options,
-                "All fields",
-                true
-            );
+        if (
+            options.some(
+                option =>
+                    normalise(option) === normalise(oldField)
+            )
+        ) {
+            select.value = oldField;
         } else {
-            fieldSelect.disabled = false;
+            select.value = "__all__";
+        }
+    }
 
-            const options =
-                distinctFieldValues(
-                    coursesForLevel(level)
-                );
 
-            activeFieldOptions = options;
+    /* ========================================================
+       DATA QUALITY DIAGNOSTICS
 
-            setSelectOptions(
-                fieldSelect,
-                options,
-                `Choose a ${
-                    level === "bachelor"
-                        ? "bachelor's"
-                        : level === "phd"
-                            ? "doctoral"
-                            : "teaching"
-                } field`,
-                false
-            );
+       These counts help show whether a problem comes from the
+       interface or from missing/uncategorised source values.
+    ======================================================== */
+
+    function renderDiagnostics() {
+        const counts = {
+            bachelor: 0,
+            master: 0,
+            phd: 0,
+            teaching: 0,
+            other: 0
+        };
+
+        let missingField = 0;
+        let missingRequirements = 0;
+
+        state.rows.forEach(course => {
+            counts[course.level] =
+                (counts[course.level] || 0) + 1;
+
+            if (course.field === "Other / not stated") {
+                missingField++;
+            }
 
             if (
-                level === "phd" &&
-                !explicitDoctoralRows().length &&
-                doctoralFallbackCourses.length
+                isEmpty(course.entryRequirements) &&
+                isEmpty(course.languageRequirements)
             ) {
-                fieldExplanation =
-                    "Individual PhD course rows are not present " +
-                    "in the dataset. The results below show distinct " +
-                    "universities whose course data indicates doctoral " +
-                    "availability; these are not individual doctoral programmes.";
+                missingRequirements++;
             }
-        }
+        });
 
-        updateCourseNote();
-    }
-
-
-    /* ========================================================
-       FILTER DROPDOWNS
-    ======================================================== */
-
-    function updateFilterOptions() {
-        const filterSource = [
-            ...allCourses,
-            ...doctoralFallbackCourses
-        ];
-
-        const states = uniqueSorted(
-            filterSource.map(
-                (course) =>
-                    course.state
-            )
-        );
-
-        const languages = uniqueSorted(
-            filterSource.map(
-                (course) =>
-                    course.language
-            )
-        );
-
-        const admissions = uniqueSorted(
-            filterSource.map(
-                (course) =>
-                    course.admission
-            )
-        );
-
-
-        setSelectOptions(
-            el("courseState"),
-            states,
-            "All states",
-            true
-        );
-
-        setSelectOptions(
-            el("courseLanguage"),
-            languages,
-            "All languages",
-            true
-        );
-
-        setSelectOptions(
-            el("courseAdmission"),
-            admissions,
-            "All admission statuses",
-            true
-        );
-    }
-
-
-    /* ========================================================
-       NOTE / GUIDANCE
-    ======================================================== */
-
-    function updateCourseNote(extra) {
         const note =
-            el("courseExplorerNote");
+            $("ceNote");
 
         if (!note) return;
 
-        const level = currentLevel();
-
-        let message = "";
-
-        if (level === "master") {
-            message =
-                fieldExplanation ||
-                "Choose your completed bachelor's degree, " +
-                "then choose a suggested master's field.";
-        } else if (
-            [
-                "bachelor",
-                "phd",
-                "teaching"
-            ].includes(level)
-        ) {
-            message =
-                `Choose a subject / field to see the ${
-                    level === "bachelor"
-                        ? "bachelor's"
-                        : level === "phd"
-                            ? "PhD / doctoral"
-                            : "teaching / Lehramt"
-                } programmes in the dataset.`;
-
-            if (
-                level === "phd" &&
-                !explicitDoctoralRows().length &&
-                doctoralFallbackCourses.length
-            ) {
-                message +=
-                    " The dataset has university-level doctoral " +
-                    "availability indicators but no individual PhD " +
-                    "programme rows, so university-level records are shown.";
-            }
-        } else {
-            message =
-                "All courses shows every row in the current course " +
-                "dataset. Choose a field or other filters to narrow results.";
-        }
-
         note.innerHTML = `
-            <strong>Important:</strong>
-            ${escapeHtml(message)}
+            <strong>Dataset coverage:</strong>
 
-            ${extra ? escapeHtml(extra) : ""}
+            ${state.rows.length.toLocaleString()} source records.
+
+            Bachelor's / undergraduate:
+            ${counts.bachelor.toLocaleString()}.
+
+            Master's:
+            ${counts.master.toLocaleString()}.
+
+            PhD / doctoral:
+            ${counts.phd.toLocaleString()}.
+
+            Teaching / Lehramt:
+            ${counts.teaching.toLocaleString()}.
+
+            Other / unspecified level:
+            ${counts.other.toLocaleString()}.
 
             <br><br>
 
-            Requirements are displayed as recorded in the dataset and
-            may be programme-specific or incomplete. Field matching and
-            previous-degree suggestions do not guarantee admission.
-            Verify eligibility, language scores, deadlines, fees and
-            links on the official programme page.
+            Fields inferred or unavailable:
+            ${missingField.toLocaleString()}.
+
+            Records missing both entry and language requirements:
+            ${missingRequirements.toLocaleString()}.
+
+            <br><br>
+
+            Fields are inferred from programme titles only when source
+            fields are missing. They are search aids, not official
+            academic classifications. Course requirements and deadlines
+            must be verified on each official programme page.
         `;
     }
 
 
     /* ========================================================
-       FILTERING
-    ======================================================== */
-
-    function masterSelectionIsReady() {
-        if (currentLevel() !== "master") {
-            return true;
-        }
-
-        return Boolean(
-            selectedPreviousBachelor
-        );
-    }
-
-
-    function matchesCourse(course) {
-        const level = currentLevel();
-
-        if (
-            level !== "all" &&
-            course.category !== level
-        ) {
-            return false;
-        }
-
-
-        const field =
-            el("courseField")?.value ||
-            "__all__";
-
-        if (
-            level !== "all" &&
-            !field
-        ) {
-            return false;
-        }
-
-        if (
-            field !== "__all__" &&
-            field &&
-            normalise(
-                course.field ||
-                "Other / not stated"
-            ) !== normalise(field)
-        ) {
-            return false;
-        }
-
-
-        const state =
-            el("courseState")?.value ||
-            "__all__";
-
-        if (
-            state !== "__all__" &&
-            normalise(course.state) !== normalise(state)
-        ) {
-            return false;
-        }
-
-
-        const language =
-            el("courseLanguage")?.value ||
-            "__all__";
-
-        if (
-            language !== "__all__" &&
-            normalise(course.language) !== normalise(language)
-        ) {
-            return false;
-        }
-
-
-        const admission =
-            el("courseAdmission")?.value ||
-            "__all__";
-
-        if (
-            admission !== "__all__" &&
-            normalise(course.admission) !== normalise(admission)
-        ) {
-            return false;
-        }
-
-
-        const query =
-            normalise(
-                el("courseSearch")?.value ||
-                ""
-            );
-
-        if (query) {
-            const searchable = normalise([
-                course.programme,
-                course.degree,
-                course.field,
-                course.university,
-                course.state,
-                course.city,
-                course.language,
-                course.admission,
-                course.entryRequirements,
-                course.languageRequirements,
-                course.faculty,
-                course.applicationRoute,
-                course.tuition,
-                course.semesterContribution
-            ].join(" "));
-
-            if (!searchable.includes(query)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /* ========================================================
-       SORTING
-    ======================================================== */
-
-    function sortCourses(rows) {
-        const mode =
-            el("courseSort")?.value ||
-            "programme";
-
-        const sorted = [...rows];
-
-        sorted.sort((a, b) => {
-            let first = "";
-            let second = "";
-
-            if (mode === "university") {
-                first = a.university;
-                second = b.university;
-            } else if (mode === "state") {
-                first = a.state;
-                second = b.state;
-            } else {
-                first = a.programme;
-                second = b.programme;
-            }
-
-            const compare =
-                String(first).localeCompare(
-                    String(second),
-                    undefined,
-                    { sensitivity: "base" }
-                );
-
-            if (compare !== 0) {
-                return compare;
-            }
-
-            return String(a.university).localeCompare(
-                String(b.university),
-                undefined,
-                { sensitivity: "base" }
-            );
-        });
-
-        return sorted;
-    }
-
-
-    /* ========================================================
-       RENDER RESULTS
+       RENDER
     ======================================================== */
 
     function render() {
         const list =
-            el("courseList");
+            $("ceList");
 
         const pagination =
-            el("coursePagination");
+            $("cePagination");
 
-        const count =
-            el("courseResultsCount");
-
-        const total =
-            el("courseExplorerTotal");
+        const summary =
+            $("ceResultsCount");
 
         if (!list || !pagination) return;
 
-        if (total) {
-            total.textContent =
-                `${allCourses.length.toLocaleString()} course records`;
+        const totalBadge =
+            $("ceTotal");
+
+        if (totalBadge) {
+            totalBadge.textContent =
+                `${state.rows.length.toLocaleString()} course records`;
         }
 
 
-        if (!masterSelectionIsReady()) {
-            list.innerHTML = `
-                <div class="course-empty">
-                    Select your completed bachelor's degree above.
-                    Then choose a suggested master's subject / field
-                    to see matching programmes.
-                </div>
-            `;
+        const level =
+            $("ceLevel")?.value || "all";
 
-            pagination.innerHTML = "";
-
-            if (count) {
-                count.textContent =
-                    "Waiting for previous bachelor's degree selection.";
-            }
-
-            currentPage = 0;
-
-            return;
-        }
-
-
-        const level = currentLevel();
-
-        const selectedField =
-            el("courseField")?.value ||
-            "";
-
-
-        if (
-            level !== "all" &&
-            !selectedField
-        ) {
-            list.innerHTML = `
-                <div class="course-empty">
-                    Choose a subject / field above to list programmes.
-                    The available fields are based on the selected study
-                    route and the course dataset.
-                </div>
-            `;
-
-            pagination.innerHTML = "";
-
-            if (count) {
-                count.textContent =
-                    `${coursesForLevel(level).length.toLocaleString()} ` +
-                    "records available in this study route before field filtering.";
-            }
-
-            currentPage = 0;
-
-            return;
-        }
-
-
-        const baseRows =
-            coursesForLevel(level);
-
-        const filtered =
-            sortCourses(
-                baseRows.filter(
-                    (course) =>
-                        matchesCourse(course)
-                )
-            );
+        const matching =
+            visibleCourses();
 
 
         const totalPages =
             Math.max(
                 1,
                 Math.ceil(
-                    filtered.length /
-                    PAGE_SIZE
+                    matching.length / PAGE_SIZE
                 )
             );
 
-
-        currentPage =
+        state.page =
             Math.min(
-                currentPage,
+                state.page,
                 totalPages - 1
             );
 
 
         const start =
-            currentPage *
-            PAGE_SIZE;
-
+            state.page * PAGE_SIZE;
 
         const visible =
-            filtered.slice(
+            matching.slice(
                 start,
                 start + PAGE_SIZE
             );
 
 
-        if (count) {
-            count.textContent =
-                filtered.length
+        if (summary) {
+            summary.textContent =
+                matching.length
                     ? `Showing ${(start + 1).toLocaleString()}–` +
-                      `${Math.min(start + PAGE_SIZE, filtered.length).toLocaleString()} ` +
-                      `of ${filtered.length.toLocaleString()} matching courses · ` +
-                      `${allCourses.length.toLocaleString()} records in total.`
-                    : `No courses match the selected filters. ` +
-                      `${allCourses.length.toLocaleString()} records are present in the dataset.`;
+                      `${Math.min(start + PAGE_SIZE, matching.length).toLocaleString()} ` +
+                      `of ${matching.length.toLocaleString()} matching records.`
+                    : `No matching records for these filters. ` +
+                      `${state.rows.length.toLocaleString()} source records were loaded.`;
         }
 
 
-        list.innerHTML =
-            visible.length
-                ? visible.map(renderCourseCard).join("")
-                : `
-                    <div class="course-empty">
-                        No courses match these filters.
-                        Try another field, state, language or search term.
-                    </div>
-                `;
+        /*
+           PhD is intentionally not fabricated from phd_available.
+        */
+
+        if (
+            level === "phd" &&
+            matching.length === 0
+        ) {
+            list.innerHTML = `
+                <div class="ce-empty">
+                    No individual PhD / doctoral programme rows were
+                    identified in the current course data.
+
+                    <br><br>
+
+                    A university-level "PhD available" flag is not
+                    an individual doctoral course. Choose All Courses
+                    to inspect the source records, or add individual
+                    doctoral programme records to the dataset.
+                </div>
+            `;
+
+        } else if (!visible.length) {
+            list.innerHTML = `
+                <div class="ce-empty">
+                    No programmes match the current filters.
+                    Try All fields, clear the search, or select a
+                    different degree level or state.
+                </div>
+            `;
+
+        } else {
+            list.innerHTML =
+                visible.map(renderCard).join("");
+        }
 
 
-        pagination.innerHTML =
-            filtered.length > PAGE_SIZE
-                ? `
-                    <button
-                        type="button"
-                        id="coursePreviousPage"
-                        ${currentPage === 0 ? "disabled" : ""}
-                    >
-                        Previous
-                    </button>
+        if (
+            matching.length > PAGE_SIZE
+        ) {
+            pagination.innerHTML = `
+                <button
+                    id="cePrev"
+                    type="button"
+                    ${state.page === 0 ? "disabled" : ""}
+                >
+                    Previous
+                </button>
 
-                    <span>
-                        Page ${(currentPage + 1).toLocaleString()}
-                        of ${totalPages.toLocaleString()}
-                    </span>
+                <span>
+                    Page ${(state.page + 1).toLocaleString()}
+                    of ${totalPages.toLocaleString()}
+                </span>
 
-                    <button
-                        type="button"
-                        id="courseNextPage"
-                        ${currentPage >= totalPages - 1 ? "disabled" : ""}
-                    >
-                        Next
-                    </button>
-                `
-                : (
-                    filtered.length
-                        ? "<span>All matching results are shown.</span>"
-                        : ""
-                );
+                <button
+                    id="ceNext"
+                    type="button"
+                    ${state.page >= totalPages - 1 ? "disabled" : ""}
+                >
+                    Next
+                </button>
+            `;
 
+            $("cePrev")?.addEventListener(
+                "click",
+                () => {
+                    state.page =
+                        Math.max(0, state.page - 1);
 
-        el("coursePreviousPage")?.addEventListener(
-            "click",
-            () => {
-                currentPage =
-                    Math.max(0, currentPage - 1);
+                    render();
 
-                render();
+                    $("courseExplorer")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }
+            );
 
-                el("courseExplorer")?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-        );
+            $("ceNext")?.addEventListener(
+                "click",
+                () => {
+                    state.page =
+                        Math.min(
+                            totalPages - 1,
+                            state.page + 1
+                        );
 
+                    render();
 
-        el("courseNextPage")?.addEventListener(
-            "click",
-            () => {
-                currentPage =
-                    Math.min(
-                        totalPages - 1,
-                        currentPage + 1
-                    );
-
-                render();
-
-                el("courseExplorer")?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-        );
+                    $("courseExplorer")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }
+            );
+        } else {
+            pagination.innerHTML =
+                matching.length
+                    ? "<span>All matching records are shown.</span>"
+                    : "";
+        }
     }
 
 
-    function refreshAndRender(resetPage = true) {
+    function refresh(resetPage = true) {
         if (resetPage) {
-            currentPage = 0;
+            state.page = 0;
         }
 
         render();
@@ -2721,156 +2684,92 @@
 
 
     /* ========================================================
-       MASTER'S SELECTION HANDLER
-    ======================================================== */
-
-    function handleBachelorInput() {
-        const input =
-            el("coursePreviousBachelor");
-
-        const typed =
-            input?.value || "";
-
-        const exact =
-            previousBachelorOptions.get(typed);
-
-        const normalisedMatch =
-            [
-                ...previousBachelorOptions.entries()
-            ].find(
-                ([label]) =>
-                    normalise(label) === normalise(typed)
-            );
-
-
-        selectedPreviousBachelor =
-            exact ||
-            (
-                normalisedMatch
-                    ? normalisedMatch[1]
-                    : null
-            );
-
-
-        if (el("courseField")) {
-            el("courseField").value = "";
-        }
-
-        updateFieldOptions();
-
-        refreshAndRender(true);
-    }
-
-
-    /* ========================================================
-       EVENT WIRING
+       EVENTS
     ======================================================== */
 
     function setupEvents() {
-        el("courseDegreeLevel")?.addEventListener(
+        $("ceLevel")?.addEventListener(
             "change",
             () => {
-                selectedPreviousBachelor = null;
+                state.page = 0;
+                state.selectedBachelor = null;
 
-                if (
-                    el("coursePreviousBachelor")
-                ) {
-                    el("coursePreviousBachelor").value = "";
+                if ($("ceBachelor")) {
+                    $("ceBachelor").value = "";
                 }
 
-                if (el("courseField")) {
-                    el("courseField").value =
-                        currentLevel() === "all"
-                            ? "__all__"
-                            : "";
-                }
-
-                currentPage = 0;
-
-                updateFieldOptions();
-
+                updateFields();
                 render();
             }
         );
 
 
-        el("coursePreviousBachelor")?.addEventListener(
+        $("ceField")?.addEventListener(
             "change",
-            handleBachelorInput
+            () => refresh(true)
         );
 
 
-        el("coursePreviousBachelor")?.addEventListener(
+        $("ceState")?.addEventListener(
+            "change",
+            () => refresh(true)
+        );
+
+
+        $("ceLanguage")?.addEventListener(
+            "change",
+            () => refresh(true)
+        );
+
+
+        $("ceAdmission")?.addEventListener(
+            "change",
+            () => refresh(true)
+        );
+
+
+        $("ceSort")?.addEventListener(
+            "change",
+            () => refresh(true)
+        );
+
+
+        $("ceSearch")?.addEventListener(
             "input",
             () => {
-                const input =
-                    el("coursePreviousBachelor");
+                clearTimeout(state.timer);
 
-                if (!input) return;
-
-                const value =
-                    input.value || "";
-
-
-                if (
-                    !previousBachelorOptions.has(value)
-                ) {
-                    selectedPreviousBachelor = null;
-
-                    if (el("courseField")) {
-                        el("courseField").value = "";
-                    }
-
-                    updateFieldOptions();
-
-                    render();
-                }
+                state.timer = setTimeout(
+                    () => refresh(true),
+                    160
+                );
             }
         );
 
 
-        [
-            "courseField",
-            "courseState",
-            "courseLanguage",
-            "courseAdmission",
-            "courseSort"
-        ].forEach((id) => {
-            el(id)?.addEventListener(
-                "change",
-                () => refreshAndRender(true)
-            );
-        });
-
-
-        el("courseSearch")?.addEventListener(
-            "input",
-            () => refreshAndRender(true)
+        $("ceBachelor")?.addEventListener(
+            "change",
+            findBachelorSelection
         );
 
 
-        el("courseReset")?.addEventListener(
+        $("ceReset")?.addEventListener(
             "click",
             () => {
-                el("courseDegreeLevel").value = "all";
+                $("ceLevel").value = "all";
+                $("ceBachelor").value = "";
+                $("ceSearch").value = "";
+                $("ceState").value = "__all__";
+                $("ceLanguage").value = "__all__";
+                $("ceAdmission").value = "__all__";
+                $("ceSort").value = "programme";
 
-                el("coursePreviousBachelor").value = "";
+                state.selectedBachelor = null;
+                state.page = 0;
 
-                el("courseSearch").value = "";
+                updateFields();
 
-                el("courseState").value = "__all__";
-
-                el("courseLanguage").value = "__all__";
-
-                el("courseAdmission").value = "__all__";
-
-                el("courseSort").value = "programme";
-
-                selectedPreviousBachelor = null;
-
-                currentPage = 0;
-
-                updateFieldOptions();
+                $("ceField").value = "__all__";
 
                 render();
             }
@@ -2880,173 +2779,143 @@
 
     /* ========================================================
        LOAD DATA
+
+       Parse and normalise the CSV once. Search and filters use
+       precomputed normalised fields, rather than rebuilding
+       the whole search text on every keystroke.
     ======================================================== */
 
     async function initialise() {
-        if (el("courseExplorer")) return;
-
-        createCourseExplorer();
-
-        const list =
-            el("courseList");
-
-        if (list) {
-            list.innerHTML = `
-                <div class="course-empty">
-                    Loading the course dataset…
-                </div>
-            `;
+        if (state.loading || $("courseExplorer")) {
+            return;
         }
 
+        state.loading = true;
+
+        createSection();
+
+        $("ceList").innerHTML = `
+            <div class="ce-empty">
+                Loading programme data…
+            </div>
+        `;
 
         try {
             const response =
                 await fetch(
-                    COURSE_CSV_URL,
-                    {
-                        cache: "no-store"
-                    }
+                    CSV_URL,
+                    { cache: "no-store" }
                 );
-
 
             if (!response.ok) {
                 throw new Error(
-                    `Course CSV returned HTTP ${response.status}`
+                    `Course CSV returned HTTP ${response.status}.`
                 );
             }
-
 
             const csv =
                 await response.text();
 
-
             const rawRows =
-                parseCsv(csv);
+                parseCSV(csv);
 
-
-            allCourses =
+            state.rows =
                 rawRows
                     .map(standardise)
-                    .filter(
-                        (course) =>
-                            course.programme ||
-                            course.university
+                    .filter(course =>
+                        course.programme ||
+                        course.university
                     );
 
 
-            if (!allCourses.length) {
+            if (!state.rows.length) {
                 throw new Error(
-                    "The course CSV loaded, but no programme rows " +
-                    "were found. Check the CSV headers and published file path."
+                    "The CSV loaded but no course rows with a programme " +
+                    "or university name were found. Check the CSV headers."
                 );
             }
 
 
-            doctoralFallbackCourses =
-                buildDoctoralAvailabilityFallback(
-                    allCourses
-                );
-
-
-            setupBachelorDatalist();
+            setupBachelorOptions();
 
             updateFilterOptions();
 
+            updateFields();
+
             setupEvents();
 
-            updateFieldOptions();
+            renderDiagnostics();
 
             render();
 
 
             console.info(
-                "Course Explorer ready",
+                "Study Programme Explorer loaded",
                 {
-                    totalRows:
-                        allCourses.length,
+                    totalSourceRows:
+                        rawRows.length,
 
-                    bachelorRows:
-                        allCourses.filter(
-                            (row) =>
-                                row.category === "bachelor"
-                        ).length,
+                    displayedCourseRows:
+                        state.rows.length,
 
-                    masterRows:
-                        allCourses.filter(
-                            (row) =>
-                                row.category === "master"
-                        ).length,
+                    bachelor's:
+                        routeCourses("bachelor").length,
 
-                    doctoralRows:
-                        allCourses.filter(
-                            (row) =>
-                                row.category === "phd"
-                        ).length,
+                    master's:
+                        routeCourses("master").length,
 
-                    doctoralUniversityFallbackRows:
-                        doctoralFallbackCourses.length,
+                    doctoral:
+                        routeCourses("phd").length,
 
-                    teachingRows:
-                        allCourses.filter(
-                            (row) =>
-                                row.category === "teaching"
-                        ).length,
+                    teaching:
+                        routeCourses("teaching").length,
 
-                    otherRows:
-                        allCourses.filter(
-                            (row) =>
-                                row.category === "other"
-                        ).length
+                    other:
+                        routeCourses("other").length,
+
+                    sampleHeaders:
+                        Object.keys(rawRows[0] || {})
                 }
             );
 
         } catch (error) {
             console.error(
-                "Course Explorer could not load:",
+                "Study Programme Explorer failed:",
                 error
             );
 
+            $("ceList").innerHTML = `
+                <div class="ce-empty">
+                    The course CSV could not be loaded.
 
-            if (list) {
-                list.innerHTML = `
-                    <div class="course-empty">
-                        Could not load the course dataset.
+                    <br><br>
 
-                        <br><br>
+                    ${escapeHtml(error.message)}
 
-                        ${escapeHtml(error.message)}
+                    <br><br>
 
-                        <br><br>
+                    Confirm that this file exists in your GitHub repository:
 
-                        Confirm that
-                        <code>outputs/analytics/courses_analytics.csv</code>
-                        exists in the same GitHub repository.
-                    </div>
-                `;
-            }
+                    <br>
 
+                    outputs/analytics/courses_analytics.csv
+                </div>
+            `;
 
-            const total =
-                el("courseExplorerTotal");
+            $("ceTotal").textContent =
+                "Course data unavailable";
 
-            if (total) {
-                total.textContent =
-                    "Course data unavailable";
-            }
+        } finally {
+            state.loading = false;
         }
     }
 
 
     /* ========================================================
-       START SAFELY
-
-       Works whether the browser is still parsing HTML or the
-       module is loaded after DOMContentLoaded.
+       START
     ======================================================== */
 
-    if (
-        document.readyState === "loading"
-    ) {
+    if (document.readyState === "loading") {
         document.addEventListener(
             "DOMContentLoaded",
             initialise,
